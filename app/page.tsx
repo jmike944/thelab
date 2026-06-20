@@ -191,6 +191,7 @@ export default function App() {
   const [sent, setSent] = React.useState(false);
   const [entered, setEntered] = React.useState(false);
   const [flash, setFlash] = React.useState(false);
+  const [saver, setSaver] = React.useState(false);
   const enteredRef = React.useRef(false);
   const enter = React.useCallback(() => {
     if (enteredRef.current) return;
@@ -221,6 +222,24 @@ export default function App() {
       window.removeEventListener("keydown", onKey);
     };
   }, [entered, enter]);
+
+  // DVD-style screensaver after 10s idle (only once the site is revealed).
+  React.useEffect(() => {
+    if (!entered) return;
+    let timer: number | undefined;
+    const reset = () => {
+      setSaver(false);
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => setSaver(true), 10000);
+    };
+    const evs = ["mousemove", "mousedown", "keydown", "wheel", "touchstart", "scroll"];
+    evs.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    reset();
+    return () => {
+      if (timer) window.clearTimeout(timer);
+      evs.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [entered]);
 
   React.useEffect(() => {
     const m = readMode();
@@ -293,7 +312,54 @@ export default function App() {
       </main>
       <LabFooter />
       {open && <CaseModal p={open} onClose={() => setOpen(null)} />}
+      {saver && <Screensaver />}
     </>
+  );
+}
+
+/* =========================================================================
+ * SCREENSAVER — DVD-style bouncing logo that recolors on each wall hit
+ * ========================================================================= */
+function Screensaver() {
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const colors = SPECTRUM;
+    let ci = 0;
+    let vx = 2.4;
+    let vy = 1.9;
+    const w = el.offsetWidth || 240;
+    const h = el.offsetHeight || 80;
+    let x = 48;
+    let y = 48;
+    el.style.backgroundColor = `var(--spectrum-${colors[ci]})`;
+    let raf = 0;
+    const step = () => {
+      const maxX = Math.max(0, window.innerWidth - w);
+      const maxY = Math.max(0, window.innerHeight - h);
+      x += vx;
+      y += vy;
+      let hit = false;
+      if (x <= 0) { x = 0; vx = Math.abs(vx); hit = true; }
+      else if (x >= maxX) { x = maxX; vx = -Math.abs(vx); hit = true; }
+      if (y <= 0) { y = 0; vy = Math.abs(vy); hit = true; }
+      else if (y >= maxY) { y = maxY; vy = -Math.abs(vy); hit = true; }
+      if (hit) {
+        ci = (ci + 1) % colors.length;
+        el.style.backgroundColor = `var(--spectrum-${colors[ci]})`;
+      }
+      el.style.transform = `translate(${x}px, ${y}px)`;
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return (
+    <div className="ls-saver" aria-hidden="true">
+      <div ref={ref} className="ls-saver__logo" />
+      <span className="ls-saver__tag">SYS.IDLE // MUEVE PARA DESPERTAR</span>
+    </div>
   );
 }
 

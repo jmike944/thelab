@@ -482,6 +482,22 @@ img, svg { display: block; max-width: 100%; }
 }
 
 /* ============================================================
+   SCREENSAVER — DVD-style idle bounce
+   ============================================================ */
+.ls-saver { position: fixed; inset: 0; z-index: 400; background: #0a0a0a; overflow: hidden; cursor: none; animation: ls-saver-in .4s ease; }
+@keyframes ls-saver-in { from { opacity: 0; } to { opacity: 1; } }
+.ls-saver__logo {
+  position: absolute; top: 0; left: 0;
+  width: clamp(150px, 20vw, 260px);
+  aspect-ratio: 2998 / 1000;
+  background-color: var(--spectrum-cyan);
+  -webkit-mask: url(/logos/the-lab-complete.svg) center / contain no-repeat;
+  mask: url(/logos/the-lab-complete.svg) center / contain no-repeat;
+  will-change: transform;
+}
+.ls-saver__tag { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-family: var(--font-data); font-weight: 800; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(255, 252, 247, .3); }
+
+/* ============================================================
    SCANLINE
    ============================================================ */
 .ls-scan { position: fixed; left: 0; right: 0; top: 0; height: 2px; background: var(--hud-scan); animation: ls-scan 9s linear infinite; pointer-events: none; z-index: 120; transition: opacity .4s var(--ease-out); }
