@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sun, Moon, Monitor, Send } from "lucide-react";
+import { Send, SlidersHorizontal } from "lucide-react";
 
 /* =========================================================================
  * DATA — real content from the "Creative Worth" portfolio (The Lab MX)
@@ -205,6 +205,7 @@ export default function App() {
   const [flash, setFlash] = React.useState(false);
   const [saver, setSaver] = React.useState(false);
   const [accent, setAccent] = React.useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
   const enteredRef = React.useRef(false);
 
   // Accent colour: the pre-paint script already applied the saved one; sync
@@ -343,7 +344,10 @@ export default function App() {
 
   React.useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(null);
+      if (e.key === "Escape") {
+        setOpen(null);
+        setSettingsOpen(false);
+      }
     };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
@@ -354,9 +358,9 @@ export default function App() {
       <LabIntro entered={entered} onEnter={enter} />
       {flash && <LabFlash />}
       <div className={"ls-scan" + (entered ? "" : " ls-hidden")} aria-hidden="true" />
-      <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} hidden={!entered} />
-      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} accent={accent} onAccent={applyAccent} hidden={!entered} />
-      <LabRailRight hidden={!entered} />
+      <LabHeader active={active} onNav={nav} onStart={start} onOpenSettings={() => setSettingsOpen(true)} hidden={!entered} />
+      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!entered} />
+      <LabRailRight accent={accent} onAccent={applyAccent} hidden={!entered} />
       <main className="ls-main">
         <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
         <LabMarquee items={MARQUEE} />
@@ -366,8 +370,83 @@ export default function App() {
       </main>
       <LabFooter />
       {open && <CaseModal p={open} onClose={() => setOpen(null)} />}
+      {settingsOpen && (
+        <SettingsModal
+          mode={mode}
+          onSetMode={applyMode}
+          accent={accent}
+          onAccent={applyAccent}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
       {saver && <Screensaver />}
     </>
+  );
+}
+
+/* =========================================================================
+ * SETTINGS MODAL (mobile) — pick theme + accent colour
+ * ========================================================================= */
+function SettingsModal({
+  mode,
+  onSetMode,
+  accent,
+  onAccent,
+  onClose,
+}: {
+  mode: Mode;
+  onSetMode: (m: Mode) => void;
+  accent: string | null;
+  onAccent: (n: string) => void;
+  onClose: () => void;
+}) {
+  const modes: [Mode, string][] = [
+    ["paper", "Papel"],
+    ["signal", "Digital"],
+    ["system", "Sistema"],
+  ];
+  return (
+    <div className="ls-set" onClick={onClose}>
+      <div className="ls-set__panel" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Ajustes">
+        <div className="ls-set__hd">
+          <span className="ls-set__title">// AJUSTES</span>
+          <button className="lb-modal__x" onClick={onClose} aria-label="Cerrar">
+            ✕
+          </button>
+        </div>
+        <div className="ls-set__bd">
+          <div className="ls-set__lbl">Modo de pantalla</div>
+          <div className="ls-set__modes">
+            {modes.map(([m, label]) => (
+              <button
+                key={m}
+                type="button"
+                aria-pressed={mode === m}
+                className={"ls-set__mode" + (mode === m ? " is-on" : "")}
+                onClick={() => onSetMode(m)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="ls-set__lbl">Color de acento</div>
+          <div className="ls-set__colors">
+            {ACCENTS.map((a) => (
+              <button
+                key={a.name}
+                type="button"
+                title={a.name}
+                aria-label={a.name}
+                aria-pressed={accent === a.name}
+                className={"ls-set__color" + (accent === a.name ? " is-on" : "")}
+                style={{ background: a.v }}
+                onClick={() => onAccent(a.name)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -491,15 +570,13 @@ function LabHeader({
   active,
   onNav,
   onStart,
-  mode,
-  onSetMode,
+  onOpenSettings,
   hidden,
 }: {
   active: string;
   onNav: (id: string) => void;
   onStart: () => void;
-  mode: Mode;
-  onSetMode: (m: Mode) => void;
+  onOpenSettings: () => void;
   hidden?: boolean;
 }) {
   return (
@@ -529,38 +606,9 @@ function LabHeader({
         ))}
       </div>
       <div className="ls-nav__right">
-        <div className="ls-toggle" role="group" aria-label="Modo de pantalla">
-          <button
-            type="button"
-            aria-label="Papel"
-            title="Papel"
-            aria-pressed={mode === "paper"}
-            className={"ls-toggle__opt" + (mode === "paper" ? " is-on" : "")}
-            onClick={() => onSetMode("paper")}
-          >
-            <Sun size={14} strokeWidth={2} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            aria-label="Digital"
-            title="Digital"
-            aria-pressed={mode === "signal"}
-            className={"ls-toggle__opt" + (mode === "signal" ? " is-on" : "")}
-            onClick={() => onSetMode("signal")}
-          >
-            <Moon size={14} strokeWidth={2} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            aria-label="Sistema"
-            title="Sistema"
-            aria-pressed={mode === "system"}
-            className={"ls-toggle__opt" + (mode === "system" ? " is-on" : "")}
-            onClick={() => onSetMode("system")}
-          >
-            <Monitor size={14} strokeWidth={2} aria-hidden="true" />
-          </button>
-        </div>
+        <button className="ls-settings-btn" type="button" aria-label="Ajustes" onClick={onOpenSettings}>
+          <SlidersHorizontal size={16} strokeWidth={2} aria-hidden="true" />
+        </button>
         <button className="ls-cta" onClick={onStart} aria-label="Empezar un proyecto">
           <span className="ls-cta__label">
             EMPEZAR PROYECTO<span className="ls-cta__arr">→</span>
@@ -576,15 +624,11 @@ function LabRailLeft({
   coord,
   mode,
   onSetMode,
-  accent,
-  onAccent,
   hidden,
 }: {
   coord: string;
   mode: Mode;
   onSetMode: (m: Mode) => void;
-  accent: string | null;
-  onAccent: (n: string) => void;
   hidden?: boolean;
 }) {
   const modes: [Mode, string, string][] = [
@@ -616,8 +660,26 @@ function LabRailLeft({
             </button>
           ))}
         </div>
-        <div className="ls-rail__acc" role="group" aria-label="Color de acento">
-          <span className="ls-rail__modelbl">ACC</span>
+      </div>
+      <span className="ls-rail__txt">{coord}</span>
+    </aside>
+  );
+}
+
+function LabRailRight({
+  accent,
+  onAccent,
+  hidden,
+}: {
+  accent: string | null;
+  onAccent: (n: string) => void;
+  hidden?: boolean;
+}) {
+  return (
+    <aside className={"ls-rail ls-rail--r" + (hidden ? " ls-hidden" : "")}>
+      <div className="ls-rail__accwrap" role="group" aria-label="Color de acento">
+        <span className="ls-rail__modelbl">ACC</span>
+        <div className="ls-accbar">
           {ACCENTS.map((a) => (
             <button
               key={a.name}
@@ -625,23 +687,12 @@ function LabRailLeft({
               title={a.name}
               aria-label={a.name}
               aria-pressed={accent === a.name}
-              className={"ls-acc__dot" + (accent === a.name ? " is-on" : "")}
+              className={"ls-accbar__seg" + (accent === a.name ? " is-on" : "")}
               style={{ background: a.v }}
               onClick={() => onAccent(a.name)}
             />
           ))}
         </div>
-      </div>
-      <span className="ls-rail__txt">{coord}</span>
-    </aside>
-  );
-}
-
-function LabRailRight({ hidden }: { hidden?: boolean }) {
-  return (
-    <aside className={"ls-rail ls-rail--r" + (hidden ? " ls-hidden" : "")}>
-      <div style={{ width: "100%", padding: "0 8px" }}>
-        <SpectrumBar orientation="vertical" size="lg" style={{ height: "64px", margin: "0 auto" }} />
       </div>
       <span className="ls-rail__txt">FREQ: 144.20 MHz</span>
     </aside>
