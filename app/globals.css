@@ -397,7 +397,12 @@ img, svg { display: block; max-width: 100%; }
 [data-theme="signal"] .lb-card { border: 1px solid var(--hud-line); box-shadow: var(--hud-glow-inset); }
 .lb-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--lab-ink); }
 [data-theme="signal"] .lb-card:hover { box-shadow: var(--hud-glow); }
-.lb-card__media { aspect-ratio: 4 / 3; }
+.lb-card__media { aspect-ratio: 4 / 3; position: relative; overflow: hidden; background: var(--hud-panel-2); }
+.lb-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .45s var(--ease-out); }
+.lb-card:hover .lb-card__img { transform: scale(1.04); }
+.lb-card__bar { position: absolute; top: 0; left: 0; right: 0; height: 4px; z-index: 2; }
+.lb-card__scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(to top, rgba(15,13,13,.66) 0%, rgba(15,13,13,.10) 42%, rgba(15,13,13,0) 60%); }
+.lb-card__title { position: absolute; bottom: 12px; left: 14px; z-index: 2; color: #fffcf7; font-family: var(--font-head); font-weight: 700; font-size: 26px; letter-spacing: -.01em; }
 .lb-card__body { padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
 
 .lb-badge { font-size: 11px; font-weight: 800; letter-spacing: .06em; border: 1px solid var(--hud-line); padding: 3px 8px; color: var(--hud-on-variant); }

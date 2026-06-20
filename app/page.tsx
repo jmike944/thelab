@@ -13,18 +13,17 @@ type Project = {
   cat: string;
   year: string;
   bg: string;
-  fg: string;
-  glyph: string;
+  img: string;
   blurb: string;
 };
 
 const PROJECTS: Project[] = [
-  { id: "wu",      title: "WU",      client: "WU",                       cat: "Contenido viral", year: "2026", bg: "var(--spectrum-red)",     fg: "#fffcf7", glyph: "▲", blurb: "Video viral «3 vitaminas para mujeres este 2026». +25M de reproducciones y 444K likes — 100% orgánico." },
-  { id: "zoco",    title: "ZOCO",    client: "Zoco Brema",               cat: "Storytelling",    year: "2026", bg: "var(--spectrum-magenta)", fg: "#fffcf7", glyph: "✦", blurb: "Spring menu para Zoco Brema: mango sticky rice matcha, banana latte y mango spritz. Storytelling que se siente, se entiende y se queda." },
-  { id: "collab",  title: "COLLAB",  client: "La Cantina × La Potranca", cat: "Collabs",         year: "2025", bg: "#231f20",                 fg: "#fffcf7", glyph: "✕", blurb: "Colaboración de marcas: La Cantina × La Potranca. Narrativa norteña — rancho, cantina y carretera." },
-  { id: "mercato", title: "MERCATO", client: "Il Mercato Gentiloni",     cat: "Producción",      year: "2025", bg: "var(--spectrum-orange)",  fg: "#231f20", glyph: "Ø", blurb: "Sesiones fotográficas y producción de video para Il Mercato Gentiloni: carta, platillos y marca." },
-  { id: "apertura",title: "EVENTOS", client: "Apertura de sucursal",     cat: "Cobertura",       year: "2026", bg: "var(--spectrum-blue)",    fg: "#fffcf7", glyph: "◉", blurb: "Cobertura de apertura de nueva sucursal — shorts y reels capturados y publicados en tiempo real." },
-  { id: "rancho",  title: "RANCHO",  client: "Saltillo es uto rancho",   cat: "Campañas",        year: "2025", bg: "var(--spectrum-green)",   fg: "#231f20", glyph: "✺", blurb: "Campaña lifestyle «Saltillo es uto rancho» — rodeo, rancho y merch para una comunidad local." },
+  { id: "wu",      title: "WU",      client: "WU",                       cat: "Contenido viral", year: "2026", bg: "var(--spectrum-red)",     img: "/work/wu.jpg",      blurb: "Video viral «3 vitaminas para mujeres este 2026». +25M de reproducciones y 444K likes — 100% orgánico." },
+  { id: "zoco",    title: "ZOCO",    client: "Zoco Brema",               cat: "Storytelling",    year: "2026", bg: "var(--spectrum-magenta)", img: "/work/zoco.jpg",    blurb: "Spring menu para Zoco Brema: mango sticky rice matcha, banana latte y mango spritz. Storytelling que se siente, se entiende y se queda." },
+  { id: "collab",  title: "COLLAB",  client: "La Cantina × La Potranca", cat: "Collabs",         year: "2025", bg: "#231f20",                 img: "/work/collab.jpg",  blurb: "Colaboración de marcas: La Cantina × La Potranca. Narrativa norteña — rancho, cantina y carretera." },
+  { id: "mercato", title: "MERCATO", client: "Il Mercato Gentiloni",     cat: "Producción",      year: "2025", bg: "var(--spectrum-orange)",  img: "/work/mercato.jpg", blurb: "Sesiones fotográficas y producción de video para Il Mercato Gentiloni: carta, platillos y marca." },
+  { id: "apertura",title: "EVENTOS", client: "Apertura de sucursal",     cat: "Cobertura",       year: "2026", bg: "var(--spectrum-blue)",    img: "/work/apertura.jpg",blurb: "Cobertura de apertura de nueva sucursal — shorts y reels capturados y publicados en tiempo real." },
+  { id: "rancho",  title: "RANCHO",  client: "Saltillo es uto rancho",   cat: "Campañas",        year: "2025", bg: "var(--spectrum-green)",   img: "/work/rancho.jpg",  blurb: "Campaña lifestyle «Saltillo es uto rancho» — rodeo, rancho y merch para una comunidad local." },
 ];
 
 const CATS = ["Todos", "Contenido viral", "Storytelling", "Collabs", "Producción", "Cobertura", "Campañas"];
@@ -464,31 +463,11 @@ function LabWorkTile({ p, onOpen }: { p: Project; onOpen: (p: Project) => void }
   return (
     <button type="button" className="lb-card" onClick={() => onOpen(p)}>
       <div className="lb-card__media">
-        <div
-          style={{
-            height: "100%",
-            background: p.bg,
-            color: p.fg,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-          }}
-        >
-          <span style={{ fontFamily: "var(--font-display)", fontSize: 84, lineHeight: 1 }}>{p.glyph}</span>
-          <span
-            style={{
-              position: "absolute",
-              bottom: 12,
-              left: 14,
-              fontFamily: "var(--font-head)",
-              fontSize: 26,
-              letterSpacing: "-.01em",
-            }}
-          >
-            {p.title}
-          </span>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="lb-card__img" src={p.img} alt={p.client} loading="lazy" />
+        <span className="lb-card__bar" style={{ background: p.bg }} />
+        <span className="lb-card__scrim" />
+        <span className="lb-card__title">{p.title}</span>
       </div>
       <div className="lb-card__body">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
@@ -724,8 +703,9 @@ function CaseModal({ p, onClose }: { p: Project; onClose: () => void }) {
             ✕
           </button>
         </div>
-        <div className="lb-modal__hero" style={{ background: p.bg, color: p.fg }}>
-          <span style={{ fontFamily: "var(--font-display)", fontSize: 96, lineHeight: 1 }}>{p.glyph}</span>
+        <div className="lb-modal__hero" style={{ padding: 0, overflow: "hidden", display: "block" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={p.img} alt={p.client} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
         <SpectrumBar />
         <div className="lb-modal__bd">
