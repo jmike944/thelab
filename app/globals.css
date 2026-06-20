@@ -447,10 +447,9 @@ img, svg { display: block; max-width: 100%; }
 /* ============================================================
    INTRO — full-screen video splash
    ============================================================ */
-.ls-intro { position: fixed; inset: 0; z-index: 200; overflow: hidden; background: #000; cursor: pointer; will-change: transform; transition: transform 1.05s cubic-bezier(.76, 0, .24, 1); }
-.ls-intro.is-entered { transform: translateY(-100%); pointer-events: none; }
-.ls-intro__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; transition: transform 1.2s cubic-bezier(.76, 0, .24, 1); }
-.ls-intro.is-entered .ls-intro__video { transform: scale(1.14); }
+.ls-intro { position: fixed; inset: 0; z-index: 200; overflow: hidden; background: #000; cursor: pointer; }
+.ls-intro.is-entered { display: none; }
+.ls-intro__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ls-intro__veil { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,.28) 0%, transparent 20%, transparent 60%, rgba(0,0,0,.62) 100%); }
 .ls-intro__cue { position: absolute; left: 0; right: 0; bottom: 34px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 16px; transition: opacity .3s ease, transform .5s var(--ease-out); }
 .ls-intro.is-entered .ls-intro__cue { opacity: 0; transform: translateY(10px); }
@@ -460,7 +459,26 @@ img, svg { display: block; max-width: 100%; }
 @keyframes ls-introbounce { 0%, 100% { transform: translateY(0); opacity: .75; } 50% { transform: translateY(6px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .ls-intro__chev { animation: none; }
-  .ls-intro, .ls-intro__video { transition-duration: .01ms; }
+  .ls-flash { animation: none; }
+}
+
+/* test-card flash — flickers in, then unmounts (hard cut to the site) */
+.ls-flash { position: fixed; inset: 0; z-index: 300; pointer-events: none; display: flex; flex-direction: column; background: #000; animation: ls-flash-in .43s linear forwards; }
+.ls-flash__bars { flex: 1 1 66%; display: flex; }
+.ls-flash__bars > i { flex: 1; }
+.ls-flash__ramp { flex: 0 0 9%; display: flex; }
+.ls-flash__ramp > i { flex: 1; }
+.ls-flash__base { flex: 1 1 25%; position: relative; display: grid; place-items: center; background: #0a0a0a; }
+.ls-flash__mark { height: clamp(22px, 3.6vw, 42px); width: auto; filter: invert(1); }
+.ls-flash__tag { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-family: var(--font-data); font-weight: 800; font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: #fffcf7; opacity: .8; }
+@keyframes ls-flash-in {
+  0% { opacity: 0; }
+  9% { opacity: 1; }
+  18% { opacity: 0; }
+  27% { opacity: 1; }
+  42% { opacity: .25; }
+  54% { opacity: 1; }
+  100% { opacity: 1; }
 }
 
 /* ============================================================

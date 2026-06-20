@@ -178,10 +178,18 @@ export default function App() {
   const [open, setOpen] = React.useState<Project | null>(null);
   const [sent, setSent] = React.useState(false);
   const [entered, setEntered] = React.useState(false);
-  const enter = React.useCallback(() => setEntered(true), []);
+  const [flash, setFlash] = React.useState(false);
+  const enteredRef = React.useRef(false);
+  const enter = React.useCallback(() => {
+    if (enteredRef.current) return;
+    enteredRef.current = true;
+    setFlash(true); // test-card flash...
+    setEntered(true); // ...hides the video + reveals the site beneath
+    window.setTimeout(() => setFlash(false), 430); // then cut abruptly
+  }, []);
 
   // Hold on the intro (scroll locked) until the slightest scroll / swipe / key,
-  // then slide it away and reveal the site.
+  // then flash the test card and reveal the site.
   React.useEffect(() => {
     if (entered) return;
     const prevOverflow = document.body.style.overflow;
@@ -259,6 +267,7 @@ export default function App() {
   return (
     <>
       <LabIntro entered={entered} onEnter={enter} />
+      {flash && <LabFlash />}
       <div className={"ls-scan" + (entered ? "" : " ls-hidden")} aria-hidden="true" />
       <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} hidden={!entered} />
       <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!entered} />
@@ -316,6 +325,30 @@ function LabIntro({ entered, onEnter }: { entered: boolean; onEnter: () => void 
         </span>
       </div>
     </section>
+  );
+}
+
+/* Broadcast test-card flash shown on enter, then cut abruptly to the site. */
+function LabFlash() {
+  const ramp = ["#000000", "#2b2b2b", "#555555", "#808080", "#aaaaaa", "#d6d6d6", "#ffffff"];
+  return (
+    <div className="ls-flash" aria-hidden="true">
+      <div className="ls-flash__bars">
+        {SPECTRUM.map((c) => (
+          <i key={c} style={{ background: `var(--spectrum-${c})` }} />
+        ))}
+      </div>
+      <div className="ls-flash__ramp">
+        {ramp.map((g) => (
+          <i key={g} style={{ background: g }} />
+        ))}
+      </div>
+      <div className="ls-flash__base">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="ls-flash__mark" src="/logos/the-lab-wordmark.svg" alt="" />
+        <span className="ls-flash__tag">// SIGNAL — THE LAB® — CREATIVE WORTH</span>
+      </div>
+    </div>
   );
 }
 
