@@ -177,9 +177,9 @@
   --hud-accent:      var(--lab-blue);
   --hud-accent-soft: var(--lab-blue);
   --hud-accent-ink:  var(--lab-paper);
-  --hud-bracket:     var(--lab-blue);
+  --hud-bracket:     var(--hud-accent);
 
-  --hud-glow:        3px 3px 0 var(--lab-blue);
+  --hud-glow:        3px 3px 0 var(--hud-accent);
   --hud-glow-inset:  none;
 
   --hud-grid:        rgba(35, 31, 32, 0.07);
@@ -227,8 +227,8 @@
   --hud-accent:      var(--signal-accent);
   --hud-accent-soft: var(--signal-accent-soft);
   --hud-accent-ink:  var(--signal-bg);
-  --hud-bracket:     var(--signal-accent);
-  --hud-glow:        var(--signal-glow);
+  --hud-bracket:     var(--hud-accent);
+  --hud-glow:        0 0 0 1px var(--hud-accent), 0 0 12px color-mix(in srgb, var(--hud-accent) 40%, transparent);
   --hud-glow-inset:  var(--signal-glow-inset);
   --hud-grid:        var(--signal-grid);
   --hud-chrome:      color-mix(in srgb, #231f20 92%, transparent);
@@ -559,6 +559,11 @@ img, svg { display: block; max-width: 100%; }
 .ls-rail__modebtn { font-family: var(--font-data); font-weight: 800; font-size: 8px; letter-spacing: .06em; width: 30px; padding: 4px 0; text-align: center; background: transparent; color: var(--hud-muted); border: 1px solid var(--hud-line); cursor: pointer; transition: color .15s, background .15s, border-color .15s; text-transform: uppercase; }
 .ls-rail__modebtn.is-on { background: var(--hud-accent); color: var(--hud-accent-ink); border-color: var(--hud-accent); }
 .ls-rail__modebtn:not(.is-on):hover { color: var(--hud-accent); border-color: var(--hud-accent); }
+/* accent-colour picker — the brand's 7 spectrum colours */
+.ls-rail__acc { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.ls-acc__dot { width: 11px; height: 11px; padding: 0; border-radius: 50%; border: 1px solid var(--hud-line); cursor: pointer; transition: transform .12s; }
+.ls-acc__dot:hover { transform: scale(1.25); }
+.ls-acc__dot.is-on { box-shadow: 0 0 0 2px var(--hud-bg), 0 0 0 3px var(--hud-ink); }
 
 /* ============================================================
    MAIN + MARQUEE

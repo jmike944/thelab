@@ -48,6 +48,18 @@ const MARQUEE = ["CONTENIDO VIRAL", "EVENTOS", "FOTOGRAFÍA", "VIDEO", "COMMUNIT
 
 const NAV: [string, string][] = [["01", "TRABAJO"], ["02", "SERVICIOS"], ["03", "ESTUDIO"], ["04", "CONTACTO"]];
 
+// The brand's 7 spectrum colours, selectable as the site accent. `ink` is the
+// readable text colour to use on top of each accent.
+const ACCENTS: { name: string; v: string; ink: string }[] = [
+  { name: "red", v: "#ee1708", ink: "#fffcf7" },
+  { name: "orange", v: "#ff9000", ink: "#231f20" },
+  { name: "yellow", v: "#feff1f", ink: "#231f20" },
+  { name: "green", v: "#3ac62f", ink: "#231f20" },
+  { name: "cyan", v: "#00cfff", ink: "#231f20" },
+  { name: "blue", v: "#3537ff", ink: "#fffcf7" },
+  { name: "magenta", v: "#ff0074", ink: "#fffcf7" },
+];
+
 const MARK = "/logos/the-lab-mark.svg";
 const COMPLETE = "/logos/the-lab-complete.svg";
 const MARK_3D = "/logos/the-lab-3d-line.svg";
@@ -192,7 +204,33 @@ export default function App() {
   const [entered, setEntered] = React.useState(false);
   const [flash, setFlash] = React.useState(false);
   const [saver, setSaver] = React.useState(false);
+  const [accent, setAccent] = React.useState<string | null>(null);
   const enteredRef = React.useRef(false);
+
+  // Accent colour: the pre-paint script already applied the saved one; sync
+  // state for the picker UI. Clicking the active swatch resets to the default.
+  React.useEffect(() => {
+    try {
+      const a = localStorage.getItem("lab-site-accent");
+      if (a) setAccent(a);
+    } catch {}
+  }, []);
+  function applyAccent(name: string) {
+    const root = document.documentElement;
+    if (accent === name) {
+      root.style.removeProperty("--hud-accent");
+      root.style.removeProperty("--hud-accent-ink");
+      try { localStorage.removeItem("lab-site-accent"); } catch {}
+      setAccent(null);
+      return;
+    }
+    const a = ACCENTS.find((x) => x.name === name);
+    if (!a) return;
+    root.style.setProperty("--hud-accent", a.v);
+    root.style.setProperty("--hud-accent-ink", a.ink);
+    try { localStorage.setItem("lab-site-accent", name); } catch {}
+    setAccent(name);
+  }
   const saverRef = React.useRef(false);
   const flashTimer = React.useRef<number | undefined>(undefined);
   const triggerFlash = React.useCallback(() => {
@@ -317,7 +355,7 @@ export default function App() {
       {flash && <LabFlash />}
       <div className={"ls-scan" + (entered ? "" : " ls-hidden")} aria-hidden="true" />
       <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} hidden={!entered} />
-      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!entered} />
+      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} accent={accent} onAccent={applyAccent} hidden={!entered} />
       <LabRailRight hidden={!entered} />
       <main className="ls-main">
         <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
@@ -538,11 +576,15 @@ function LabRailLeft({
   coord,
   mode,
   onSetMode,
+  accent,
+  onAccent,
   hidden,
 }: {
   coord: string;
   mode: Mode;
   onSetMode: (m: Mode) => void;
+  accent: string | null;
+  onAccent: (n: string) => void;
   hidden?: boolean;
 }) {
   const modes: [Mode, string, string][] = [
@@ -572,6 +614,21 @@ function LabRailLeft({
             >
               {abbr}
             </button>
+          ))}
+        </div>
+        <div className="ls-rail__acc" role="group" aria-label="Color de acento">
+          <span className="ls-rail__modelbl">ACC</span>
+          {ACCENTS.map((a) => (
+            <button
+              key={a.name}
+              type="button"
+              title={a.name}
+              aria-label={a.name}
+              aria-pressed={accent === a.name}
+              className={"ls-acc__dot" + (accent === a.name ? " is-on" : "")}
+              style={{ background: a.v }}
+              onClick={() => onAccent(a.name)}
+            />
           ))}
         </div>
       </div>
