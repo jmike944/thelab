@@ -53,6 +53,17 @@ const COMPLETE = "/logos/the-lab-complete.svg";
 const MARK_3D = "/logos/the-lab-3d-line.svg";
 const WORDMARK = "/logos/the-lab-wordmark.svg";
 
+// Logos the hero plate flashes through. `tone` = single-tone (recolor per
+// theme); the 3D mark is two-tone and stays as-is.
+const HERO_MARKS = [
+  { src: "/logos/the-lab-3d-line.svg",   fig: "FIG.01 — MARCA 3D",   tone: false },
+  { src: "/logos/the-lab-mark.svg",      fig: "FIG.02 — MONOGRAMA",  tone: true },
+  { src: "/logos/the-lab-complete.svg",  fig: "FIG.03 — LOCKUP",     tone: true },
+  { src: "/logos/the-lab-variant.svg",   fig: "FIG.04 — VARIANTE",   tone: true },
+  { src: "/logos/the-lab-variant-2.svg", fig: "FIG.05 — VARIANTE 02", tone: true },
+  { src: "/logos/the-lab-wordmark.svg",  fig: "FIG.06 — WORDMARK",   tone: true },
+];
+
 /* =========================================================================
  * PRIMITIVES
  * ========================================================================= */
@@ -518,6 +529,13 @@ function LabMarquee({ items }: { items: string[] }) {
  * HERO
  * ========================================================================= */
 function LabHero({ onStart, onWork }: { onStart: () => void; onWork: () => void }) {
+  const [idx, setIdx] = React.useState(0);
+  React.useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const id = window.setInterval(() => setIdx((i) => (i + 1) % HERO_MARKS.length), reduce ? 2600 : 1600);
+    return () => window.clearInterval(id);
+  }, []);
+  const m = HERO_MARKS[idx];
   return (
     <section className="lb-hero ls-brk" id="top">
       <div className="lb-monitor">
@@ -550,9 +568,14 @@ function LabHero({ onStart, onWork }: { onStart: () => void; onWork: () => void 
             <StatusPip color="red" pulse label="REC [CH.01]" />
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="lb-hero__mark" src={MARK_3D} alt="The Lab — marca 3D" />
+          <img
+            key={idx}
+            className={"lb-hero__mark" + (m.tone ? " is-tone" : "")}
+            src={m.src}
+            alt="The Lab"
+          />
           <div className="lb-hero__plate">
-            <span className="lb-code">FIG.01 — LA MARCA</span>
+            <span className="lb-code">{m.fig}</span>
           </div>
           <span className="lb-hero__scan" aria-hidden="true" />
         </div>
