@@ -193,13 +193,19 @@ export default function App() {
   const [flash, setFlash] = React.useState(false);
   const [saver, setSaver] = React.useState(false);
   const enteredRef = React.useRef(false);
+  const saverRef = React.useRef(false);
+  const flashTimer = React.useRef<number | undefined>(undefined);
+  const triggerFlash = React.useCallback(() => {
+    setFlash(true);
+    if (flashTimer.current) window.clearTimeout(flashTimer.current);
+    flashTimer.current = window.setTimeout(() => setFlash(false), 430);
+  }, []);
   const enter = React.useCallback(() => {
     if (enteredRef.current) return;
     enteredRef.current = true;
-    setFlash(true); // test-card flash...
-    setEntered(true); // ...hides the video + reveals the site beneath
-    window.setTimeout(() => setFlash(false), 430); // then cut abruptly
-  }, []);
+    triggerFlash(); // test-card flash, then reveal the site
+    setEntered(true);
+  }, [triggerFlash]);
 
   // Hold on the intro (scroll locked) until the slightest scroll / swipe / key,
   // then flash the test card and reveal the site.
@@ -224,13 +230,23 @@ export default function App() {
   }, [entered, enter]);
 
   // DVD-style screensaver after 10s idle (only once the site is revealed).
+  // A test-card flash plays both entering and exiting the screensaver.
   React.useEffect(() => {
     if (!entered) return;
     let timer: number | undefined;
+    const show = () => {
+      saverRef.current = true;
+      setSaver(true);
+      triggerFlash();
+    };
     const reset = () => {
-      setSaver(false);
+      if (saverRef.current) {
+        saverRef.current = false;
+        setSaver(false);
+        triggerFlash();
+      }
       if (timer) window.clearTimeout(timer);
-      timer = window.setTimeout(() => setSaver(true), 10000);
+      timer = window.setTimeout(show, 10000);
     };
     const evs = ["mousemove", "mousedown", "keydown", "wheel", "touchstart", "scroll"];
     evs.forEach((e) => window.addEventListener(e, reset, { passive: true }));
@@ -239,7 +255,7 @@ export default function App() {
       if (timer) window.clearTimeout(timer);
       evs.forEach((e) => window.removeEventListener(e, reset));
     };
-  }, [entered]);
+  }, [entered, triggerFlash]);
 
   React.useEffect(() => {
     const m = readMode();

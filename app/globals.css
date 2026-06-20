@@ -463,7 +463,7 @@ img, svg { display: block; max-width: 100%; }
 }
 
 /* test-card flash — flickers in, then unmounts (hard cut to the site) */
-.ls-flash { position: fixed; inset: 0; z-index: 300; pointer-events: none; display: flex; flex-direction: column; background: #000; animation: ls-flash-in .43s linear forwards; }
+.ls-flash { position: fixed; inset: 0; z-index: 500; pointer-events: none; display: flex; flex-direction: column; background: #000; animation: ls-flash-in .43s linear forwards; }
 .ls-flash__bars { flex: 1 1 66%; display: flex; }
 .ls-flash__bars > i { flex: 1; }
 .ls-flash__ramp { flex: 0 0 9%; display: flex; }
