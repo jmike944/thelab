@@ -435,7 +435,7 @@ export default function App() {
           onClose={() => setSettingsOpen(false)}
         />
       )}
-      {saver && <Screensaver />}
+      {saver && (theme === "signal" ? <Screensaver /> : <ScreensaverPoster />)}
     </>
   );
 }
@@ -574,6 +574,50 @@ function Screensaver() {
     <div className="ls-saver" aria-hidden="true">
       <div ref={ref} className="ls-saver__logo" />
       <span className="ls-saver__tag">SYS.IDLE // MUEVE PARA DESPERTAR</span>
+    </div>
+  );
+}
+
+/* =========================================================================
+ * SCREENSAVER (PAPEL) — kinetic neubrutalist type poster
+ * ========================================================================= */
+const POSTER_WORDS = ["CREATIVE", "WORTH", "THE LAB", "SALTILLO", "CONTENIDO", "VIRAL", "MÉXICO"];
+// bg = brand spectrum colour, ink = legible text colour on that block.
+const POSTER_COLORS = [
+  { bg: "#ee1708", ink: "#fffcf7" }, // red
+  { bg: "#ff9000", ink: "#231f20" }, // orange
+  { bg: "#feff1f", ink: "#231f20" }, // yellow
+  { bg: "#3ac62f", ink: "#231f20" }, // green
+  { bg: "#00cfff", ink: "#231f20" }, // cyan
+  { bg: "#3537ff", ink: "#fffcf7" }, // blue
+  { bg: "#8a00ff", ink: "#fffcf7" }, // violet
+  { bg: "#ff0074", ink: "#fffcf7" }, // magenta
+];
+
+function ScreensaverPoster() {
+  const [i, setI] = React.useState(0);
+  React.useEffect(() => {
+    const id = window.setInterval(() => setI((n) => n + 1), 1050);
+    return () => window.clearInterval(id);
+  }, []);
+  const word = POSTER_WORDS[i % POSTER_WORDS.length];
+  const c = POSTER_COLORS[(i * 3) % POSTER_COLORS.length]; // decoupled from word cycle
+  // Deterministic-but-varied placement per beat (no Math.random → no thrash).
+  const cx = 28 + ((i * 43) % 44); // 28%..71% horizontal centre
+  const cy = 26 + ((i * 29) % 48); // 26%..73% vertical centre
+  const rot = ((i * 5) % 15) - 7; // -7°..+7°
+  return (
+    <div className="ls-poster" aria-hidden="true">
+      <div
+        key={i}
+        className="ls-poster__slot"
+        style={{ left: `${cx}%`, top: `${cy}%`, transform: `translate(-50%, -50%) rotate(${rot}deg)` }}
+      >
+        <div className="ls-poster__word" style={{ background: c.bg, color: c.ink }}>
+          {word}
+        </div>
+      </div>
+      <span className="ls-poster__tag">SYS.IDLE // MUEVE PARA DESPERTAR</span>
     </div>
   );
 }

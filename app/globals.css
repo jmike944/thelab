@@ -508,6 +508,19 @@ img, svg { display: block; max-width: 100%; }
 }
 .ls-saver__tag { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-family: var(--font-data); font-weight: 800; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(255, 252, 247, .3); }
 
+/* Papel screensaver — kinetic neubrutalist type poster */
+.ls-poster { position: fixed; inset: 0; z-index: 400; overflow: hidden; cursor: none; background: var(--hud-bg); animation: ls-saver-in .3s ease; }
+.ls-poster__slot { position: absolute; }
+.ls-poster__word {
+  font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 9vw, 132px);
+  line-height: .82; letter-spacing: -.02em; text-transform: uppercase; white-space: nowrap;
+  padding: 10px 28px; border: 5px solid var(--lab-ink); box-shadow: 14px 14px 0 var(--lab-ink);
+  transform-origin: center; animation: ls-poster-slam .18s cubic-bezier(.2, 1.5, .35, 1);
+}
+@keyframes ls-poster-slam { from { transform: scale(1.5); opacity: 0; } 55% { opacity: 1; } to { transform: scale(1); opacity: 1; } }
+.ls-poster__tag { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-family: var(--font-data); font-weight: 800; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--hud-muted); }
+@media (prefers-reduced-motion: reduce) { .ls-poster__word { animation: none; } }
+
 /* ============================================================
    SCANLINE
    ============================================================ */
