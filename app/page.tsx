@@ -74,6 +74,10 @@ const COMPLETE = "/logos/the-lab-complete.svg";
 const MARK_3D = "/logos/the-lab-3d-line.svg";
 const WORDMARK = "/logos/the-lab-wordmark.svg";
 
+// Single-tone logos the header brand cycles through on click — the theme
+// filter inverts these cleanly (the colour 3D marks are excluded).
+const HEADER_LOGOS = [COMPLETE, MARK, "/logos/the-lab-variant.svg", "/logos/the-lab-variant-2.svg", WORDMARK];
+
 // Logos the hero plate flashes through. `tone` = single-tone (recolor per
 // theme); the 3D mark is two-tone and stays as-is.
 const HERO_MARKS = [
@@ -513,16 +517,35 @@ function Screensaver() {
     const el = ref.current;
     if (!el) return;
     const colors = SPECTRUM;
+    // Single-tone logos that recolor cleanly through the mask. Each carries its
+    // own aspect ratio so the bounce box stays tight to the artwork.
+    const designs = [
+      { src: "/logos/the-lab-complete.svg",  ar: "10613 / 3540" },
+      { src: "/logos/the-lab-mark.svg",      ar: "9159 / 4698" },
+      { src: "/logos/the-lab-variant.svg",   ar: "10775 / 3594" },
+      { src: "/logos/the-lab-variant-2.svg", ar: "13130 / 4286" },
+      { src: "/logos/the-lab-wordmark.svg",  ar: "12506 / 2720" },
+    ];
     let ci = 0;
+    let di = 0;
+    const applyDesign = () => {
+      const d = designs[di];
+      el.style.aspectRatio = d.ar;
+      const m = `url(${d.src}) center / contain no-repeat`;
+      el.style.setProperty("-webkit-mask", m);
+      el.style.setProperty("mask", m);
+    };
+    applyDesign();
+    el.style.backgroundColor = `var(--spectrum-${colors[ci]})`;
     let vx = 2.4;
     let vy = 1.9;
-    const w = el.offsetWidth || 240;
-    const h = el.offsetHeight || 80;
     let x = 48;
     let y = 48;
-    el.style.backgroundColor = `var(--spectrum-${colors[ci]})`;
     let raf = 0;
     const step = () => {
+      // Recompute size each frame — the box changes when the design swaps.
+      const w = el.offsetWidth || 240;
+      const h = el.offsetHeight || 80;
       const maxX = Math.max(0, window.innerWidth - w);
       const maxY = Math.max(0, window.innerHeight - h);
       x += vx;
@@ -535,6 +558,11 @@ function Screensaver() {
       if (hit) {
         ci = (ci + 1) % colors.length;
         el.style.backgroundColor = `var(--spectrum-${colors[ci]})`;
+        // One full pass through every colour → swap to the next logo design.
+        if (ci === 0) {
+          di = (di + 1) % designs.length;
+          applyDesign();
+        }
       }
       el.style.transform = `translate(${x}px, ${y}px)`;
       raf = requestAnimationFrame(step);
@@ -633,19 +661,36 @@ function LabHeader({
   onOpenSettings: () => void;
   hidden?: boolean;
 }) {
+  const [logoIdx, setLogoIdx] = React.useState(0);
+  // Restore the last-shown header logo on mount, and persist each change so it
+  // sticks for the next visit (same pattern as the accent colour).
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem("lab-site-logo");
+      const i = saved ? HEADER_LOGOS.indexOf(saved) : -1;
+      if (i >= 0) setLogoIdx(i);
+    } catch {}
+  }, []);
+  const cycleLogo = () => {
+    setLogoIdx((i) => {
+      const next = (i + 1) % HEADER_LOGOS.length;
+      try {
+        localStorage.setItem("lab-site-logo", HEADER_LOGOS[next]);
+      } catch {}
+      return next;
+    });
+  };
   return (
     <nav className={"ls-nav" + (hidden ? " ls-hidden-top" : "")}>
-      <a
+      <button
         className="ls-brand"
-        href="#top"
-        onClick={(e) => {
-          e.preventDefault();
-          onNav("top");
-        }}
+        type="button"
+        aria-label="Cambiar logo"
+        onClick={cycleLogo}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={COMPLETE} alt="The Lab — Creative Worth" className="ls-mark" />
-      </a>
+        <img src={HEADER_LOGOS[logoIdx]} alt="The Lab — Creative Worth" className="ls-mark" />
+      </button>
       <div className="ls-links">
         {NAV.map(([n, l]) => (
           <button

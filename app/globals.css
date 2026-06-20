@@ -461,6 +461,7 @@ img, svg { display: block; max-width: 100%; }
   .ls-intro__chev { animation: none; }
   .ls-flash { animation: none; }
   .ls-saver { animation: ls-saver-in .4s ease; }
+  .ls-saver::before { animation: none; }
 }
 
 /* test-card flash — flickers in, then unmounts (hard cut to the site) */
@@ -487,12 +488,14 @@ img, svg { display: block; max-width: 100%; }
 /* ============================================================
    SCREENSAVER — DVD-style idle bounce
    ============================================================ */
-.ls-saver { position: fixed; inset: 0; z-index: 400; background: #0a0a0a; overflow: hidden; cursor: none; animation: ls-saver-in .4s ease; }
+.ls-saver { position: fixed; inset: 0; z-index: 400; overflow: hidden; cursor: none; animation: ls-saver-in .4s ease; background: radial-gradient(125% 95% at 50% 45%, #15171a 0%, #0a0b0c 62%, #050607 100%); }
 @keyframes ls-saver-in { from { opacity: 0; } to { opacity: 1; } }
+/* moving phosphor sweep — matches the hero TV's .lb-tv__sweep */
+.ls-saver::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(transparent, rgba(255,255,255,.06), transparent); transform: translateY(-100%); animation: ls-scan 6s linear infinite; }
 /* CRT scanlines + vignette over the screensaver */
-.ls-saver::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.26) 2px 3px), radial-gradient(120% 120% at 50% 50%, transparent 54%, rgba(0,0,0,.6) 100%); }
+.ls-saver::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.26) 2px 3px), radial-gradient(120% 120% at 50% 50%, transparent 60%, rgba(0,0,0,.5) 100%); }
 .ls-saver__logo {
-  position: absolute; top: 0; left: 0;
+  position: absolute; top: 0; left: 0; z-index: 2;
   width: clamp(150px, 20vw, 260px);
   aspect-ratio: 2998 / 1000;
   background-color: var(--spectrum-cyan);
@@ -516,7 +519,7 @@ img, svg { display: block; max-width: 100%; }
    ============================================================ */
 .ls-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 60; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 24px; background: var(--hud-chrome); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--hud-line); transition: opacity .45s var(--ease-out), transform .45s var(--ease-out); }
 .ls-nav.ls-hidden-top { opacity: 0; transform: translateY(-110%); pointer-events: none; }
-.ls-brand { display: flex; align-items: center; gap: 12px; }
+.ls-brand { display: flex; align-items: center; gap: 12px; background: none; border: 0; padding: 0; cursor: pointer; }
 .ls-mark { height: 24px; width: auto; filter: var(--hud-logo-filter); }
 .ls-word { font-size: 12px; letter-spacing: .14em; font-weight: 800; }
 .ls-reg { vertical-align: super; font-size: 8px; }
