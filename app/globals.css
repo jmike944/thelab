@@ -562,10 +562,20 @@ img, svg { display: block; max-width: 100%; }
 .lb-hero__cta { display: flex; gap: 12px; flex-wrap: wrap; }
 .lb-hero__panel { position: relative; border: 1px solid var(--hud-line); border-radius: 3px; background: var(--hud-panel-2); box-shadow: var(--hud-glow-inset); min-height: 340px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .lb-hero__rec { position: absolute; top: 12px; right: 12px; z-index: 3; }
-.lb-hero__mark { width: auto; height: auto; max-width: 82%; max-height: 58%; animation: lb-logoflash .5s var(--ease-out); }
+.lb-hero__mark { width: auto; height: auto; max-width: 82%; max-height: 58%; }
 .lb-hero__mark.is-tone { filter: var(--hud-logo-filter); }
-@keyframes lb-logoflash { 0% { opacity: 0; } 22% { opacity: 1; } 38% { opacity: .2; } 58% { opacity: 1; } 100% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .lb-hero__mark { animation: none; } }
+.lb-hero__mark--in { animation: lb-flick-in .34s linear; }
+.lb-hero__ghost { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); animation: lb-flick-out .34s linear; }
+/* anti-phase strobe — alternates between the outgoing and incoming logo */
+@keyframes lb-flick-in {
+  0%, 13% { opacity: 0; } 14%, 27% { opacity: 1; } 28%, 41% { opacity: 0; }
+  42%, 55% { opacity: 1; } 56%, 69% { opacity: 0; } 70%, 100% { opacity: 1; }
+}
+@keyframes lb-flick-out {
+  0%, 13% { opacity: 1; } 14%, 27% { opacity: 0; } 28%, 41% { opacity: 1; }
+  42%, 55% { opacity: 0; } 56%, 69% { opacity: 1; } 70%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .lb-hero__mark--in, .lb-hero__ghost { animation: none; } }
 .lb-hero__plate { position: absolute; left: 14px; top: 14px; }
 .lb-code { font-size: 9.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--hud-muted); }
 .lb-hero__scan { position: absolute; inset: 0; background: linear-gradient(transparent, var(--hud-sweep), transparent); transform: translateY(-100%); animation: ls-scan 6s linear infinite; pointer-events: none; }

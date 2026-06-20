@@ -530,12 +530,24 @@ function LabMarquee({ items }: { items: string[] }) {
  * ========================================================================= */
 function LabHero({ onStart, onWork }: { onStart: () => void; onWork: () => void }) {
   const [idx, setIdx] = React.useState(0);
+  const [flicker, setFlicker] = React.useState(false);
+  const prevRef = React.useRef(0);
   React.useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const id = window.setInterval(() => setIdx((i) => (i + 1) % HERO_MARKS.length), reduce ? 2600 : 1600);
+    const id = window.setInterval(() => {
+      setIdx((i) => {
+        prevRef.current = i;
+        return (i + 1) % HERO_MARKS.length;
+      });
+      if (!reduce) {
+        setFlicker(true);
+        window.setTimeout(() => setFlicker(false), 360);
+      }
+    }, reduce ? 2600 : 1600);
     return () => window.clearInterval(id);
   }, []);
   const m = HERO_MARKS[idx];
+  const prev = HERO_MARKS[prevRef.current];
   return (
     <section className="lb-hero ls-brk" id="top">
       <div className="lb-monitor">
@@ -570,10 +582,22 @@ function LabHero({ onStart, onWork }: { onStart: () => void; onWork: () => void 
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             key={idx}
-            className={"lb-hero__mark" + (m.tone ? " is-tone" : "")}
+            className={"lb-hero__mark lb-hero__mark--in" + (m.tone ? " is-tone" : "")}
             src={m.src}
             alt="The Lab"
           />
+          {flicker && (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                key={"g" + idx}
+                className={"lb-hero__mark lb-hero__ghost" + (prev.tone ? " is-tone" : "")}
+                src={prev.src}
+                alt=""
+                aria-hidden="true"
+              />
+            </>
+          )}
           <div className="lb-hero__plate">
             <span className="lb-code">{m.fig}</span>
           </div>
