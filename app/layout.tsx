@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "THE LAB® — Creative Worth",
+  title: "THE LAB® — Creative Worth · Estudio de contenido en Saltillo",
   description:
-    "A creative studio for brands that want range — identity, campaigns and content, made in the lab.",
+    "The Lab MX — estudio de contenido en Saltillo, Coahuila. Contenido viral, cobertura de eventos, fotografía, video y community management para restaurantes y experiencias.",
 };
 
 const themeBoot = `(() => { try { const t = localStorage.getItem("lab-site-theme"); if (t === "signal") document.documentElement.setAttribute("data-theme", "signal"); } catch (_) {} })();`;
@@ -13,7 +13,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
       </head>

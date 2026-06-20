@@ -3,7 +3,7 @@
 import * as React from "react";
 
 /* =========================================================================
- * DATA (verbatim from the_lab_site prototype)
+ * DATA — real content from the "Creative Worth" portfolio (The Lab MX)
  * ========================================================================= */
 type Project = {
   id: string;
@@ -18,42 +18,35 @@ type Project = {
 };
 
 const PROJECTS: Project[] = [
-  { id: "atlas",  title: "Atlas",  client: "Atlas Movers",   cat: "Identity", year: "2026", bg: "var(--spectrum-blue)",    fg: "#fffcf7", glyph: "Ø", blurb: "A mark in motion for a moving company — a wordmark that keeps shifting." },
-  { id: "prism",  title: "Prism",  client: "Prism Festival", cat: "Campaign", year: "2025", bg: "var(--spectrum-magenta)", fg: "#fffcf7", glyph: "▲", blurb: "A spectrum identity for a music festival, built to be remixed every night." },
-  { id: "forma",  title: "Forma",  client: "Forma Studio",   cat: "Branding", year: "2025", bg: "#231f20",                 fg: "#fffcf7", glyph: "◑", blurb: "Architectural branding — sharp, quiet, confident. Ink on paper." },
-  { id: "juno",   title: "Juno",   client: "Juno Skincare",  cat: "Content",  year: "2026", bg: "var(--spectrum-orange)",  fg: "#231f20", glyph: "✺", blurb: "Editorial content engine for a skincare line that talks straight." },
-  { id: "verde",  title: "Verde",  client: "Verde Grocers",  cat: "Identity", year: "2024", bg: "var(--spectrum-green)",   fg: "#231f20", glyph: "✦", blurb: "A fresh, friendly system for a neighbourhood grocer going citywide." },
-  { id: "signal", title: "Signal", client: "Signal Audio",   cat: "Motion",   year: "2026", bg: "var(--spectrum-violet)",  fg: "#fffcf7", glyph: "))",     blurb: "Sound made visible — a motion language for an audio hardware brand." },
+  { id: "wu",      title: "WU",      client: "WU",                       cat: "Contenido viral", year: "2026", bg: "var(--spectrum-red)",     fg: "#fffcf7", glyph: "▲", blurb: "Video viral «3 vitaminas para mujeres este 2026». +25M de reproducciones y 444K likes — 100% orgánico." },
+  { id: "zoco",    title: "ZOCO",    client: "Zoco Brema",               cat: "Storytelling",    year: "2026", bg: "var(--spectrum-magenta)", fg: "#fffcf7", glyph: "✦", blurb: "Spring menu para Zoco Brema: mango sticky rice matcha, banana latte y mango spritz. Storytelling que se siente, se entiende y se queda." },
+  { id: "collab",  title: "COLLAB",  client: "La Cantina × La Potranca", cat: "Collabs",         year: "2025", bg: "#231f20",                 fg: "#fffcf7", glyph: "✕", blurb: "Colaboración de marcas: La Cantina × La Potranca. Narrativa norteña — rancho, cantina y carretera." },
+  { id: "mercato", title: "MERCATO", client: "Il Mercato Gentiloni",     cat: "Producción",      year: "2025", bg: "var(--spectrum-orange)",  fg: "#231f20", glyph: "Ø", blurb: "Sesiones fotográficas y producción de video para Il Mercato Gentiloni: carta, platillos y marca." },
+  { id: "apertura",title: "EVENTOS", client: "Apertura de sucursal",     cat: "Cobertura",       year: "2026", bg: "var(--spectrum-blue)",    fg: "#fffcf7", glyph: "◉", blurb: "Cobertura de apertura de nueva sucursal — shorts y reels capturados y publicados en tiempo real." },
+  { id: "rancho",  title: "RANCHO",  client: "Saltillo es uto rancho",   cat: "Campañas",        year: "2025", bg: "var(--spectrum-green)",   fg: "#231f20", glyph: "✺", blurb: "Campaña lifestyle «Saltillo es uto rancho» — rodeo, rancho y merch para una comunidad local." },
 ];
 
-const CATS = ["All", "Branding", "Identity", "Campaign", "Content", "Motion"];
-
-const TEAM = [
-  { name: "Mara Vela", accent: true },
-  { name: "Theo Lang", accent: false },
-  { name: "Ines Roca", accent: false },
-  { name: "Kojo Mensah", accent: false },
-];
+const CATS = ["Todos", "Contenido viral", "Storytelling", "Collabs", "Producción", "Cobertura", "Campañas"];
 
 const STATS = [
-  { n: "12yrs", l: "In the lab" },
-  { n: "140+", l: "Brands shipped" },
-  { n: "9", l: "Awards, 2025" },
-  { n: "4", l: "Continents" },
+  { n: "+43M", l: "Visualizaciones" },
+  { n: "+160K", l: "Seguidores nuevos" },
+  { n: "+900K", l: "Interacciones" },
+  { n: "100%", l: "Orgánico" },
 ];
 
 const SVCS: [string, string][] = [
-  ["Brand strategy", "Positioning, naming, narrative and the worth behind it."],
-  ["Identity systems", "Marks, type, colour and the rules that hold them."],
-  ["Campaigns", "Ideas that travel — across channels, formats and feeds."],
-  ["Content & motion", "Editorial, film and motion language, made to scale."],
+  ["Contenido viral", "Reels y shorts pensados para volverse virales. Crecimiento real, 100% orgánico."],
+  ["Cobertura de eventos", "Aperturas, activaciones y experiencias cubiertas y publicadas en tiempo real."],
+  ["Producción de video", "Sesiones fotográficas y video para tu carta, tu producto y tu marca."],
+  ["Community management", "Manejamos tus redes y tu comunidad — la voz de tu marca, todos los días."],
 ];
 
-const INTERESTS = ["Branding", "Identity", "Campaign", "Content", "Motion", "Not sure yet"];
+const INTERESTS = ["Contenido viral", "Eventos", "Fotografía", "Video", "Community", "Aún no sé"];
 
-const MARQUEE = ["BRANDING", "IDENTITY", "CAMPAIGNS", "CONTENT", "MOTION", "STRATEGY", "CREATIVE WORTH"];
+const MARQUEE = ["CONTENIDO VIRAL", "EVENTOS", "FOTOGRAFÍA", "VIDEO", "COMMUNITY", "STORYTELLING", "CAMPAÑAS", "CREATIVE WORTH"];
 
-const NAV: [string, string][] = [["01", "WORK"], ["02", "METHOD"], ["03", "STUDIO"], ["04", "CONTACT"]];
+const NAV: [string, string][] = [["01", "TRABAJO"], ["02", "SERVICIOS"], ["03", "ESTUDIO"], ["04", "CONTACTO"]];
 
 const MARK = "/logos/the-lab-mark.svg";
 const MARK_3D = "/logos/the-lab-3d-line.svg";
@@ -147,16 +140,6 @@ function HudPanel({
   );
 }
 
-function Avatar({ name, accent }: { name: string; accent?: boolean }) {
-  const initials = name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-  return <span className={"avatar" + (accent ? " avatar--accent" : "")}>{initials}</span>;
-}
-
 /* =========================================================================
  * HOOKS
  * ========================================================================= */
@@ -176,9 +159,9 @@ function scrollToId(id: string) {
  * APP
  * ========================================================================= */
 export default function App() {
-  const [active, setActive] = React.useState("WORK");
+  const [active, setActive] = React.useState("TRABAJO");
   const [theme, setTheme] = React.useState<"signal" | "paper">("paper");
-  const [coord, setCoord] = React.useState("45.118N 90.330W");
+  const [coord, setCoord] = React.useState("25.421N 101.001W");
   const [open, setOpen] = React.useState<Project | null>(null);
   const [sent, setSent] = React.useState(false);
 
@@ -196,14 +179,14 @@ export default function App() {
     scrollToId(id === "top" ? "top" : id);
   }
   const start = () => {
-    setActive("CONTACT");
-    scrollToId("CONTACT");
+    setActive("CONTACTO");
+    scrollToId("CONTACTO");
   };
 
   React.useEffect(() => {
     const t = setInterval(() => {
-      const a = (45.12 + (Math.random() * 0.01 - 0.005)).toFixed(3);
-      const b = (90.33 + (Math.random() * 0.01 - 0.005)).toFixed(3);
+      const a = (25.42 + (Math.random() * 0.01 - 0.005)).toFixed(3);
+      const b = (101.0 + (Math.random() * 0.01 - 0.005)).toFixed(3);
       setCoord(`${a}N ${b}W`);
     }, 3000);
     return () => clearInterval(t);
@@ -224,7 +207,7 @@ export default function App() {
       <LabRailLeft coord={coord} />
       <LabRailRight />
       <main className="ls-main">
-        <LabHero onStart={start} onWork={() => nav("WORK")} />
+        <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
         <LabMarquee items={MARQUEE} />
         <LabWork onOpen={setOpen} />
         <LabStudio />
@@ -282,16 +265,16 @@ function LabHeader({
         ))}
       </div>
       <div className="ls-nav__right">
-        <div className="ls-toggle" role="group" aria-label="Display mode">
+        <div className="ls-toggle" role="group" aria-label="Modo de pantalla">
           <button className={"ls-toggle__opt" + (theme === "signal" ? " is-on" : "")} onClick={() => onToggleTheme("signal")}>
             DIGITAL
           </button>
           <button className={"ls-toggle__opt" + (theme !== "signal" ? " is-on" : "")} onClick={() => onToggleTheme("paper")}>
-            PAPER
+            PAPEL
           </button>
         </div>
         <button className="ls-cta" onClick={onStart}>
-          START A PROJECT <span className="ls-cta__arr">→</span>
+          EMPEZAR PROYECTO <span className="ls-cta__arr">→</span>
         </button>
       </div>
     </nav>
@@ -301,7 +284,7 @@ function LabHeader({
 function LabRailLeft({ coord }: { coord: string }) {
   return (
     <aside className="ls-rail ls-rail--l">
-      <span className="ls-rail__txt">SYS.ON // ONLINE</span>
+      <span className="ls-rail__txt">SYS.ON // EN LÍNEA</span>
       <div className="ls-rail__pips">
         <StatusPip color="green" pulse />
         <StatusPip hollow />
@@ -346,27 +329,27 @@ function LabHero({ onStart, onWork }: { onStart: () => void; onWork: () => void 
   return (
     <section className="lb-hero ls-brk" id="top">
       <div className="lb-monitor">
-        <span>// PRIMARY DISPLAY</span>
+        <span>// PANTALLA PRINCIPAL</span>
         <span>THE LAB® — CREATIVE WORTH</span>
         <span>FPS: 60.0</span>
       </div>
       <div className="lb-hero__grid">
         <div className="lb-hero__copy">
-          <div className="lb-eyebrow">&gt;&gt; CREATIVE STUDIO — EST. IN THE LAB</div>
+          <div className="lb-eyebrow">&gt;&gt; ESTUDIO CREATIVO — SALTILLO, COAHUILA · MX</div>
           <h1 className="lb-hero__title">
             Creative
             <br />
             worth<span className="lb-dot">.</span>
           </h1>
           <p className="lb-hero__sub">
-            We make brands worth more — identity, campaigns and content for the ones that want range. No brief too weird.
+            Conectamos con tu marca para convertir lo que eres en contenido que se siente, se entiende y se queda.
           </p>
           <div className="lb-hero__cta">
             <button className="ls-cta ls-cta--lg" onClick={onStart}>
-              START A PROJECT <span className="ls-cta__arr">→</span>
+              EMPEZAR UN PROYECTO <span className="ls-cta__arr">→</span>
             </button>
             <button className="ls-btn-ghost" onClick={onWork}>
-              SEE THE WORK
+              VER EL TRABAJO
             </button>
           </div>
         </div>
@@ -375,9 +358,9 @@ function LabHero({ onStart, onWork }: { onStart: () => void; onWork: () => void 
             <StatusPip color="red" pulse label="REC [CH.01]" />
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="lb-hero__mark" src={MARK_3D} alt="The Lab 3D mark" />
+          <img className="lb-hero__mark" src={MARK_3D} alt="The Lab — marca 3D" />
           <div className="lb-hero__plate">
-            <span className="lb-code">FIG.01 — THE MARK</span>
+            <span className="lb-code">FIG.01 — LA MARCA</span>
           </div>
           <span className="lb-hero__scan" aria-hidden="true" />
         </div>
@@ -442,17 +425,17 @@ function LabWorkTile({ p, onOpen }: { p: Project; onOpen: (p: Project) => void }
 }
 
 function LabWork({ onOpen }: { onOpen: (p: Project) => void }) {
-  const [cat, setCat] = React.useState("All");
-  const shown = cat === "All" ? PROJECTS : PROJECTS.filter((p) => p.cat === cat);
+  const [cat, setCat] = React.useState("Todos");
+  const shown = cat === "Todos" ? PROJECTS : PROJECTS.filter((p) => p.cat === cat);
   return (
-    <section className="lb-sec" id="WORK">
+    <section className="lb-sec" id="TRABAJO">
       <div className="lb-workhead">
         <div>
           <div className="lb-eyebrow" style={{ color: "var(--hud-muted)", marginBottom: "8px" }}>
-            SELECTED WORK // SEC_01
+            TRABAJO SELECCIONADO // SEC_01
           </div>
           <h2 className="lb-worktitle">
-            Made in the lab<span className="lb-dot">.</span>
+            Hecho en the lab<span className="lb-dot">.</span>
           </h2>
         </div>
         <div className="lb-pills">
@@ -477,30 +460,27 @@ function LabWork({ onOpen }: { onOpen: (p: Project) => void }) {
  * ========================================================================= */
 function LabStudio() {
   return (
-    <section className="lb-sec" id="STUDIO">
+    <section className="lb-sec" id="ESTUDIO">
       <div className="lb-sechead">
-        <span className="lb-code">SEC_03 // THE STUDIO</span>
+        <span className="lb-code">SEC_03 // EL ESTUDIO</span>
         <SpectrumBar size="sm" style={{ flex: 1, opacity: 0.6 }} />
       </div>
       <div className="lb-studio2">
         <div>
           <div className="lb-eyebrow" style={{ marginBottom: "14px" }}>
-            THE STUDIO
+            EL ESTUDIO
           </div>
-          <h2 className="lb-h2">
-            We treat creative as an asset — something that compounds, not decoration that fades.
-          </h2>
+          <h2 className="lb-h2">Especialistas en restaurantes y experiencias.</h2>
           <p className="lb-body">
-            The Lab is a small, senior studio. We work in tight loops with founders and brand teams, prototype fast,
-            and ship systems that hold up in the wild. The experiments stay in the lab — the worth ships to you.
+            The Lab es un estudio de contenido en Saltillo, Coahuila. Creamos contenido viral, fotografía, video y
+            community management para marcas que quieren rango — crecimiento real, hecho 100% orgánico. Convertimos lo
+            que eres en contenido que se siente, se entiende y se queda.
           </p>
           <div className="lb-crew">
-            <div className="avatar-stack">
-              {TEAM.map((t) => (
-                <Avatar key={t.name} name={t.name} accent={t.accent} />
-              ))}
-            </div>
-            <span className="lb-crew__cap">A senior team of four, plus a deep bench.</span>
+            <span className="lb-tag" aria-hidden="true">
+              RESTAURANTES Y EXPERIENCIAS
+            </span>
+            <span className="lb-crew__cap">Saltillo, Coahuila · México — @thelab.mx</span>
           </div>
         </div>
         <div className="lb-statbox ls-brk-sm">
@@ -519,7 +499,7 @@ function LabStudio() {
           ))}
         </div>
       </div>
-      <div className="lb-svc">
+      <div className="lb-svc" id="SERVICIOS">
         {SVCS.map(([h, d], i) => (
           <div key={h} className="lb-svc__cell" style={{ borderRight: i < 3 ? "1px solid var(--hud-line)" : "none" }}>
             <div className="lb-svc__n">0{i + 1}</div>
@@ -539,16 +519,16 @@ function LabContact({ sent, onSend }: { sent: boolean; onSend: () => void }) {
   const [pick, setPick] = React.useState<string[]>([]);
   const toggle = (x: string) => setPick((p) => (p.includes(x) ? p.filter((i) => i !== x) : [...p, x]));
   return (
-    <section className="lb-sec" id="CONTACT">
-      <HudPanel title="TRANSMIT // START A PROJECT" code="SEC_04" spine>
+    <section className="lb-sec" id="CONTACTO">
+      <HudPanel title="TRANSMITIR // EMPIEZA UN PROYECTO" code="SEC_04" spine>
         {sent ? (
           <div className="lb-sent">
-            <StatusPip color="green" pulse label="SIGNAL RECEIVED" />
+            <StatusPip color="green" pulse label="SEÑAL RECIBIDA" />
             <h2 className="lb-h2" style={{ marginTop: "12px" }}>
-              Transmission logged.
+              Transmisión registrada.
             </h2>
             <p className="lb-body">
-              We&apos;ll decode your brief and reply within two working days. Frequency locked.
+              Te respondemos en menos de 2 días hábiles. Frecuencia fijada.
             </p>
           </div>
         ) : (
@@ -556,16 +536,16 @@ function LabContact({ sent, onSend }: { sent: boolean; onSend: () => void }) {
             <div className="lb-form">
               <div className="lb-form__row">
                 <label>
-                  <span className="lb-field__lbl">Name</span>
-                  <input className="lb-input" placeholder="Your name" />
+                  <span className="lb-field__lbl">Nombre</span>
+                  <input className="lb-input" placeholder="Tu nombre" />
                 </label>
                 <label>
                   <span className="lb-field__lbl">Email</span>
-                  <input className="lb-input" type="email" placeholder="you@company.com" />
+                  <input className="lb-input" type="email" placeholder="tu@correo.com" />
                 </label>
               </div>
               <div className="lb-field">
-                <span className="lb-field__lbl">Interested in</span>
+                <span className="lb-field__lbl">Interesado en</span>
                 <div className="lb-chips">
                   {INTERESTS.map((x) => (
                     <button
@@ -580,32 +560,32 @@ function LabContact({ sent, onSend }: { sent: boolean; onSend: () => void }) {
                 </div>
               </div>
               <label>
-                <span className="lb-field__lbl">The brief</span>
-                <textarea className="lb-textarea" rows={3} placeholder="What are we making?" />
+                <span className="lb-field__lbl">El brief</span>
+                <textarea className="lb-textarea" rows={3} placeholder="¿Qué vamos a crear?" />
               </label>
               <button className="ls-cta ls-cta--lg" onClick={onSend} style={{ alignSelf: "flex-start" }}>
-                TRANSMIT BRIEF <span className="ls-cta__arr">→</span>
+                TRANSMITIR BRIEF <span className="ls-cta__arr">→</span>
               </button>
             </div>
             <aside className="lb-coord">
               <div className="lb-coord__row">
-                <span className="lb-coord__k">Channel</span>
-                <span className="lb-coord__v">144.20 MHz</span>
+                <span className="lb-coord__k">Estudio</span>
+                <span className="lb-coord__v">vasconcelos@thelabmx.com</span>
               </div>
               <div className="lb-coord__row">
-                <span className="lb-coord__k">Studio</span>
-                <span className="lb-coord__v">hello@thelab.mx</span>
+                <span className="lb-coord__k">Ubicación</span>
+                <span className="lb-coord__v">Saltillo, Coahuila · MX</span>
               </div>
               <div className="lb-coord__row">
-                <span className="lb-coord__k">Location</span>
-                <span className="lb-coord__v">México · 45.118N 90.330W</span>
+                <span className="lb-coord__k">Instagram</span>
+                <span className="lb-coord__v">@thelab.mx</span>
               </div>
               <div className="lb-coord__row">
-                <span className="lb-coord__k">Response</span>
-                <span className="lb-coord__v">&le; 2 working days</span>
+                <span className="lb-coord__k">Respuesta</span>
+                <span className="lb-coord__v">&le; 2 días hábiles</span>
               </div>
               <div className="lb-coord__status">
-                <StatusPip color="green" pulse label="LINE OPEN" />
+                <StatusPip color="green" pulse label="LÍNEA ABIERTA" />
               </div>
               <SpectrumBar size="sm" style={{ marginTop: "auto" }} />
             </aside>
@@ -635,8 +615,8 @@ function LabFooter() {
       </div>
       <SpectrumBar />
       <div className="ls-footer__bar">
-        <StatusPip color="green" label="SYS.STATUS: NOMINAL" />
-        <span className="ls-footer__c">©2026 THE LAB® — END OF TRANSMISSION.</span>
+        <StatusPip color="green" label="SISTEMA: NOMINAL" />
+        <span className="ls-footer__c">©2026 THE LAB® — FIN DE TRANSMISIÓN · SALTILLO, MX</span>
       </div>
     </footer>
   );
@@ -653,7 +633,7 @@ function CaseModal({ p, onClose }: { p: Project; onClose: () => void }) {
           <span className="lb-modal__title">
             // {p.id} · {p.title}
           </span>
-          <button className="lb-modal__x" onClick={onClose} aria-label="Close">
+          <button className="lb-modal__x" onClick={onClose} aria-label="Cerrar">
             ✕
           </button>
         </div>
@@ -666,11 +646,8 @@ function CaseModal({ p, onClose }: { p: Project; onClose: () => void }) {
             {p.cat} · {p.year}
           </div>
           <h2 className="lb-h2" style={{ fontSize: "32px" }}>
-            {p.title}
-          </h2>
-          <div style={{ fontWeight: 800, color: "var(--hud-accent)", marginBottom: "12px", fontSize: "13px", letterSpacing: ".04em" }}>
             {p.client}
-          </div>
+          </h2>
           <p className="lb-body" style={{ maxWidth: "none" }}>
             {p.blurb}
           </p>
