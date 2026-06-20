@@ -460,10 +460,13 @@ img, svg { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .ls-intro__chev { animation: none; }
   .ls-flash { animation: none; }
+  .ls-saver { animation: ls-saver-in .4s ease; }
 }
 
 /* test-card flash — flickers in, then unmounts (hard cut to the site) */
 .ls-flash { position: fixed; inset: 0; z-index: 500; pointer-events: none; display: flex; flex-direction: column; background: #000; animation: ls-flash-in .43s linear forwards; }
+/* CRT scanlines + vignette over the test card */
+.ls-flash::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.22) 2px 3px), radial-gradient(125% 125% at 50% 50%, transparent 56%, rgba(0,0,0,.55) 100%); }
 .ls-flash__bars { flex: 1 1 66%; display: flex; }
 .ls-flash__bars > i { flex: 1; }
 .ls-flash__ramp { flex: 0 0 9%; display: flex; }
@@ -486,6 +489,8 @@ img, svg { display: block; max-width: 100%; }
    ============================================================ */
 .ls-saver { position: fixed; inset: 0; z-index: 400; background: #0a0a0a; overflow: hidden; cursor: none; animation: ls-saver-in .4s ease; }
 @keyframes ls-saver-in { from { opacity: 0; } to { opacity: 1; } }
+/* CRT scanlines + vignette over the screensaver */
+.ls-saver::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.26) 2px 3px), radial-gradient(120% 120% at 50% 50%, transparent 54%, rgba(0,0,0,.6) 100%); }
 .ls-saver__logo {
   position: absolute; top: 0; left: 0;
   width: clamp(150px, 20vw, 260px);
@@ -494,6 +499,7 @@ img, svg { display: block; max-width: 100%; }
   -webkit-mask: url(/logos/the-lab-complete.svg) center / contain no-repeat;
   mask: url(/logos/the-lab-complete.svg) center / contain no-repeat;
   will-change: transform;
+  filter: drop-shadow(0 0 9px rgba(255, 255, 255, .28));
 }
 .ls-saver__tag { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-family: var(--font-data); font-weight: 800; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(255, 252, 247, .3); }
 
