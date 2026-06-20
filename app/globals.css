@@ -593,30 +593,16 @@ img, svg { display: block; max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .lb-hero__mark--in, .lb-hero__ghost { animation: none; } }
 
-/* retro CRT television housing the flickering logos */
-.lb-tv { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 340px; }
-.lb-tv__antenna { position: relative; width: 2px; height: 34px; background: var(--hud-line-strong); margin-bottom: -3px; }
-.lb-tv__antenna::before, .lb-tv__antenna::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 2px; height: 56px; background: var(--hud-line-strong); transform-origin: bottom center; border-radius: 2px; }
-.lb-tv__antenna::before { transform: rotate(-32deg); }
-.lb-tv__antenna::after { transform: rotate(32deg); }
-.lb-tv__body { position: relative; width: 100%; max-width: 430px; display: grid; grid-template-columns: 1fr 56px; gap: 14px; padding: 16px; background: var(--hud-panel-2); border: 2px solid var(--hud-ink); border-radius: 20px; box-shadow: var(--hud-glow); }
-.lb-tv__screen { position: relative; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: radial-gradient(120% 130% at 50% 40%, #15171a 0%, #0a0b0c 70%, #060708 100%); box-shadow: inset 0 0 0 2px rgba(0,0,0,.7), inset 0 0 46px rgba(0,0,0,.9); animation: lb-tv-flicker 5s infinite; }
-@keyframes lb-tv-flicker { 0%,100% { opacity: 1; } 49% { opacity: 1; } 50% { opacity: .94; } 52% { opacity: 1; } 89% { opacity: 1; } 90% { opacity: .9; } 92% { opacity: 1; } }
-.lb-tv__screen .lb-hero__mark { max-width: 74%; max-height: 56%; filter: drop-shadow(0 0 6px rgba(255,255,255,.22)); }
+/* retro TV photo with the flickering logos showing through its screen */
+.lb-tv { position: relative; width: 100%; max-width: 480px; aspect-ratio: 670 / 515; margin: 0 auto; }
+.lb-tv__img { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.lb-tv__screen { position: absolute; left: 4.5%; top: 10%; right: 23%; bottom: 17.2%; z-index: 1; overflow: hidden; border-radius: 7% / 9%; display: flex; align-items: center; justify-content: center; background: radial-gradient(120% 130% at 50% 42%, #15171a 0%, #0a0b0c 70%, #050607 100%); }
+.lb-tv__screen .lb-hero__mark { max-width: 76%; max-height: 54%; filter: drop-shadow(0 0 6px rgba(255,255,255,.22)); }
 .lb-tv__screen .lb-hero__mark.is-tone { filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(120,255,170,.25)); }
-.lb-tv__plate { position: absolute; left: 12px; top: 9px; z-index: 3; font-family: var(--font-data); font-weight: 800; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,252,247,.5); }
-.lb-tv__rec { position: absolute; right: 12px; top: 8px; z-index: 3; }
-.lb-tv__screen .pip-label { color: rgba(255,252,247,.6); }
+.lb-tv__plate { position: absolute; left: 8%; bottom: 7%; z-index: 3; font-family: var(--font-data); font-weight: 800; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,252,247,.5); }
 .lb-tv__sweep { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(transparent, rgba(255,255,255,.06), transparent); transform: translateY(-100%); animation: ls-scan 6s linear infinite; }
 .lb-tv__scan { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.26) 2px 3px); }
-.lb-tv__vig { position: absolute; inset: 0; z-index: 2; pointer-events: none; box-shadow: inset 0 0 55px rgba(0,0,0,.7); }
-.lb-tv__controls { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 4px; }
-.lb-tv__knob { position: relative; width: 26px; height: 26px; border-radius: 50%; background: var(--hud-panel); border: 2px solid var(--hud-ink); }
-.lb-tv__knob::after { content: ""; position: absolute; top: 3px; left: 50%; width: 2px; height: 9px; background: var(--hud-ink); transform: translateX(-50%); border-radius: 1px; }
-.lb-tv__grille { width: 32px; height: 44px; margin-top: 4px; border: 1.5px solid var(--hud-ink); border-radius: 4px; opacity: .5; background: repeating-linear-gradient(var(--hud-ink) 0 1.5px, transparent 1.5px 5px); }
-.lb-tv__feet { display: flex; justify-content: space-between; width: 72%; max-width: 320px; }
-.lb-tv__feet i { width: 22px; height: 14px; background: var(--hud-ink); border-radius: 0 0 5px 5px; }
-@media (prefers-reduced-motion: reduce) { .lb-tv__screen, .lb-tv__sweep { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .lb-tv__sweep { animation: none; } }
 .lb-hero__plate { position: absolute; left: 14px; top: 14px; }
 .lb-code { font-size: 9.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--hud-muted); }
 .lb-hero__scan { position: absolute; inset: 0; background: linear-gradient(transparent, var(--hud-sweep), transparent); transform: translateY(-100%); animation: ls-scan 6s linear infinite; pointer-events: none; }

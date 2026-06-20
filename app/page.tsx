@@ -658,46 +658,32 @@ function LabHero({ onStart, onWork }: { onStart: () => void; onWork: () => void 
           </div>
         </div>
         <div className="lb-tv">
-          <span className="lb-tv__antenna" aria-hidden="true" />
-          <div className="lb-tv__body">
-            <div className="lb-tv__screen">
-              <span className="lb-tv__plate">{m.fig}</span>
-              <span className="lb-tv__rec">
-                <StatusPip color="red" pulse label="REC" />
-              </span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                key={idx}
-                className={"lb-hero__mark lb-hero__mark--in" + (m.tone ? " is-tone" : "")}
-                src={m.src}
-                alt="The Lab"
-              />
-              {flicker && (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    key={"g" + idx}
-                    className={"lb-hero__mark lb-hero__ghost" + (prev.tone ? " is-tone" : "")}
-                    src={prev.src}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                </>
-              )}
-              <span className="lb-tv__sweep" aria-hidden="true" />
-              <span className="lb-tv__scan" aria-hidden="true" />
-              <span className="lb-tv__vig" aria-hidden="true" />
-            </div>
-            <div className="lb-tv__controls" aria-hidden="true">
-              <span className="lb-tv__knob" />
-              <span className="lb-tv__knob" />
-              <span className="lb-tv__grille" />
-            </div>
+          <div className="lb-tv__screen">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              key={idx}
+              className={"lb-hero__mark lb-hero__mark--in" + (m.tone ? " is-tone" : "")}
+              src={m.src}
+              alt="The Lab"
+            />
+            {flicker && (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  key={"g" + idx}
+                  className={"lb-hero__mark lb-hero__ghost" + (prev.tone ? " is-tone" : "")}
+                  src={prev.src}
+                  alt=""
+                  aria-hidden="true"
+                />
+              </>
+            )}
+            <span className="lb-tv__sweep" aria-hidden="true" />
+            <span className="lb-tv__scan" aria-hidden="true" />
+            <span className="lb-tv__plate">{m.fig}</span>
           </div>
-          <span className="lb-tv__feet" aria-hidden="true">
-            <i />
-            <i />
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="lb-tv__img" src="/crt-tv.png" alt="The Lab — TV" />
         </div>
       </div>
       <SpectrumBar style={{ marginTop: "24px" }} />
