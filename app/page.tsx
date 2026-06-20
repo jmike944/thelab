@@ -143,9 +143,21 @@ function HudPanel({
 /* =========================================================================
  * HOOKS
  * ========================================================================= */
-function readTheme(): "signal" | "paper" {
-  if (typeof document === "undefined") return "paper";
-  return document.documentElement.getAttribute("data-theme") === "signal" ? "signal" : "paper";
+type Mode = "paper" | "signal" | "system";
+
+function prefersDark(): boolean {
+  return typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function resolveTheme(mode: Mode): "signal" | "paper" {
+  if (mode === "system") return prefersDark() ? "signal" : "paper";
+  return mode;
+}
+function readMode(): Mode {
+  try {
+    const m = localStorage.getItem("lab-site-theme");
+    if (m === "signal" || m === "paper" || m === "system") return m;
+  } catch {}
+  return "system";
 }
 
 function scrollToId(id: string) {
@@ -160,16 +172,36 @@ function scrollToId(id: string) {
  * ========================================================================= */
 export default function App() {
   const [active, setActive] = React.useState("TRABAJO");
+  const [mode, setMode] = React.useState<Mode>("system");
   const [theme, setTheme] = React.useState<"signal" | "paper">("paper");
   const [coord, setCoord] = React.useState("25.421N 101.001W");
   const [open, setOpen] = React.useState<Project | null>(null);
   const [sent, setSent] = React.useState(false);
 
-  React.useEffect(() => setTheme(readTheme()), []);
+  React.useEffect(() => {
+    const m = readMode();
+    setMode(m);
+    setTheme(resolveTheme(m));
+  }, []);
 
-  function applyTheme(next: "signal" | "paper") {
-    setTheme(next);
-    document.documentElement.setAttribute("data-theme", next === "signal" ? "signal" : "");
+  // When following the OS, repaint live as the system scheme changes.
+  React.useEffect(() => {
+    if (mode !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      const resolved = mq.matches ? "signal" : "paper";
+      setTheme(resolved);
+      document.documentElement.setAttribute("data-theme", resolved === "signal" ? "signal" : "");
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [mode]);
+
+  function applyMode(next: Mode) {
+    setMode(next);
+    const resolved = resolveTheme(next);
+    setTheme(resolved);
+    document.documentElement.setAttribute("data-theme", resolved === "signal" ? "signal" : "");
     try {
       localStorage.setItem("lab-site-theme", next);
     } catch {}
@@ -203,7 +235,7 @@ export default function App() {
   return (
     <>
       <div className="ls-scan" aria-hidden="true" />
-      <LabHeader active={active} onNav={nav} onStart={start} theme={theme} onToggleTheme={applyTheme} />
+      <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} />
       <LabRailLeft coord={coord} />
       <LabRailRight />
       <main className="ls-main">
@@ -226,14 +258,14 @@ function LabHeader({
   active,
   onNav,
   onStart,
-  theme,
-  onToggleTheme,
+  mode,
+  onSetMode,
 }: {
   active: string;
   onNav: (id: string) => void;
   onStart: () => void;
-  theme: "signal" | "paper";
-  onToggleTheme: (t: "signal" | "paper") => void;
+  mode: Mode;
+  onSetMode: (m: Mode) => void;
 }) {
   return (
     <nav className="ls-nav">
@@ -266,11 +298,14 @@ function LabHeader({
       </div>
       <div className="ls-nav__right">
         <div className="ls-toggle" role="group" aria-label="Modo de pantalla">
-          <button className={"ls-toggle__opt" + (theme === "signal" ? " is-on" : "")} onClick={() => onToggleTheme("signal")}>
+          <button className={"ls-toggle__opt" + (mode === "paper" ? " is-on" : "")} onClick={() => onSetMode("paper")}>
+            PAPEL
+          </button>
+          <button className={"ls-toggle__opt" + (mode === "signal" ? " is-on" : "")} onClick={() => onSetMode("signal")}>
             DIGITAL
           </button>
-          <button className={"ls-toggle__opt" + (theme !== "signal" ? " is-on" : "")} onClick={() => onToggleTheme("paper")}>
-            PAPEL
+          <button className={"ls-toggle__opt" + (mode === "system" ? " is-on" : "")} onClick={() => onSetMode("system")}>
+            SISTEMA
           </button>
         </div>
         <button className="ls-cta" onClick={onStart}>

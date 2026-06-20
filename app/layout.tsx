@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     "The Lab MX — estudio de contenido en Saltillo, Coahuila. Contenido viral, cobertura de eventos, fotografía, video y community management para restaurantes y experiencias.",
 };
 
-const themeBoot = `(() => { try { const t = localStorage.getItem("lab-site-theme"); if (t === "signal") document.documentElement.setAttribute("data-theme", "signal"); } catch (_) {} })();`;
+const themeBoot = `(() => { try { var m = localStorage.getItem("lab-site-theme"); var dark = m === "signal" || ((m === "system" || m === null) && window.matchMedia("(prefers-color-scheme: dark)").matches); if (dark) document.documentElement.setAttribute("data-theme", "signal"); } catch (_) {} })();`;
 
 export default function RootLayout({
   children,
