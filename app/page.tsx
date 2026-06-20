@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sun, Moon, Monitor } from "lucide-react";
+import { Sun, Moon, Monitor, Send } from "lucide-react";
 
 /* =========================================================================
  * DATA — real content from the "Creative Worth" portfolio (The Lab MX)
@@ -327,8 +327,11 @@ function LabHeader({
             <Monitor size={14} strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
-        <button className="ls-cta" onClick={onStart}>
-          EMPEZAR<span className="ls-cta__word"> PROYECTO</span> <span className="ls-cta__arr">→</span>
+        <button className="ls-cta" onClick={onStart} aria-label="Empezar un proyecto">
+          <span className="ls-cta__label">
+            EMPEZAR PROYECTO<span className="ls-cta__arr">→</span>
+          </span>
+          <Send size={15} strokeWidth={2} className="ls-cta__icon" aria-hidden="true" />
         </button>
       </div>
     </nav>

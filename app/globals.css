@@ -471,6 +471,8 @@ img, svg { display: block; max-width: 100%; }
 .ls-cta--lg { font-size: 13px; padding: 13px 24px; }
 .ls-cta__arr { transition: transform .15s; }
 .ls-cta:hover .ls-cta__arr { transform: translateX(3px); }
+.ls-cta__label { display: inline-flex; align-items: center; gap: 8px; }
+.ls-cta__icon { display: none; }
 .ls-btn-ghost { font-family: var(--font-data); font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--hud-ink); background: transparent; border: 1px solid var(--hud-ink); padding: 13px 24px; cursor: pointer; transition: .15s; white-space: nowrap; }
 .ls-btn-ghost:hover { background: var(--hud-ink); color: var(--hud-bg); }
 
@@ -600,6 +602,9 @@ img, svg { display: block; max-width: 100%; }
   .ls-cw { display: none; }
   /* rail is hidden — fall back to a centered header toggle */
   .ls-toggle { display: flex; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-  .ls-cta__word { display: none; } /* compact CTA on mobile so the centered toggle has room */
+  /* header CTA becomes an icon-only button on mobile so the centered toggle has room */
+  .ls-cta__label { display: none; }
+  .ls-cta__icon { display: block; }
+  .ls-nav .ls-cta { padding: 9px 11px; }
   .lb-hero__grid, .lb-studio2, .lb-svc, .lb-contact2, .lb-form__row { grid-template-columns: 1fr; }
 }
