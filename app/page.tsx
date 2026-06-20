@@ -232,6 +232,8 @@ export default function App() {
     try { localStorage.setItem("lab-site-accent", name); } catch {}
     setAccent(name);
   }
+  // What the picker marks as selected: the chosen accent, or the theme default.
+  const activeAccent = accent ?? (theme === "signal" ? "cyan" : "blue");
   const saverRef = React.useRef(false);
   const flashTimer = React.useRef<number | undefined>(undefined);
   const triggerFlash = React.useCallback(() => {
@@ -360,7 +362,7 @@ export default function App() {
       <div className={"ls-scan" + (entered ? "" : " ls-hidden")} aria-hidden="true" />
       <LabHeader active={active} onNav={nav} onStart={start} onOpenSettings={() => setSettingsOpen(true)} hidden={!entered} />
       <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!entered} />
-      <LabRailRight accent={accent} onAccent={applyAccent} hidden={!entered} />
+      <LabRailRight accent={activeAccent} onAccent={applyAccent} hidden={!entered} />
       <main className="ls-main">
         <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
         <LabMarquee items={MARQUEE} />
@@ -374,7 +376,7 @@ export default function App() {
         <SettingsModal
           mode={mode}
           onSetMode={applyMode}
-          accent={accent}
+          accent={activeAccent}
           onAccent={applyAccent}
           onClose={() => setSettingsOpen(false)}
         />
@@ -638,28 +640,25 @@ function LabRailLeft({
   ];
   return (
     <aside className={"ls-rail ls-rail--l" + (hidden ? " ls-hidden" : "")}>
-      <span className="ls-rail__txt">SYS.ON // EN LÍNEA</span>
-      <div className="ls-rail__mid">
-        <div className="ls-rail__pips">
-          <StatusPip color="green" pulse />
-          <StatusPip hollow />
-          <StatusPip hollow />
-        </div>
-        <div className="ls-rail__mode" role="group" aria-label="Modo de pantalla">
-          <span className="ls-rail__modelbl">DSP</span>
-          {modes.map(([m, abbr, label]) => (
-            <button
-              key={m}
-              type="button"
-              title={label}
-              aria-pressed={mode === m}
-              className={"ls-rail__modebtn" + (mode === m ? " is-on" : "")}
-              onClick={() => onSetMode(m)}
-            >
-              {abbr}
-            </button>
-          ))}
-        </div>
+      <div className="ls-rail__mode" role="group" aria-label="Modo de pantalla">
+        <span className="ls-rail__modelbl">DSP</span>
+        {modes.map(([m, abbr, label]) => (
+          <button
+            key={m}
+            type="button"
+            title={label}
+            aria-pressed={mode === m}
+            className={"ls-rail__modebtn" + (mode === m ? " is-on" : "")}
+            onClick={() => onSetMode(m)}
+          >
+            {abbr}
+          </button>
+        ))}
+      </div>
+      <div className="ls-rail__pips">
+        <StatusPip color="green" pulse />
+        <StatusPip hollow />
+        <StatusPip hollow />
       </div>
       <span className="ls-rail__txt">{coord}</span>
     </aside>
