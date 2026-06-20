@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Sun, Moon, Monitor } from "lucide-react";
 
 /* =========================================================================
  * DATA — real content from the "Creative Worth" portfolio (The Lab MX)
@@ -236,7 +237,7 @@ export default function App() {
     <>
       <div className="ls-scan" aria-hidden="true" />
       <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} />
-      <LabRailLeft coord={coord} />
+      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} />
       <LabRailRight />
       <main className="ls-main">
         <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
@@ -279,9 +280,6 @@ function LabHeader({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={MARK} alt="The Lab" className="ls-mark" />
-        <span className="ls-word">
-          THE LAB <span className="ls-reg">®</span> <span className="ls-cw">CREATIVE WORTH</span>
-        </span>
       </a>
       <div className="ls-links">
         {NAV.map(([n, l]) => (
@@ -298,32 +296,83 @@ function LabHeader({
       </div>
       <div className="ls-nav__right">
         <div className="ls-toggle" role="group" aria-label="Modo de pantalla">
-          <button className={"ls-toggle__opt" + (mode === "paper" ? " is-on" : "")} onClick={() => onSetMode("paper")}>
-            PAPEL
+          <button
+            type="button"
+            aria-label="Papel"
+            title="Papel"
+            aria-pressed={mode === "paper"}
+            className={"ls-toggle__opt" + (mode === "paper" ? " is-on" : "")}
+            onClick={() => onSetMode("paper")}
+          >
+            <Sun size={14} strokeWidth={2} aria-hidden="true" />
           </button>
-          <button className={"ls-toggle__opt" + (mode === "signal" ? " is-on" : "")} onClick={() => onSetMode("signal")}>
-            DIGITAL
+          <button
+            type="button"
+            aria-label="Digital"
+            title="Digital"
+            aria-pressed={mode === "signal"}
+            className={"ls-toggle__opt" + (mode === "signal" ? " is-on" : "")}
+            onClick={() => onSetMode("signal")}
+          >
+            <Moon size={14} strokeWidth={2} aria-hidden="true" />
           </button>
-          <button className={"ls-toggle__opt" + (mode === "system" ? " is-on" : "")} onClick={() => onSetMode("system")}>
-            SISTEMA
+          <button
+            type="button"
+            aria-label="Sistema"
+            title="Sistema"
+            aria-pressed={mode === "system"}
+            className={"ls-toggle__opt" + (mode === "system" ? " is-on" : "")}
+            onClick={() => onSetMode("system")}
+          >
+            <Monitor size={14} strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
         <button className="ls-cta" onClick={onStart}>
-          EMPEZAR PROYECTO <span className="ls-cta__arr">→</span>
+          EMPEZAR<span className="ls-cta__word"> PROYECTO</span> <span className="ls-cta__arr">→</span>
         </button>
       </div>
     </nav>
   );
 }
 
-function LabRailLeft({ coord }: { coord: string }) {
+function LabRailLeft({
+  coord,
+  mode,
+  onSetMode,
+}: {
+  coord: string;
+  mode: Mode;
+  onSetMode: (m: Mode) => void;
+}) {
+  const modes: [Mode, string, string][] = [
+    ["paper", "PAP", "Papel"],
+    ["signal", "DIG", "Digital"],
+    ["system", "SYS", "Sistema"],
+  ];
   return (
     <aside className="ls-rail ls-rail--l">
       <span className="ls-rail__txt">SYS.ON // EN LÍNEA</span>
-      <div className="ls-rail__pips">
-        <StatusPip color="green" pulse />
-        <StatusPip hollow />
-        <StatusPip hollow />
+      <div className="ls-rail__mid">
+        <div className="ls-rail__pips">
+          <StatusPip color="green" pulse />
+          <StatusPip hollow />
+          <StatusPip hollow />
+        </div>
+        <div className="ls-rail__mode" role="group" aria-label="Modo de pantalla">
+          <span className="ls-rail__modelbl">DSP</span>
+          {modes.map(([m, abbr, label]) => (
+            <button
+              key={m}
+              type="button"
+              title={label}
+              aria-pressed={mode === m}
+              className={"ls-rail__modebtn" + (mode === m ? " is-on" : "")}
+              onClick={() => onSetMode(m)}
+            >
+              {abbr}
+            </button>
+          ))}
+        </div>
       </div>
       <span className="ls-rail__txt">{coord}</span>
     </aside>
