@@ -177,15 +177,30 @@ export default function App() {
   const [coord, setCoord] = React.useState("25.421N 101.001W");
   const [open, setOpen] = React.useState<Project | null>(null);
   const [sent, setSent] = React.useState(false);
-  const [scrolled, setScrolled] = React.useState(false);
+  const [entered, setEntered] = React.useState(false);
+  const enter = React.useCallback(() => setEntered(true), []);
 
-  // Reveal the header + rails once the user scrolls past the intro video.
+  // Hold on the intro (scroll locked) until the slightest scroll / swipe / key,
+  // then slide it away and reveal the site.
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.6);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    if (entered) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.scrollTo(0, 0);
+    const onIntent = () => enter();
+    const onKey = (e: KeyboardEvent) => {
+      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Spacebar", "Enter"].includes(e.key)) enter();
+    };
+    window.addEventListener("wheel", onIntent, { passive: true });
+    window.addEventListener("touchmove", onIntent, { passive: true });
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("wheel", onIntent);
+      window.removeEventListener("touchmove", onIntent);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [entered, enter]);
 
   React.useEffect(() => {
     const m = readMode();
@@ -243,11 +258,11 @@ export default function App() {
 
   return (
     <>
-      <LabIntro />
-      <div className={"ls-scan" + (scrolled ? "" : " ls-hidden")} aria-hidden="true" />
-      <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} hidden={!scrolled} />
-      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!scrolled} />
-      <LabRailRight hidden={!scrolled} />
+      <LabIntro entered={entered} onEnter={enter} />
+      <div className={"ls-scan" + (entered ? "" : " ls-hidden")} aria-hidden="true" />
+      <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} hidden={!entered} />
+      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!entered} />
+      <LabRailRight hidden={!entered} />
       <main className="ls-main">
         <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
         <LabMarquee items={MARQUEE} />
@@ -264,7 +279,7 @@ export default function App() {
 /* =========================================================================
  * INTRO — full-screen muted autoplay video; scroll down to reveal the site
  * ========================================================================= */
-function LabIntro() {
+function LabIntro({ entered, onEnter }: { entered: boolean; onEnter: () => void }) {
   const vref = React.useRef<HTMLVideoElement>(null);
   React.useEffect(() => {
     const v = vref.current;
@@ -274,7 +289,11 @@ function LabIntro() {
     if (p) p.catch(() => {});
   }, []);
   return (
-    <section className="ls-intro" aria-label="Intro">
+    <section
+      className={"ls-intro" + (entered ? " is-entered" : "")}
+      aria-label="Intro"
+      onClick={onEnter}
+    >
       <video
         ref={vref}
         className="ls-intro__video"

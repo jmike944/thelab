@@ -447,15 +447,21 @@ img, svg { display: block; max-width: 100%; }
 /* ============================================================
    INTRO — full-screen video splash
    ============================================================ */
-.ls-intro { position: relative; width: 100%; height: 100vh; height: 100svh; overflow: hidden; background: #000; }
-.ls-intro__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ls-intro { position: fixed; inset: 0; z-index: 200; overflow: hidden; background: #000; cursor: pointer; will-change: transform; transition: transform 1.05s cubic-bezier(.76, 0, .24, 1); }
+.ls-intro.is-entered { transform: translateY(-100%); pointer-events: none; }
+.ls-intro__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; transition: transform 1.2s cubic-bezier(.76, 0, .24, 1); }
+.ls-intro.is-entered .ls-intro__video { transform: scale(1.14); }
 .ls-intro__veil { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,.28) 0%, transparent 20%, transparent 60%, rgba(0,0,0,.62) 100%); }
-.ls-intro__cue { position: absolute; left: 0; right: 0; bottom: 34px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.ls-intro__cue { position: absolute; left: 0; right: 0; bottom: 34px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 16px; transition: opacity .3s ease, transform .5s var(--ease-out); }
+.ls-intro.is-entered .ls-intro__cue { opacity: 0; transform: translateY(10px); }
 .ls-intro__mark { height: 20px; width: auto; filter: invert(1) drop-shadow(0 1px 10px rgba(0,0,0,.5)); opacity: .95; }
 .ls-intro__scroll { display: inline-flex; flex-direction: column; align-items: center; gap: 5px; font-family: var(--font-data); font-weight: 800; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #fffcf7; text-shadow: 0 1px 8px rgba(0,0,0,.55); }
 .ls-intro__chev { font-size: 14px; animation: ls-introbounce 1.7s var(--ease-out) infinite; }
 @keyframes ls-introbounce { 0%, 100% { transform: translateY(0); opacity: .75; } 50% { transform: translateY(6px); opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .ls-intro__chev { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .ls-intro__chev { animation: none; }
+  .ls-intro, .ls-intro__video { transition-duration: .01ms; }
+}
 
 /* ============================================================
    SCANLINE
