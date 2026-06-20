@@ -349,7 +349,7 @@ img, svg { display: block; max-width: 100%; }
 /* ============================================================
    PRIMITIVES — spectrum bar, pip, hud panel, card, tag, avatar
    ============================================================ */
-/* SMPTE spectrum strip — 7 functional colours (matches DS SpectrumBar) */
+/* SMPTE spectrum strip — full brand spectrum incl. violet (#8a00ff) */
 .specbar { display: flex; width: 100%; overflow: hidden; height: 6px; border: 0; }
 .specbar > i { flex: 1 1 0; display: block; }
 .specbar--sm { height: 4px; }
@@ -562,7 +562,7 @@ img, svg { display: block; max-width: 100%; }
 .ls-rail__modebtn { font-family: var(--font-data); font-weight: 800; font-size: 8px; letter-spacing: .06em; width: 30px; padding: 4px 0; text-align: center; background: transparent; color: var(--hud-muted); border: 1px solid var(--hud-line); cursor: pointer; transition: color .15s, background .15s, border-color .15s; text-transform: uppercase; }
 .ls-rail__modebtn.is-on { background: var(--hud-accent); color: var(--hud-accent-ink); border-color: var(--hud-accent); }
 .ls-rail__modebtn:not(.is-on):hover { color: var(--hud-accent); border-color: var(--hud-accent); }
-/* accent-colour picker — the brand's 7 spectrum colours as a clickable bar */
+/* accent-colour picker — theme-paired brand accents as a clickable bar */
 .ls-rail__accwrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .ls-accbar { display: flex; flex-direction: column; width: 16px; height: 150px; border: 1px solid var(--hud-line); overflow: hidden; }
 .ls-accbar__seg { flex: 1; border: 0; padding: 0; cursor: pointer; position: relative; transition: filter .12s; }

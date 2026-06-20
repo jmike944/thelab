@@ -46,19 +46,28 @@ const INTERESTS = ["Contenido viral", "Eventos", "Fotografía", "Video", "Commun
 
 const MARQUEE = ["CONTENIDO VIRAL", "EVENTOS", "FOTOGRAFÍA", "VIDEO", "COMMUNITY", "STORYTELLING", "CAMPAÑAS", "CREATIVE WORTH"];
 
-const NAV: [string, string][] = [["01", "TRABAJO"], ["02", "SERVICIOS"], ["03", "ESTUDIO"], ["04", "CONTACTO"]];
+// Servicios is part of the Estudio section, so the nav treats them as one.
+const NAV: [string, string][] = [["01", "TRABAJO"], ["02", "ESTUDIO"], ["03", "CONTACTO"]];
 
-// The brand's 7 spectrum colours, selectable as the site accent. `ink` is the
-// readable text colour to use on top of each accent.
-const ACCENTS: { name: string; v: string; ink: string }[] = [
-  { name: "red", v: "#ee1708", ink: "#fffcf7" },
-  { name: "orange", v: "#ff9000", ink: "#231f20" },
-  { name: "yellow", v: "#feff1f", ink: "#231f20" },
-  { name: "green", v: "#3ac62f", ink: "#231f20" },
-  { name: "cyan", v: "#00cfff", ink: "#231f20" },
-  { name: "blue", v: "#3537ff", ink: "#fffcf7" },
-  { name: "magenta", v: "#ff0074", ink: "#fffcf7" },
+// Accent pairs: a DARK brand colour for Papel (legible on the light background)
+// twinned with a BRIGHT one for Digital (legible on the dark background). The
+// accent swaps between the two as the theme changes, so it's always readable.
+// Default is blue ↔ yellow.
+const ACCENT_PAIRS: { key: string; paper: string; digital: string }[] = [
+  { key: "blue", paper: "#3537ff", digital: "#feff1f" }, // blue ↔ yellow
+  { key: "magenta", paper: "#ff0074", digital: "#00cfff" }, // magenta ↔ cyan
+  { key: "red", paper: "#ee1708", digital: "#3ac62f" }, // red ↔ green
+  { key: "violet", paper: "#8a00ff", digital: "#ff9000" }, // violet ↔ orange
 ];
+function accentColor(key: string, dark: boolean) {
+  const p = ACCENT_PAIRS.find((x) => x.key === key) ?? ACCENT_PAIRS[0];
+  return dark ? p.digital : p.paper;
+}
+function applyAccentVars(key: string, dark: boolean) {
+  const r = document.documentElement;
+  r.style.setProperty("--hud-accent", accentColor(key, dark));
+  r.style.setProperty("--hud-accent-ink", dark ? "#231f20" : "#fffcf7");
+}
 
 const MARK = "/logos/the-lab-mark.svg";
 const COMPLETE = "/logos/the-lab-complete.svg";
@@ -79,7 +88,7 @@ const HERO_MARKS = [
 /* =========================================================================
  * PRIMITIVES
  * ========================================================================= */
-const SPECTRUM = ["red", "orange", "yellow", "green", "cyan", "blue", "magenta"];
+const SPECTRUM = ["red", "orange", "yellow", "green", "cyan", "blue", "violet", "magenta"];
 
 function SpectrumBar({
   orientation,
@@ -208,32 +217,35 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const enteredRef = React.useRef(false);
 
-  // Accent colour: the pre-paint script already applied the saved one; sync
-  // state for the picker UI. Clicking the active swatch resets to the default.
+  // Accent: the pre-paint script already applied the saved pair; sync state for
+  // the picker UI. A ref keeps the current pair available to theme listeners.
+  const accentRef = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    accentRef.current = accent;
+  }, [accent]);
   React.useEffect(() => {
     try {
       const a = localStorage.getItem("lab-site-accent");
       if (a) setAccent(a);
     } catch {}
   }, []);
-  function applyAccent(name: string) {
-    const root = document.documentElement;
-    if (accent === name) {
-      root.style.removeProperty("--hud-accent");
-      root.style.removeProperty("--hud-accent-ink");
-      try { localStorage.removeItem("lab-site-accent"); } catch {}
+  function applyAccent(key: string) {
+    const dark = document.documentElement.getAttribute("data-theme") === "signal";
+    if (accent === key) {
+      // toggle off → back to the default pair
       setAccent(null);
+      applyAccentVars("blue", dark);
+      try { localStorage.removeItem("lab-site-accent"); } catch {}
       return;
     }
-    const a = ACCENTS.find((x) => x.name === name);
-    if (!a) return;
-    root.style.setProperty("--hud-accent", a.v);
-    root.style.setProperty("--hud-accent-ink", a.ink);
-    try { localStorage.setItem("lab-site-accent", name); } catch {}
-    setAccent(name);
+    setAccent(key);
+    applyAccentVars(key, dark);
+    try { localStorage.setItem("lab-site-accent", key); } catch {}
   }
-  // What the picker marks as selected: the chosen accent, or the theme default.
-  const activeAccent = accent ?? (theme === "signal" ? "cyan" : "blue");
+  // Picker state: the active pair (default "blue") and each pair's colour for
+  // the current theme.
+  const activeAccent = accent ?? "blue";
+  const accentOptions = ACCENT_PAIRS.map((p) => ({ key: p.key, color: theme === "signal" ? p.digital : p.paper }));
   const saverRef = React.useRef(false);
   const flashTimer = React.useRef<number | undefined>(undefined);
   const triggerFlash = React.useCallback(() => {
@@ -312,6 +324,7 @@ export default function App() {
       const resolved = mq.matches ? "signal" : "paper";
       setTheme(resolved);
       document.documentElement.setAttribute("data-theme", resolved === "signal" ? "signal" : "");
+      applyAccentVars(accentRef.current ?? "blue", mq.matches);
     };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -322,6 +335,7 @@ export default function App() {
     const resolved = resolveTheme(next);
     setTheme(resolved);
     document.documentElement.setAttribute("data-theme", resolved === "signal" ? "signal" : "");
+    applyAccentVars(accentRef.current ?? "blue", resolved === "signal");
     try {
       localStorage.setItem("lab-site-theme", next);
     } catch {}
@@ -355,6 +369,41 @@ export default function App() {
     return () => window.removeEventListener("keydown", k);
   }, []);
 
+  // Scroll-spy: highlight the nav item for the section currently in view.
+  // ids are in scroll order; the active section is the last one whose top has
+  // passed the detection line below the header (Servicios counts as Estudio).
+  React.useEffect(() => {
+    if (!entered) return;
+    const ids = ["TRABAJO", "ESTUDIO", "CONTACTO"];
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      // Detection line ~40% down the viewport (below the 72px header). A
+      // fraction (not a fixed offset) lets the short final section activate
+      // near the page bottom, where its heading can't climb to the very top.
+      const line = Math.max(96, window.innerHeight * 0.4);
+      let current = "top"; // hero region → nothing highlighted
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= line) current = id;
+      }
+      // Snap to the last section once scrolled to the very bottom.
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+        current = ids[ids.length - 1];
+      }
+      setActive((prev) => (prev === current ? prev : current));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [entered]);
+
   return (
     <>
       <LabIntro entered={entered} onEnter={enter} />
@@ -362,7 +411,7 @@ export default function App() {
       <div className={"ls-scan" + (entered ? "" : " ls-hidden")} aria-hidden="true" />
       <LabHeader active={active} onNav={nav} onStart={start} onOpenSettings={() => setSettingsOpen(true)} hidden={!entered} />
       <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!entered} />
-      <LabRailRight accent={activeAccent} onAccent={applyAccent} hidden={!entered} />
+      <LabRailRight options={accentOptions} selected={activeAccent} onAccent={applyAccent} hidden={!entered} />
       <main className="ls-main">
         <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
         <LabMarquee items={MARQUEE} />
@@ -376,7 +425,8 @@ export default function App() {
         <SettingsModal
           mode={mode}
           onSetMode={applyMode}
-          accent={activeAccent}
+          options={accentOptions}
+          selected={activeAccent}
           onAccent={applyAccent}
           onClose={() => setSettingsOpen(false)}
         />
@@ -392,14 +442,16 @@ export default function App() {
 function SettingsModal({
   mode,
   onSetMode,
-  accent,
+  options,
+  selected,
   onAccent,
   onClose,
 }: {
   mode: Mode;
   onSetMode: (m: Mode) => void;
-  accent: string | null;
-  onAccent: (n: string) => void;
+  options: { key: string; color: string }[];
+  selected: string;
+  onAccent: (k: string) => void;
   onClose: () => void;
 }) {
   const modes: [Mode, string][] = [
@@ -433,16 +485,16 @@ function SettingsModal({
           </div>
           <div className="ls-set__lbl">Color de acento</div>
           <div className="ls-set__colors">
-            {ACCENTS.map((a) => (
+            {options.map((o) => (
               <button
-                key={a.name}
+                key={o.key}
                 type="button"
-                title={a.name}
-                aria-label={a.name}
-                aria-pressed={accent === a.name}
-                className={"ls-set__color" + (accent === a.name ? " is-on" : "")}
-                style={{ background: a.v }}
-                onClick={() => onAccent(a.name)}
+                title={o.key}
+                aria-label={o.key}
+                aria-pressed={selected === o.key}
+                className={"ls-set__color" + (selected === o.key ? " is-on" : "")}
+                style={{ background: o.color }}
+                onClick={() => onAccent(o.key)}
               />
             ))}
           </div>
@@ -666,12 +718,14 @@ function LabRailLeft({
 }
 
 function LabRailRight({
-  accent,
+  options,
+  selected,
   onAccent,
   hidden,
 }: {
-  accent: string | null;
-  onAccent: (n: string) => void;
+  options: { key: string; color: string }[];
+  selected: string;
+  onAccent: (k: string) => void;
   hidden?: boolean;
 }) {
   return (
@@ -679,16 +733,16 @@ function LabRailRight({
       <div className="ls-rail__accwrap" role="group" aria-label="Color de acento">
         <span className="ls-rail__modelbl">ACC</span>
         <div className="ls-accbar">
-          {ACCENTS.map((a) => (
+          {options.map((o) => (
             <button
-              key={a.name}
+              key={o.key}
               type="button"
-              title={a.name}
-              aria-label={a.name}
-              aria-pressed={accent === a.name}
-              className={"ls-accbar__seg" + (accent === a.name ? " is-on" : "")}
-              style={{ background: a.v }}
-              onClick={() => onAccent(a.name)}
+              title={o.key}
+              aria-label={o.key}
+              aria-pressed={selected === o.key}
+              className={"ls-accbar__seg" + (selected === o.key ? " is-on" : "")}
+              style={{ background: o.color }}
+              onClick={() => onAccent(o.key)}
             />
           ))}
         </div>
@@ -870,7 +924,7 @@ function LabStudio() {
   return (
     <section className="lb-sec" id="ESTUDIO">
       <div className="lb-sechead">
-        <span className="lb-code">SEC_03 // EL ESTUDIO</span>
+        <span className="lb-code">SEC_02 // EL ESTUDIO</span>
         <SpectrumBar size="sm" style={{ flex: 1, opacity: 0.6 }} />
       </div>
       <div className="lb-studio2">
@@ -928,7 +982,7 @@ function LabContact({ sent, onSend }: { sent: boolean; onSend: () => void }) {
   const toggle = (x: string) => setPick((p) => (p.includes(x) ? p.filter((i) => i !== x) : [...p, x]));
   return (
     <section className="lb-sec" id="CONTACTO">
-      <HudPanel title="TRANSMITIR // EMPIEZA UN PROYECTO" code="SEC_04" spine>
+      <HudPanel title="TRANSMITIR // EMPIEZA UN PROYECTO" code="SEC_03" spine>
         {sent ? (
           <div className="lb-sent">
             <StatusPip color="green" pulse label="SEÑAL RECIBIDA" />
