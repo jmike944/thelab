@@ -524,7 +524,8 @@ img, svg { display: block; max-width: 100%; }
 .ls-word { font-size: 12px; letter-spacing: .14em; font-weight: 800; }
 .ls-reg { vertical-align: super; font-size: 8px; }
 .ls-cw { color: var(--hud-muted); margin-left: 6px; }
-.ls-links { display: flex; gap: 26px; }
+/* Absolutely centered so the brand logo's width never shifts the links. */
+.ls-links { display: flex; gap: 26px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .ls-link { font-size: 10px; letter-spacing: .12em; font-weight: 800; text-transform: uppercase; color: var(--hud-on-variant); display: flex; gap: 4px; transition: color .15s; cursor: pointer; background: none; border: 0; }
 .ls-link__n { color: var(--hud-muted); }
 .ls-link:hover, .ls-link.is-active { color: var(--hud-accent); }
