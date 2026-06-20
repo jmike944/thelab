@@ -2,6 +2,13 @@
 
 import * as React from "react";
 import { Send, SlidersHorizontal } from "lucide-react";
+import {
+  buildImageTransitionSnapshot,
+  buildPosterSticker,
+  buildStickerStack,
+  buildStickerTransitionSnapshot,
+  transitionOverlayForTheme,
+} from "@/lib/sticker-screensaver.mjs";
 
 /* =========================================================================
  * DATA — real content from the "Creative Worth" portfolio (The Lab MX)
@@ -181,6 +188,10 @@ function HudPanel({
  * HOOKS
  * ========================================================================= */
 type Mode = "paper" | "signal" | "system";
+type StickerSnapshot = ReturnType<typeof buildStickerStack>;
+type CrumpleSnapshot =
+  | { kind: "stickers"; stickers: StickerSnapshot }
+  | { kind: "image"; src: string };
 
 function prefersDark(): boolean {
   return typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -215,7 +226,11 @@ export default function App() {
   const [open, setOpen] = React.useState<Project | null>(null);
   const [sent, setSent] = React.useState(false);
   const [entered, setEntered] = React.useState(false);
-  const [flash, setFlash] = React.useState(false);
+  const [flash, setFlash] = React.useState<"testcard" | "paperCrumple" | null>(null);
+  const [crumpleSnapshot, setCrumpleSnapshot] = React.useState<CrumpleSnapshot>(() => ({
+    kind: "stickers",
+    stickers: buildStickerStack(30),
+  }));
   const [saver, setSaver] = React.useState(false);
   const [accent, setAccent] = React.useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -251,16 +266,26 @@ export default function App() {
   const activeAccent = accent ?? "blue";
   const accentOptions = ACCENT_PAIRS.map((p) => ({ key: p.key, color: theme === "signal" ? p.digital : p.paper }));
   const saverRef = React.useRef(false);
+  const saverStickersRef = React.useRef<StickerSnapshot>(buildStickerStack(1));
   const flashTimer = React.useRef<number | undefined>(undefined);
-  const triggerFlash = React.useCallback(() => {
-    setFlash(true);
+  const triggerFlash = React.useCallback((
+    phase?: "intro-exit" | "screensaver-enter" | "screensaver-exit",
+    payload?: { stickers?: StickerSnapshot; imageSrc?: string },
+  ) => {
+    const overlay = transitionOverlayForTheme(theme, phase);
+    if (!overlay) return;
+    if (overlay === "paperCrumple") {
+      if (payload?.imageSrc) setCrumpleSnapshot(buildImageTransitionSnapshot(payload.imageSrc) as CrumpleSnapshot);
+      else setCrumpleSnapshot({ kind: "stickers", stickers: buildStickerTransitionSnapshot(payload?.stickers ?? buildStickerStack(30)) });
+    }
+    setFlash(overlay);
     if (flashTimer.current) window.clearTimeout(flashTimer.current);
-    flashTimer.current = window.setTimeout(() => setFlash(false), 430);
-  }, []);
-  const enter = React.useCallback(() => {
+    flashTimer.current = window.setTimeout(() => setFlash(null), 1600);
+  }, [theme]);
+  const enter = React.useCallback((imageSrc?: string) => {
     if (enteredRef.current) return;
     enteredRef.current = true;
-    triggerFlash(); // test-card flash, then reveal the site
+    triggerFlash("intro-exit", imageSrc ? { imageSrc } : undefined);
     setEntered(true);
   }, [triggerFlash]);
 
@@ -271,20 +296,10 @@ export default function App() {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.scrollTo(0, 0);
-    const onIntent = () => enter();
-    const onKey = (e: KeyboardEvent) => {
-      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Spacebar", "Enter"].includes(e.key)) enter();
-    };
-    window.addEventListener("wheel", onIntent, { passive: true });
-    window.addEventListener("touchmove", onIntent, { passive: true });
-    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prevOverflow;
-      window.removeEventListener("wheel", onIntent);
-      window.removeEventListener("touchmove", onIntent);
-      window.removeEventListener("keydown", onKey);
     };
-  }, [entered, enter]);
+  }, [entered]);
 
   // DVD-style screensaver after 10s idle (only once the site is revealed).
   // A test-card flash plays both entering and exiting the screensaver.
@@ -294,13 +309,13 @@ export default function App() {
     const show = () => {
       saverRef.current = true;
       setSaver(true);
-      triggerFlash();
+      triggerFlash("screensaver-enter");
     };
     const reset = () => {
       if (saverRef.current) {
         saverRef.current = false;
         setSaver(false);
-        triggerFlash();
+        triggerFlash("screensaver-exit", { stickers: saverStickersRef.current });
       }
       if (timer) window.clearTimeout(timer);
       timer = window.setTimeout(show, 10000);
@@ -411,7 +426,8 @@ export default function App() {
   return (
     <>
       <LabIntro entered={entered} onEnter={enter} />
-      {flash && <LabFlash />}
+      {flash === "testcard" && <LabFlash />}
+      {flash === "paperCrumple" && <LabPaperCrumpleTransition snapshot={crumpleSnapshot} />}
       <div className={"ls-scan" + (entered ? "" : " ls-hidden")} aria-hidden="true" />
       <LabHeader active={active} onNav={nav} onStart={start} onOpenSettings={() => setSettingsOpen(true)} hidden={!entered} />
       <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!entered} />
@@ -435,7 +451,7 @@ export default function App() {
           onClose={() => setSettingsOpen(false)}
         />
       )}
-      {saver && (theme === "signal" ? <Screensaver /> : <ScreensaverPoster />)}
+      {saver && (theme === "signal" ? <Screensaver /> : <ScreensaverPoster onStickersChange={(stickers) => { saverStickersRef.current = stickers; }} />)}
     </>
   );
 }
@@ -578,45 +594,36 @@ function Screensaver() {
   );
 }
 
-/* =========================================================================
- * SCREENSAVER (PAPEL) — kinetic neubrutalist type poster
- * ========================================================================= */
-const POSTER_WORDS = ["CREATIVE", "WORTH", "THE LAB", "SALTILLO", "CONTENIDO", "VIRAL", "MÉXICO"];
-// bg = brand spectrum colour, ink = legible text colour on that block.
-const POSTER_COLORS = [
-  { bg: "#ee1708", ink: "#fffcf7" }, // red
-  { bg: "#ff9000", ink: "#231f20" }, // orange
-  { bg: "#feff1f", ink: "#231f20" }, // yellow
-  { bg: "#3ac62f", ink: "#231f20" }, // green
-  { bg: "#00cfff", ink: "#231f20" }, // cyan
-  { bg: "#3537ff", ink: "#fffcf7" }, // blue
-  { bg: "#8a00ff", ink: "#fffcf7" }, // violet
-  { bg: "#ff0074", ink: "#fffcf7" }, // magenta
-];
-
-function ScreensaverPoster() {
-  const [i, setI] = React.useState(0);
+function ScreensaverPoster({ onStickersChange }: { onStickersChange: (stickers: ReturnType<typeof buildStickerStack>) => void }) {
+  const [stickers, setStickers] = React.useState(() => buildStickerStack(1));
   React.useEffect(() => {
-    const id = window.setInterval(() => setI((n) => n + 1), 1050);
+    onStickersChange(stickers);
+  }, [onStickersChange, stickers]);
+  React.useEffect(() => {
+    const id = window.setInterval(() => {
+      setStickers((items) => [...items, buildPosterSticker(items.length)]);
+    }, 720);
     return () => window.clearInterval(id);
   }, []);
-  const word = POSTER_WORDS[i % POSTER_WORDS.length];
-  const c = POSTER_COLORS[(i * 3) % POSTER_COLORS.length]; // decoupled from word cycle
-  // Deterministic-but-varied placement per beat (no Math.random → no thrash).
-  const cx = 28 + ((i * 43) % 44); // 28%..71% horizontal centre
-  const cy = 26 + ((i * 29) % 48); // 26%..73% vertical centre
-  const rot = ((i * 5) % 15) - 7; // -7°..+7°
   return (
     <div className="ls-poster" aria-hidden="true">
-      <div
-        key={i}
-        className="ls-poster__slot"
-        style={{ left: `${cx}%`, top: `${cy}%`, transform: `translate(-50%, -50%) rotate(${rot}deg)` }}
-      >
-        <div className="ls-poster__word" style={{ background: c.bg, color: c.ink }}>
-          {word}
+      {stickers.map((sticker) => (
+        <div
+          key={sticker.id}
+          className="ls-poster__slot"
+          style={{
+            left: `${sticker.left}%`,
+            top: `${sticker.top}%`,
+            zIndex: sticker.zIndex,
+            transform: `translate(-50%, -50%) rotate(${sticker.rotate}deg)`,
+          }}
+        >
+          <div className="ls-poster__sticker" style={{ background: sticker.bg, width: `min(${sticker.width}px, 44vw)` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={sticker.preserveTone ? "preserve-tone" : undefined} src={sticker.src} alt="" />
+          </div>
         </div>
-      </div>
+      ))}
       <span className="ls-poster__tag">SYS.IDLE // MUEVE PARA DESPERTAR</span>
     </div>
   );
@@ -625,7 +632,7 @@ function ScreensaverPoster() {
 /* =========================================================================
  * INTRO — full-screen muted autoplay video; scroll down to reveal the site
  * ========================================================================= */
-function LabIntro({ entered, onEnter }: { entered: boolean; onEnter: () => void }) {
+function LabIntro({ entered, onEnter }: { entered: boolean; onEnter: (imageSrc?: string) => void }) {
   const vref = React.useRef<HTMLVideoElement>(null);
   React.useEffect(() => {
     const v = vref.current;
@@ -634,11 +641,47 @@ function LabIntro({ entered, onEnter }: { entered: boolean; onEnter: () => void 
     const p = v.play();
     if (p) p.catch(() => {});
   }, []);
+  const enterWithFrame = React.useCallback(() => {
+    const v = vref.current;
+    if (!v || !v.videoWidth || !v.videoHeight) {
+      onEnter();
+      return;
+    }
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = v.videoWidth;
+      canvas.height = v.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        onEnter();
+        return;
+      }
+      ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+      onEnter(canvas.toDataURL("image/jpeg", 0.82));
+    } catch {
+      onEnter();
+    }
+  }, [onEnter]);
+  React.useEffect(() => {
+    if (entered) return;
+    const onIntent = () => enterWithFrame();
+    const onKey = (e: KeyboardEvent) => {
+      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Spacebar", "Enter"].includes(e.key)) enterWithFrame();
+    };
+    window.addEventListener("wheel", onIntent, { passive: true });
+    window.addEventListener("touchmove", onIntent, { passive: true });
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("wheel", onIntent);
+      window.removeEventListener("touchmove", onIntent);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [entered, enterWithFrame]);
   return (
     <section
       className={"ls-intro" + (entered ? " is-entered" : "")}
       aria-label="Intro"
-      onClick={onEnter}
+      onClick={enterWithFrame}
     >
       <video
         ref={vref}
@@ -684,6 +727,35 @@ function LabFlash() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="ls-flash__mark" src="/logos/the-lab-wordmark.svg" alt="" />
         <span className="ls-flash__tag">// SIGNAL — THE LAB® — CREATIVE WORTH</span>
+      </div>
+    </div>
+  );
+}
+
+function LabPaperCrumpleTransition({ snapshot }: { snapshot: CrumpleSnapshot }) {
+  const panelStyle = snapshot.kind === "image"
+    ? { backgroundImage: `url(${snapshot.src})` }
+    : undefined;
+  return (
+    <div className="ls-paper-crumple" aria-hidden="true">
+      <div className="ls-paper-crumple__panel" style={panelStyle}>
+        {snapshot.kind === "stickers" && snapshot.stickers.map((sticker) => (
+          <div
+            key={sticker.id}
+            className="ls-paper-crumple__slot"
+            style={{
+              left: `${sticker.left}%`,
+              top: `${sticker.top}%`,
+              zIndex: sticker.zIndex,
+              transform: `translate(-50%, -50%) rotate(${sticker.rotate}deg)`,
+            }}
+          >
+            <div className="ls-paper-crumple__sticker" style={{ background: sticker.bg, width: `min(${sticker.width}px, 42vw)` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className={sticker.preserveTone ? "preserve-tone" : undefined} src={sticker.src} alt="" />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
