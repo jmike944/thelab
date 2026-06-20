@@ -49,6 +49,7 @@ const MARQUEE = ["CONTENIDO VIRAL", "EVENTOS", "FOTOGRAFÍA", "VIDEO", "COMMUNIT
 const NAV: [string, string][] = [["01", "TRABAJO"], ["02", "SERVICIOS"], ["03", "ESTUDIO"], ["04", "CONTACTO"]];
 
 const MARK = "/logos/the-lab-mark.svg";
+const COMPLETE = "/logos/the-lab-complete.svg";
 const MARK_3D = "/logos/the-lab-3d-line.svg";
 const WORDMARK = "/logos/the-lab-wordmark.svg";
 
@@ -381,7 +382,7 @@ function LabHeader({
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={MARK} alt="The Lab" className="ls-mark" />
+        <img src={COMPLETE} alt="The Lab — Creative Worth" className="ls-mark" />
       </a>
       <div className="ls-links">
         {NAV.map(([n, l]) => (
