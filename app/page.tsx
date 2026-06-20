@@ -177,6 +177,15 @@ export default function App() {
   const [coord, setCoord] = React.useState("25.421N 101.001W");
   const [open, setOpen] = React.useState<Project | null>(null);
   const [sent, setSent] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+
+  // Reveal the header + rails once the user scrolls past the intro video.
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.6);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   React.useEffect(() => {
     const m = readMode();
@@ -234,10 +243,11 @@ export default function App() {
 
   return (
     <>
-      <div className="ls-scan" aria-hidden="true" />
-      <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} />
-      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} />
-      <LabRailRight />
+      <LabIntro />
+      <div className={"ls-scan" + (scrolled ? "" : " ls-hidden")} aria-hidden="true" />
+      <LabHeader active={active} onNav={nav} onStart={start} mode={mode} onSetMode={applyMode} hidden={!scrolled} />
+      <LabRailLeft coord={coord} mode={mode} onSetMode={applyMode} hidden={!scrolled} />
+      <LabRailRight hidden={!scrolled} />
       <main className="ls-main">
         <LabHero onStart={start} onWork={() => nav("TRABAJO")} />
         <LabMarquee items={MARQUEE} />
@@ -252,6 +262,45 @@ export default function App() {
 }
 
 /* =========================================================================
+ * INTRO — full-screen muted autoplay video; scroll down to reveal the site
+ * ========================================================================= */
+function LabIntro() {
+  const vref = React.useRef<HTMLVideoElement>(null);
+  React.useEffect(() => {
+    const v = vref.current;
+    if (!v) return;
+    v.muted = true;
+    const p = v.play();
+    if (p) p.catch(() => {});
+  }, []);
+  return (
+    <section className="ls-intro" aria-label="Intro">
+      <video
+        ref={vref}
+        className="ls-intro__video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster="/intro-poster.jpg"
+      >
+        <source src="/intro.mp4" type="video/mp4" />
+      </video>
+      <div className="ls-intro__veil" aria-hidden="true" />
+      <div className="ls-intro__cue" aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="ls-intro__mark" src="/logos/the-lab-wordmark.svg" alt="" />
+        <span className="ls-intro__scroll">
+          DESLIZA
+          <span className="ls-intro__chev">↓</span>
+        </span>
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================================
  * HEADER + RAILS
  * ========================================================================= */
 function LabHeader({
@@ -260,15 +309,17 @@ function LabHeader({
   onStart,
   mode,
   onSetMode,
+  hidden,
 }: {
   active: string;
   onNav: (id: string) => void;
   onStart: () => void;
   mode: Mode;
   onSetMode: (m: Mode) => void;
+  hidden?: boolean;
 }) {
   return (
-    <nav className="ls-nav">
+    <nav className={"ls-nav" + (hidden ? " ls-hidden-top" : "")}>
       <a
         className="ls-brand"
         href="#top"
@@ -341,10 +392,12 @@ function LabRailLeft({
   coord,
   mode,
   onSetMode,
+  hidden,
 }: {
   coord: string;
   mode: Mode;
   onSetMode: (m: Mode) => void;
+  hidden?: boolean;
 }) {
   const modes: [Mode, string, string][] = [
     ["paper", "PAP", "Papel"],
@@ -352,7 +405,7 @@ function LabRailLeft({
     ["system", "SYS", "Sistema"],
   ];
   return (
-    <aside className="ls-rail ls-rail--l">
+    <aside className={"ls-rail ls-rail--l" + (hidden ? " ls-hidden" : "")}>
       <span className="ls-rail__txt">SYS.ON // EN LÍNEA</span>
       <div className="ls-rail__mid">
         <div className="ls-rail__pips">
@@ -381,9 +434,9 @@ function LabRailLeft({
   );
 }
 
-function LabRailRight() {
+function LabRailRight({ hidden }: { hidden?: boolean }) {
   return (
-    <aside className="ls-rail ls-rail--r">
+    <aside className={"ls-rail ls-rail--r" + (hidden ? " ls-hidden" : "")}>
       <div style={{ width: "100%", padding: "0 8px" }}>
         <SpectrumBar orientation="vertical" size="lg" style={{ height: "64px", margin: "0 auto" }} />
       </div>
