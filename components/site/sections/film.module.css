@@ -1,0 +1,429 @@
+/* ============================================================
+   Film — "Así se ve The Lab" (Agentic's split title over a slot
+   that opens into the identity film). Static by default: title,
+   then the film at 16:9 with a player bar. The pinned scene only
+   exists under html.motion on wide screens.
+   ============================================================ */
+.film {
+  position: relative;
+  padding-block: clamp(64px, 9vw, 136px) clamp(24px, 6vw, 120px);
+}
+
+.track {
+  position: relative;
+  container-type: inline-size;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-inline: var(--frame);
+}
+
+/* ---- Title (rendered twice: ink on paper, paper inside the film) ---- */
+.title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding-inline: var(--gut);
+  font-family: var(--f-display);
+  font-weight: 400;
+  /* Sized from the track width so the line always fits before it splits. */
+  font-size: min(var(--t-giant), 12cqw);
+  line-height: 0.82;
+  letter-spacing: 0.004em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.half {
+  display: inline-block;
+}
+
+/* ---- Paper furniture: tag, corner meta, registration marks, note ---- */
+.metaRow {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding-inline: var(--gut);
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+.tag {
+  margin: 0;
+}
+.meta {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+}
+.meta div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.meta dt {
+  color: var(--ink-soft);
+}
+.meta dd {
+  color: var(--ink);
+}
+
+.reg {
+  position: absolute;
+  z-index: 0;
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  pointer-events: none;
+}
+.regTL {
+  top: -40px;
+  left: 10px;
+}
+.regTR {
+  top: -40px;
+  right: 10px;
+}
+.regBL,
+.regBR {
+  display: none;
+}
+
+/* Static: the note hangs off the title's right end, down to the film's top
+   edge but not onto the footage. */
+.note {
+  position: relative;
+  z-index: 4;
+  align-self: flex-end;
+  margin: 0.2em var(--gut) -0.9em 0;
+  --rot: -7deg;
+}
+
+.hint {
+  display: none;
+}
+
+/* ---- The film ---- */
+.fig {
+  position: relative;
+  align-self: stretch;
+  margin-top: clamp(28px, 4vw, 56px);
+}
+.screen {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  background: var(--ink);
+  box-shadow: 0 0 0 var(--stroke) var(--ink);
+}
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: 50% 50%;
+}
+.guides {
+  display: none;
+}
+.over {
+  display: none;
+}
+
+/* Player bar under the film (static): caption left, controls right. */
+.cap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  margin-top: 16px;
+  padding-right: 200px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.capDot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--magenta);
+}
+.ctrl {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.clock {
+  font-variant-numeric: tabular-nums;
+}
+.play {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper-hi);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--magenta);
+  cursor: pointer;
+  transition:
+    transform 0.28s var(--ease),
+    box-shadow 0.28s var(--ease);
+}
+.play svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+.play:hover,
+.play:focus-visible {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--magenta);
+}
+
+@media (max-width: 899px) {
+  .screen {
+    border-radius: var(--r-lg);
+  }
+}
+@media (max-width: 560px) {
+  .metaRow {
+    flex-direction: column;
+  }
+  .meta {
+    text-align: left;
+  }
+  .meta div {
+    justify-content: flex-start;
+  }
+  .clock {
+    display: none;
+  }
+  .cap {
+    padding-right: 68px;
+  }
+}
+
+/* ============================================================
+   The pinned split (motion, wide screens)
+   ============================================================ */
+@media (min-width: 900px) {
+  :global(.motion) .film {
+    padding-block: clamp(24px, 3vw, 48px) 0;
+  }
+  :global(.motion) .track {
+    height: calc(100svh - 2 * var(--frame) + 150vh);
+  }
+  :global(.motion) .stage {
+    position: sticky;
+    top: var(--frame);
+    display: grid;
+    place-items: center;
+    height: calc(100svh - 2 * var(--frame));
+    --fs: min(var(--t-giant), 12cqw);
+  }
+  :global(.motion) .metaRow {
+    position: absolute;
+    z-index: 2;
+    top: clamp(20px, 2.4vw, 32px);
+    left: 0;
+    right: 0;
+    margin: 0;
+  }
+  :global(.motion) .reg {
+    display: block;
+  }
+  /* Marks sit on the cut (the word gap the slot opens in, measured as --cut), top and bottom. */
+  :global(.motion) .regTL,
+  :global(.motion) .regBL {
+    left: var(--cut, 50%);
+    margin-left: -13px;
+  }
+  :global(.motion) .regTL {
+    top: clamp(20px, 2.4vw, 32px);
+  }
+  :global(.motion) .regBL {
+    bottom: clamp(20px, 2.4vw, 32px);
+  }
+  :global(.motion) .regTR,
+  :global(.motion) .regBR {
+    display: none;
+  }
+  :global(.motion) .note {
+    position: absolute;
+    top: calc(50% - var(--fs) * 0.71 - 1.7em);
+    right: auto;
+    left: calc(50% + var(--fs) * 1.25);
+    margin: 0;
+  }
+  :global(.motion) .hint {
+    position: absolute;
+    z-index: 2;
+    left: var(--gut);
+    bottom: clamp(20px, 2.4vw, 32px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: var(--ink-soft);
+  }
+  .hintBar {
+    position: relative;
+    width: 1.5px;
+    height: 34px;
+    overflow: hidden;
+    background: var(--hair);
+  }
+  .hintBar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    animation: hint 1.8s var(--ease-io) infinite;
+  }
+
+  :global(.motion) .fig {
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    margin: 0;
+    clip-path: inset(31% 49% 31% 49% round 14px);
+  }
+  :global(.motion) .screen {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Construction lines (box, rules, circles, axis) around the title. */
+  :global(.motion) .guides {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    overflow: clip;
+    pointer-events: none;
+  }
+  .rule {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: calc(var(--fs) * 1.42);
+    margin-top: calc(var(--fs) * -0.71);
+    border-block: 1px solid var(--hair);
+  }
+  .box {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--fs) * 7.4);
+    height: calc(var(--fs) * 1.42);
+    margin: calc(var(--fs) * -0.71) 0 0 calc(var(--fs) * -3.7);
+    border: 1px solid var(--line);
+  }
+  .ring {
+    position: absolute;
+    width: calc(var(--fs) * 0.34);
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+  }
+  .ringL1,
+  .ringL2,
+  .ringR1,
+  .ringR2 {
+    top: 50%;
+    margin-top: calc(var(--fs) * -0.17);
+  }
+  .ringL1 {
+    left: calc(var(--fs) * -0.17);
+  }
+  .ringL2 {
+    left: calc(var(--fs) * -0.51);
+  }
+  .ringR1 {
+    right: calc(var(--fs) * -0.17);
+  }
+  .ringR2 {
+    right: calc(var(--fs) * -0.51);
+  }
+  .ringT {
+    top: calc(var(--fs) * -0.17);
+    left: 60%;
+  }
+  .ringB {
+    bottom: calc(var(--fs) * -0.17);
+    left: 37%;
+  }
+  .axis {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--cut, 50%);
+    width: 1px;
+    background: repeating-linear-gradient(180deg, var(--line) 0 6px, transparent 6px 12px);
+    opacity: 0.6;
+  }
+  :global(.motion) .over {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  /* Paper ink with an ink rim (the riso stroke Work and the banner use), so the cut
+     letters still read while the window shows the light poster before the film starts. */
+  :global(.motion) .over .title {
+    color: var(--paper-hi);
+    -webkit-text-stroke: max(0.022em, 2px) var(--ink);
+    paint-order: stroke fill;
+  }
+  /* The caption carries its own ink label, so the footage needs no shading. */
+  :global(.motion) .cap {
+    position: absolute;
+    z-index: 2;
+    left: clamp(20px, 3vw, 44px);
+    bottom: clamp(20px, 2.6vw, 36px);
+    margin: 0;
+    padding: 0 14px;
+    min-height: 36px;
+    max-width: calc(100% - 380px);
+    background: var(--ink);
+    color: var(--paper-hi);
+    opacity: 0;
+  }
+  :global(.motion) .ctrl {
+    right: clamp(20px, 3vw, 44px);
+    bottom: clamp(20px, 2.6vw, 36px);
+  }
+}
+
+@keyframes hint {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+.film[data-off] .hintBar::after {
+  animation-play-state: paused;
+}

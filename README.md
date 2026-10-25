@@ -1,39 +1,34 @@
 # THE LAB® — Creative Worth
 
-A single-page marketing site for **The Lab**, a creative studio. It marries two
-looks — warm-paper editorial and a dark cyber-industrial **HUD** — behind one
-**DIGITAL / PAPER** toggle that flips the entire page via shared CSS custom
-properties.
+A single-page site for **The Lab**, a content studio in Saltillo, Coahuila that
+specialises in restaurants and experiences. Spanish copy, real projects.
 
-Built as a faithful production rebuild of the design-system prototype
-(`the_lab_site/`), driven entirely by the brandbook tokens.
+The page tells one story: **from paper to screen**. It opens as print (brand
+paper, ink, the LAB face) and the full stop in "Creative worth." grows into the
+blue screen where the work is shown, the way The Lab turns a place into content.
 
 ## Stack
 
-- **Next.js 16** (App Router, Turbopack)
-- **React 19**
-- **Tailwind CSS v4** (`@theme inline` bridged to the brand tokens)
-- **shadcn/ui** primitives (used selectively for accessible plumbing)
-- Self-hosted brand fonts (LAB, CommonWealth, Walkway) + real logo SVGs
+- **Next.js 16** (App Router, Turbopack), **React 19**
+- **Tailwind CSS v4** for preflight; the styles themselves are plain CSS in
+  `app/globals.css`, organised by section
+- Brand fonts loaded with `next/font/local`: **LAB** (compressed caps, display)
+  and **CommonWealth** (text)
+- Work photos served through `next/image`
 
-## Two themes, one attribute
+## Design
 
-Every surface reads from `--hud-*` / `--spectrum-*` role tokens. Switching the
-theme sets `data-theme="signal"` on `<html>` (persisted to
-`localStorage["lab-site-theme"]` and restored pre-paint to avoid a flash), so a
-single attribute repaints the whole page:
-
-- **PAPER** (default): off-white `#FFFCF7`, ink `#231F20`, electric blue `#3537FF`
-  accent, 2px ink frames with hard offset shadows.
-- **DIGITAL** (`data-theme="signal"`): charcoal surface ladder, cyan `#00CFFF`
-  accent, glow instead of shadow, sharp 0px geometry, the SMPTE spectrum used
-  functionally.
-
-## Sections
-
-Header + fixed side rails · Hero (FIG.01 mark plate) · marquee · "Made in the
-lab." work grid with filterable case overlay · Studio · TRANSMIT contact panel ·
-HUD terminal footer.
+- **Colour:** three brandbook colours, paper `#FFFCF7`, ink `#231F20` and screen
+  blue `#3537FF`. Muted tones are `color-mix` derivatives, never new hexes. The
+  blue only ever appears as the full stop and the screen it becomes.
+- **Hero:** a poster. The masthead is sized to the full width from its measured
+  em width (`100cqi / 5.92`). While pinned, a script grows a blue layer from the
+  stop's exact box to the inset panel the work section continues.
+- **Work:** a pinned feed. Each stretch of scroll swipes to the next project in a
+  9:16 frame and fills its segment in a stories-style progress bar (clickable).
+- **Motion** runs only when allowed: a head script adds `html.motion` before
+  first paint unless `prefers-reduced-motion` is set, and removes it if the app
+  hasn't hydrated within 3s. Without it every section is a plain flowing layout.
 
 ## Run locally
 
@@ -52,12 +47,13 @@ npm run build && npm run start   # production build
 
 ```
 app/
-  layout.tsx      # root layout + pre-paint theme script
-  page.tsx        # the full single-page site (client component)
-  globals.css     # brand tokens, theme-signal layer, component styles
-components/ui/    # shadcn primitives
-public/fonts/     # LAB · CommonWealth · Walkway
-public/logos/     # brand mark, wordmark, 3D mark (SVG)
+  layout.tsx          # fonts, metadata, motion boot script
+  page.tsx            # composes the sections
+  globals.css         # tokens + every section's styles
+components/site/      # header, hero, work feed, studio, contact, footer
+lib/content.ts        # projects, services and contact details
+lib/scroll.ts         # scroll-progress helpers for the pinned scenes
+public/work/          # project photos
+public/logos/         # brand marks (SVG)
+public/intro.mp4      # identity film shown in the studio section
 ```
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)

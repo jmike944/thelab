@@ -1,0 +1,186 @@
+/* Stats: a blue inset panel (Agentic's frame, Corvel's figures band) with
+   faint paper rays fanning up from below it. */
+
+.stats {
+  position: relative;
+  isolation: isolate;
+  margin: var(--frame) var(--frame) 0;
+  padding-block: clamp(44px, 5.5vw, 88px) clamp(80px, 10vw, 150px);
+  overflow: clip;
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(70% 60% at 50% 120%, color-mix(in oklab, var(--paper-hi) 20%, transparent), transparent 70%),
+    var(--blue);
+  color: var(--paper-hi);
+}
+
+/* Sunburst: a huge conic disc centred below the panel. */
+.rays {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.rays div {
+  --d: max(210vw, 1800px);
+  position: absolute;
+  top: 122%;
+  left: 50%;
+  width: var(--d);
+  aspect-ratio: 1;
+  margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(color-mix(in oklab, var(--paper-hi) 16%, transparent) 0deg 0.8deg, transparent 0.8deg 6deg),
+    repeating-conic-gradient(color-mix(in oklab, var(--ink) 10%, transparent) 0deg 0.3deg, transparent 0.3deg 1.5deg);
+}
+/* A halftone ramp of paper dots along the bottom edge (Corvel). */
+.ramp {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  height: var(--ramp-h);
+  background: color-mix(in oklab, var(--paper-hi) 16%, transparent);
+  -webkit-mask: var(--ramp) 0 0 / calc(var(--ramp-h) / 10) var(--ramp-h) repeat-x;
+  mask: var(--ramp) 0 0 / calc(var(--ramp-h) / 10) var(--ramp-h) repeat-x;
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+}
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: clamp(56px, 8vw, 120px);
+}
+.stats .tag {
+  margin: 0;
+  color: var(--paper-hi);
+}
+.stats .tag::before {
+  background: var(--yellow);
+}
+.meta {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------ Figures */
+.list {
+  --fg: clamp(16px, 2.6vw, 44px);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(48px, 6vw, 72px) var(--fg);
+}
+.fig {
+  position: relative;
+  min-width: 0;
+  container-type: inline-size;
+}
+.val {
+  font: 400 min(clamp(80px, 11vw, 190px), 100cqi / 2.2) / 0.8 var(--f-display);
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+}
+/* Paper figure over an ink key plate, misregistered a touch. */
+.stamp {
+  display: inline-block;
+  color: var(--paper-hi);
+  text-shadow: 0.04em 0.04em 0 var(--ink);
+  transform-origin: 35% 70%;
+}
+.plus {
+  position: relative;
+  top: -0.74em;
+  margin-right: 0.03em;
+  color: var(--yellow);
+  font-size: 0.55em;
+}
+.pct {
+  color: var(--yellow);
+}
+.rule {
+  display: block;
+  height: var(--stroke);
+  margin: clamp(16px, 1.8vw, 26px) 0 12px;
+  background: var(--paper-hi);
+  transform-origin: 0 50%;
+}
+.label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: clamp(11px, 0.95vw, 13px);
+}
+.idx {
+  color: var(--yellow);
+}
+
+/* Hand note in yellow (magenta would sink on blue). */
+.noteWrap {
+  position: absolute;
+  top: calc(-1 * clamp(40px, 4.2vw, 64px));
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+.noteIn {
+  display: inline-flex;
+  align-items: flex-start;
+  color: var(--yellow);
+  white-space: nowrap;
+}
+.arrow {
+  flex: none;
+  width: clamp(32px, 3vw, 44px);
+  aspect-ratio: 48 / 40;
+  margin-top: 0.6em;
+}
+.stats .note {
+  --rot: -8deg;
+  color: var(--yellow);
+  /* A halo in the panel's blue keeps the strokes clear of the rays behind. */
+  text-shadow:
+    0 0 2px var(--blue),
+    0 0 5px var(--blue);
+}
+
+/* Hidden until stamped (motion only). */
+:global(.motion) .stamp,
+:global(.motion) .noteIn {
+  opacity: 0;
+}
+:global(.motion) .rule {
+  transform: scaleX(0);
+}
+
+@media (max-width: 860px) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .noteWrap {
+    position: relative;
+    top: auto;
+    margin-top: 14px;
+  }
+  .arrow {
+    margin-top: -0.2em;
+    transform: scaleY(-1);
+  }
+}
+@media (max-width: 480px) {
+  .meta {
+    justify-items: start;
+    text-align: left;
+  }
+}

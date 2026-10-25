@@ -1,0 +1,339 @@
+/* Process (after Corvel's proofs and Prism's process): three colour proofs
+   that stick and stack, each with a control bar, crop marks, a hand-written
+   numeral and a floating goo panel. */
+
+.process {
+  position: relative;
+  /* Tighter than --sec-y at both ends: the services list runs straight
+     into this heading, and the client band follows the stack. */
+  padding-block: clamp(72px, 8vw, 128px) clamp(56px, 6vw, 96px);
+  /* Clip, not hidden: keeps the sticky parts working. */
+  overflow-x: clip;
+}
+/* SplitText's line masks clip; give accents (Á É Í Ó Ú Ñ) and descenders room. */
+.head :global(.pr-line-mask) {
+  padding: 0.24em 0 0.06em;
+  margin: -0.24em 0 -0.06em;
+}
+
+/* ---- Head ---- */
+.ledeCol {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+}
+.hand {
+  position: relative;
+  margin-left: 4px;
+  --rot: -6deg;
+}
+.arrow {
+  position: absolute;
+  top: 6px;
+  right: -40px;
+  width: 30px;
+  height: 46px;
+  overflow: visible;
+}
+.arrow path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- The stack of proofs ---- */
+.proofs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(56px, 12vh, 120px);
+}
+/* A beat for the last proof to settle on the stack before it all moves on. */
+.proofs::after {
+  content: "";
+  height: 6vh;
+}
+
+.proof {
+  position: sticky;
+  top: calc(var(--head-h) + 22px + var(--i, 0) * 22px);
+  background: var(--paper-hi);
+  border: var(--stroke) solid var(--ink);
+  box-shadow: var(--shadow) var(--shadow) 0 var(--sh, var(--ink));
+  rotate: var(--tilt, 0deg);
+  transform-origin: 50% 0;
+}
+.proof:nth-child(2) {
+  --sh: var(--blue);
+}
+.proof:nth-child(3) {
+  --sh: var(--magenta);
+}
+/* Sinks into shadow as the next proof covers it (set by the scroll). */
+.proof::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: var(--ink);
+  opacity: var(--shade, 0);
+  pointer-events: none;
+}
+
+/* Crop marks just outside the corners. */
+.crops {
+  --co: 24px; /* distance from the trim to the mark's outer end */
+  --cl: 15px; /* mark length */
+  --c: var(--ink);
+  position: absolute;
+  inset: calc(var(--co) * -1);
+  pointer-events: none;
+  background:
+    linear-gradient(var(--c), var(--c)) left 0 top var(--co) / var(--cl) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left var(--co) top 0 / 1px var(--cl) no-repeat,
+    linear-gradient(var(--c), var(--c)) right 0 top var(--co) / var(--cl) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right var(--co) top 0 / 1px var(--cl) no-repeat,
+    linear-gradient(var(--c), var(--c)) left 0 bottom var(--co) / var(--cl) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left var(--co) bottom 0 / 1px var(--cl) no-repeat,
+    linear-gradient(var(--c), var(--c)) right 0 bottom var(--co) / var(--cl) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right var(--co) bottom 0 / 1px var(--cl) no-repeat;
+}
+
+/* Colour control bar along the top edge: blue, magenta, yellow, ink, in tints. */
+.bar {
+  display: block;
+  height: 16px;
+  border-bottom: var(--stroke) solid var(--ink);
+  transform-origin: left;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 calc(100% / 12 - 1px), var(--ink) calc(100% / 12 - 1px) calc(100% / 12)),
+    linear-gradient(
+      90deg,
+      var(--blue) 0 8.333%,
+      color-mix(in oklab, var(--blue) 58%, var(--paper-hi)) 8.333% 16.667%,
+      color-mix(in oklab, var(--blue) 24%, var(--paper-hi)) 16.667% 25%,
+      var(--magenta) 25% 33.333%,
+      color-mix(in oklab, var(--magenta) 58%, var(--paper-hi)) 33.333% 41.667%,
+      color-mix(in oklab, var(--magenta) 24%, var(--paper-hi)) 41.667% 50%,
+      var(--yellow) 50% 58.333%,
+      color-mix(in oklab, var(--yellow) 55%, var(--paper-hi)) 58.333% 66.667%,
+      var(--ink) 66.667% 75%,
+      color-mix(in oklab, var(--ink) 62%, var(--paper-hi)) 75% 83.333%,
+      color-mix(in oklab, var(--ink) 32%, var(--paper-hi)) 83.333% 91.667%,
+      color-mix(in oklab, var(--ink) 10%, var(--paper-hi)) 91.667% 100%
+    );
+}
+:global(.motion) .bar {
+  transform: scaleX(0);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.74fr);
+  gap: clamp(28px, 3.4vw, 56px);
+  min-height: clamp(420px, 58vh, 540px);
+  padding: clamp(22px, 2.6vw, 40px);
+}
+
+/* ---- Copy side ---- */
+.copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  container-type: inline-size;
+}
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hair);
+  color: var(--ink-soft);
+  font-size: 11.5px;
+}
+.metaR {
+  color: var(--blue);
+}
+.title {
+  margin-top: clamp(32px, 6vh, 72px);
+  font: 400 clamp(56px, 20.5cqi, 168px) / 0.84 var(--f-display);
+  letter-spacing: 0.004em;
+}
+.text {
+  max-width: 28ch;
+  margin-top: clamp(18px, 2vw, 28px);
+  font-size: clamp(19px, 1.75vw, 26px);
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+.slug {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 28px;
+  color: var(--ink-soft);
+}
+.slug :global(.mono) {
+  font-size: 10.5px;
+}
+.reg {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  overflow: visible;
+}
+.reg circle,
+.reg line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+.patches {
+  display: flex;
+  gap: 4px;
+}
+.patches i {
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.patches i:nth-child(1) { background: var(--blue); }
+.patches i:nth-child(2) { background: var(--magenta); }
+.patches i:nth-child(3) { background: var(--yellow); }
+.patches i:nth-child(4) { background: var(--ink); }
+
+:global(.motion) .proof [data-rise],
+:global(.motion) .proof [data-art] {
+  opacity: 0;
+}
+
+/* ---- Goo panel ---- */
+.artCol {
+  position: relative;
+  min-height: 300px;
+}
+.art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    6px 6px 0 var(--ink);
+}
+.art > .goo {
+  position: absolute;
+  inset: 0;
+}
+.art > .gooSm {
+  display: none;
+}
+.artTag {
+  position: absolute;
+  z-index: 2;
+  left: 14px;
+  bottom: 14px;
+  max-width: calc(100% - 28px);
+}
+.numeral {
+  position: absolute;
+  z-index: 3;
+  left: clamp(-40px, -2.2vw, -14px);
+  top: clamp(-40px, -2.6vw, -22px);
+  color: var(--magenta);
+  font: 400 clamp(54px, 5vw, 78px) / 1 var(--f-hand);
+  white-space: nowrap;
+  rotate: -9deg;
+  -webkit-text-stroke: 0.16em var(--paper-hi);
+  paint-order: stroke fill;
+}
+:global(.motion) .numeral {
+  clip-path: inset(-40% 100% -40% -20%);
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotate(var(--bob-r, 0.9deg));
+  }
+}
+:global(.motion) .art {
+  animation: bob 6.5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -2.1s);
+  animation-play-state: paused;
+}
+.proof:nth-child(2) .art {
+  --bob-r: -0.9deg;
+}
+:global(.motion) .live .art {
+  animation-play-state: running;
+}
+
+/* Short desktop screens: let the proofs shrink to their copy so the
+   stacked cards stay inside the viewport. */
+@media (min-width: 901px) and (max-height: 620px) {
+  .inner {
+    min-height: 0;
+  }
+  .title {
+    margin-top: 22px;
+  }
+  .slug {
+    padding-top: 20px;
+  }
+}
+
+/* ---- Phones and small tablets: a plain stack ---- */
+@media (max-width: 900px) {
+  .proofs {
+    gap: 56px;
+  }
+  .proofs::after {
+    display: none;
+  }
+  .proof {
+    position: relative;
+    top: auto;
+  }
+  .crops {
+    --co: 11px;
+    --cl: 7px;
+  }
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    gap: 26px;
+  }
+  .artCol {
+    order: -1;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    margin-top: 12px;
+  }
+  .art > .gooLg {
+    display: none;
+  }
+  .art > .gooSm {
+    display: block;
+  }
+  .numeral {
+    left: -6px;
+    top: -26px;
+    font-size: 54px;
+  }
+  .title {
+    margin-top: 26px;
+    font-size: clamp(52px, 19cqi, 112px);
+  }
+}
+@media (max-width: 420px) {
+  .meta {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

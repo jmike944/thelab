@@ -1,0 +1,471 @@
+/* ============================================================
+   Contact — Agentic's dark CTA panel over a Prism goo field,
+   Corvel's sunburst rays drawn out from a paper form card.
+   ============================================================ */
+.contact {
+  position: relative;
+  margin-top: clamp(40px, 6vw, 96px);
+}
+
+.panel {
+  min-height: min(980px, 100svh);
+}
+
+/* ---- Background: goo, ink dimmer, grain ---- */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.goo {
+  position: absolute;
+  inset: 0;
+}
+/* Dims the copy side to near-ink (text stays AA) and lets the colour
+   run on the card side (Agentic's .contact-bg::after). */
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    color-mix(in oklab, var(--panel) 94%, transparent) 0%,
+    color-mix(in oklab, var(--panel) 90%, transparent) 40%,
+    color-mix(in oklab, var(--panel) 52%, transparent) 60%,
+    color-mix(in oklab, var(--panel) 12%, transparent) 86%
+  );
+}
+.bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--on-panel);
+  -webkit-mask: var(--grain);
+  mask: var(--grain);
+  opacity: 0.09;
+  pointer-events: none;
+}
+
+/* ---- Sunburst rays ---- */
+.burst {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: var(--on-panel);
+  pointer-events: none;
+  /* Quieter behind the copy, full strength around the card. */
+  -webkit-mask: linear-gradient(100deg, rgb(0 0 0 / 0.32) 0 36%, #000 60%);
+  mask: linear-gradient(100deg, rgb(0 0 0 / 0.32) 0 36%, #000 60%);
+}
+.burst line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.1;
+  stroke-opacity: 0.8;
+  stroke-linecap: round;
+}
+.burst .dash {
+  stroke-dasharray: 9 7;
+}
+.burst circle {
+  fill: var(--panel);
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+/* ---- Layout ---- */
+.in {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  gap: 56px clamp(32px, 5vw, 96px);
+  align-items: stretch;
+  padding: clamp(36px, 5vw, 76px) clamp(20px, 3.6vw, 56px) clamp(32px, 4vw, 60px);
+}
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(22px, 2.6vw, 34px);
+  min-width: 0;
+}
+.copy :global(.sec-tag) {
+  margin: 0;
+}
+
+.title {
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: clamp(64px, 10.4vw, 168px);
+  line-height: 0.82;
+  letter-spacing: 0.004em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.word {
+  clip-path: inset(-40% -12% -0.12em -12%);
+}
+.char {
+  will-change: transform;
+}
+.stopMask {
+  display: inline-block;
+  clip-path: inset(-40% -40% -0.12em -40%);
+}
+.stopMask :global(.stop) {
+  display: block;
+  margin-left: 0.04em;
+}
+
+.lede {
+  max-width: 30ch;
+  color: var(--on-panel);
+  font-size: clamp(20px, 1.75vw, 26px);
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 28px;
+  align-self: stretch;
+  max-width: 600px;
+  margin-top: auto;
+  color: var(--on-panel);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.notes li {
+  min-width: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--panel-line);
+  overflow-wrap: anywhere;
+}
+.notes strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--panel-muted);
+  font-weight: 500;
+}
+.notes li:first-child {
+  border-top-color: var(--magenta);
+}
+
+/* ---- The form card ---- */
+.cardWrap {
+  position: relative;
+  align-self: start;
+  min-width: 0;
+  padding: 0 var(--shadow) var(--shadow) 0;
+}
+.note {
+  position: absolute;
+  z-index: 3;
+  right: calc(100% + 18px);
+  top: 40%;
+  --rot: -9deg;
+  /* It sits over the goo: a panel-coloured rim keeps the light note readable on any cell. */
+  -webkit-text-stroke: 0.16em var(--panel);
+  paint-order: stroke fill;
+}
+.note::after {
+  content: "";
+  position: absolute;
+  right: -14px;
+  top: 100%;
+  width: 34px;
+  height: 22px;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  border-radius: 0 0 18px 0;
+  transform: rotate(-10deg);
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: clamp(22px, 2.6vw, 38px);
+  background: var(--paper-hi);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    10px 10px 0 var(--magenta);
+}
+.tilt {
+  position: absolute;
+  top: -14px;
+  right: clamp(14px, 2vw, 28px);
+  --rot: 5deg;
+}
+.cardHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: var(--stroke) dashed var(--line);
+}
+.to {
+  justify-self: start;
+  min-width: 0;
+  max-width: 100%;
+}
+.formTitle {
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: clamp(40px, 3.6vw, 60px);
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0;
+  color: var(--ink);
+  font: 500 12px/1.3 var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.num {
+  color: var(--blue);
+}
+.opt {
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.input {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 0;
+  background: var(--paper-hi);
+  color: var(--ink);
+  font: 400 18px/1.4 var(--f-text);
+  box-shadow: 0 0 0 transparent;
+  transition:
+    box-shadow 0.25s var(--ease),
+    background-color 0.25s var(--ease);
+  appearance: none;
+}
+.area {
+  min-height: 132px;
+  resize: vertical;
+}
+.input:hover {
+  box-shadow: 3px 3px 0 var(--hair);
+}
+.input:focus-visible {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 4px 4px 0 var(--blue);
+}
+.input[aria-invalid="true"] {
+  border-color: var(--red);
+  box-shadow: 4px 4px 0 var(--red);
+}
+.err {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in oklab, var(--red) 82%, var(--ink));
+  font: 500 13px/1.3 var(--f-mono);
+}
+.err::before {
+  content: "!";
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--paper-hi);
+  font-size: 11px;
+}
+
+.fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.fieldset .label {
+  margin-bottom: 10px;
+}
+.picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px 0 10px;
+  border: var(--stroke) solid var(--ink);
+  background: var(--paper-hi);
+  color: var(--ink);
+  font: 500 13px/1 var(--f-mono);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+.pickBox {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: var(--stroke) solid currentColor;
+}
+.pickBox svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+.pick:hover {
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+.pick[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper-hi);
+  box-shadow: 3px 3px 0 var(--blue);
+}
+.pick[aria-pressed="true"] .pickBox {
+  border-color: var(--yellow);
+  background: var(--yellow);
+  color: var(--ink);
+}
+.pick[aria-pressed="true"] .pickBox svg {
+  opacity: 1;
+}
+.pick:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.send {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+  margin-top: 6px;
+  padding-top: 20px;
+  border-top: var(--stroke) dashed var(--line);
+}
+.send :global(.btn) {
+  font-size: 17px;
+}
+.small {
+  max-width: 30ch;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.35;
+}
+.status {
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.status:empty {
+  display: none;
+}
+.status:not(:empty) {
+  padding: 12px 14px;
+  border-left: 4px solid var(--green);
+  background: color-mix(in oklab, var(--green) 12%, var(--paper-hi));
+}
+.card :focus-visible {
+  outline-color: var(--blue);
+}
+
+/* ---- Motion: the card lands ---- */
+:global(.motion) .card {
+  will-change: transform;
+}
+
+/* ---- Small screens ---- */
+@media (max-width: 960px) {
+  .in {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 66px;
+  }
+  .bg::after {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--panel) 94%, transparent) 0%,
+      color-mix(in oklab, var(--panel) 90%, transparent) 38%,
+      color-mix(in oklab, var(--panel) 45%, transparent) 62%,
+      color-mix(in oklab, var(--panel) 20%, transparent) 100%
+    );
+  }
+  .burst {
+    -webkit-mask: linear-gradient(180deg, rgb(0 0 0 / 0.3) 0 34%, #000 58%);
+    mask: linear-gradient(180deg, rgb(0 0 0 / 0.3) 0 34%, #000 58%);
+  }
+  /* Above the card's top-left, clear of the tilted "Respuesta" tag on its right. */
+  .note {
+    right: auto;
+    left: 6px;
+    top: -58px;
+  }
+  .note::after {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  .notes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .card {
+    box-shadow:
+      0 0 0 var(--stroke) var(--ink),
+      6px 6px 0 var(--magenta);
+  }
+  .cardWrap {
+    padding: 0 6px 6px 0;
+  }
+  /* Full width; when the two segments don't fit side by side, the paper
+     "Abre tu correo" segment drops to its own row under the ink one. */
+  .send :global(.btn) {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .send :global(.btn .btn-k) {
+    flex: 1 0 auto;
+  }
+  .send :global(.btn .btn-v) {
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+  .tilt {
+    right: 10px;
+  }
+}

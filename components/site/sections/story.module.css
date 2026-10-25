@@ -1,0 +1,329 @@
+/* Story (after Corvel's feature): a press sheet of the bright paper laid on
+   the page, with a slug line along its top edge, crop marks round the trim,
+   a two-plate halftone print that pulls into register, and two columns of
+   copy under a giant headline. */
+
+/* The sheet: inset like the dark panels, but square-cut, keylined and
+   thrown on a hard ink shadow, so the change of paper is an object. */
+.story {
+  position: relative;
+  margin: 0 var(--frame) clamp(48px, 6vw, 96px);
+  padding-block: clamp(26px, 2.8vw, 42px) clamp(56px, 6vw, 96px);
+  background: var(--paper-hi);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    var(--shadow) var(--shadow) 0 var(--ink);
+  overflow: clip;
+}
+
+.sheet {
+  position: relative;
+}
+/* ---- The trim: crop marks just outside its corners ---- */
+.trim {
+  position: relative;
+}
+.crops {
+  position: absolute;
+  inset: -22px -14px;
+  pointer-events: none;
+  --c: var(--ink);
+  background:
+    linear-gradient(var(--c), var(--c)) left 0 top 14px / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left 14px top 0 / 1px 10px no-repeat,
+    linear-gradient(var(--c), var(--c)) right 0 top 14px / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right 14px top 0 / 1px 10px no-repeat,
+    linear-gradient(var(--c), var(--c)) left 0 bottom 14px / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left 14px bottom 0 / 1px 10px no-repeat,
+    linear-gradient(var(--c), var(--c)) right 0 bottom 14px / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right 14px bottom 0 / 1px 10px no-repeat;
+}
+
+.slug {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: clamp(44px, 5vw, 76px);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hair);
+  color: var(--ink-soft);
+  font-size: 10.5px;
+}
+.strip {
+  display: flex;
+  gap: 0;
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.strip i {
+  width: 18px;
+  height: 10px;
+}
+.strip i:nth-child(1) { background: var(--ink); }
+.strip i:nth-child(2) { background: color-mix(in oklab, var(--ink) 70%, var(--paper-hi)); }
+.strip i:nth-child(3) { background: color-mix(in oklab, var(--ink) 40%, var(--paper-hi)); }
+.strip i:nth-child(4) { background: color-mix(in oklab, var(--ink) 14%, var(--paper-hi)); }
+.strip i:nth-child(5) { background: var(--blue); }
+.strip i:nth-child(6) { background: color-mix(in oklab, var(--blue) 66%, var(--paper-hi)); }
+.strip i:nth-child(7) { background: color-mix(in oklab, var(--blue) 36%, var(--paper-hi)); }
+.strip i:nth-child(8) { background: color-mix(in oklab, var(--blue) 12%, var(--paper-hi)); }
+
+/* ---- Layout ---- */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "fig head"
+    "fig body";
+  column-gap: clamp(56px, 7vw, 120px);
+  row-gap: clamp(28px, 3vw, 44px);
+}
+
+/* ---- The two-plate print ---- */
+.reg {
+  grid-area: fig;
+  position: relative;
+  align-self: start;
+  aspect-ratio: 4 / 5;
+  margin: 30px 34px 40px 30px;
+}
+.stack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--paper-hi);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    var(--shadow) var(--shadow) 0 var(--ink);
+}
+.stack > .plate {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+/* Ink carries the shadows on a fine 45° screen… */
+.stack > .plateK {
+  --ht-b: 1.7;
+  --ht-c: 1.05;
+}
+/* …blue the mid-tones, on a coarser 15° screen, multiplied over it. */
+.stack > .plateB {
+  --ht-b: 1.28;
+  --ht-c: 0.8;
+  --dot: clamp(6px, 0.62vw, 9px);
+  mix-blend-mode: multiply;
+}
+
+.mark {
+  position: absolute;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  color: var(--ink);
+  overflow: visible;
+  will-change: transform;
+}
+.mark circle,
+.mark line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+.markB {
+  color: var(--blue);
+  mix-blend-mode: multiply;
+}
+.tl { left: -34px; top: -34px; }
+.tr { right: -34px; top: -34px; }
+.bl { left: -34px; bottom: -34px; }
+.br { right: -34px; bottom: -34px; }
+
+/* Density scale down the right edge. */
+.scale {
+  position: absolute;
+  top: 18%;
+  right: -26px;
+  display: grid;
+  gap: 4px;
+}
+.scale i {
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.scale i:nth-child(1) { background: var(--ink); }
+.scale i:nth-child(2) { background: color-mix(in oklab, var(--ink) 55%, var(--paper-hi)); }
+.scale i:nth-child(3) { background: color-mix(in oklab, var(--ink) 20%, var(--paper-hi)); }
+.scale i:nth-child(4) { background: var(--blue); }
+.scale i:nth-child(5) { background: color-mix(in oklab, var(--blue) 55%, var(--paper-hi)); }
+.scale i:nth-child(6) { background: color-mix(in oklab, var(--blue) 20%, var(--paper-hi)); }
+
+/* Mono slug set up the left edge. */
+.edge {
+  position: absolute;
+  left: -24px;
+  bottom: 22%;
+  color: var(--ink-soft);
+  font-size: 10px;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.regNote {
+  position: absolute;
+  z-index: 3;
+  top: -62px;
+  right: -22px;
+  --rot: 6deg;
+}
+.arrow {
+  position: absolute;
+  top: 26px;
+  right: -26px;
+  width: 44px;
+  height: 30px;
+  overflow: visible;
+}
+.arrow path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cap {
+  position: absolute;
+  z-index: 3;
+  left: -12px;
+  bottom: -18px;
+  max-width: calc(100% - 12px);
+  box-shadow: 4px 4px 0 var(--blue);
+}
+
+/* ---- Headline ---- */
+.head {
+  grid-area: head;
+  align-self: end;
+}
+.title {
+  --mx: 0em;
+  --my: 0em;
+  font-size: clamp(58px, 8.2vw, 142px);
+  text-shadow: var(--mx) var(--my) 0 var(--blue);
+}
+:global(.motion) .title {
+  --mx: 0.09em;
+  --my: -0.06em;
+}
+
+/* ---- Copy ---- */
+.body {
+  grid-area: body;
+}
+.cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 3vw, 44px);
+  max-width: 820px;
+  padding-top: 26px;
+  border-top: var(--stroke) solid var(--ink);
+  font: 400 18px/1.55 var(--f-text);
+  text-wrap: pretty;
+}
+/* Drop cap: four lines tall, in LAB, printed in blue. */
+.drop::first-letter {
+  float: left;
+  margin: 0.03em 0.08em 0 -0.02em;
+  color: var(--blue);
+  font: 400 7.8em/0.74 var(--f-display);
+}
+
+.foot {
+  display: grid;
+  justify-items: start;
+  gap: 22px;
+  margin-top: clamp(28px, 3.4vw, 48px);
+}
+.sign {
+  --rot: -4deg;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+}
+/* Long values wrap inside their chip rather than run off a narrow phone. */
+.facts > li {
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+:global(.motion) .story [data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  }
+  .cols {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1em;
+  }
+}
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "head"
+      "fig"
+      "body";
+  }
+  .reg {
+    width: min(100% - 48px, 460px);
+    margin: 34px auto 48px;
+  }
+  .cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .slug > span:last-child {
+    display: none;
+  }
+}
+@media (max-width: 520px) {
+  .crops {
+    inset: -18px -9px;
+  }
+  .mark {
+    width: 32px;
+    height: 32px;
+  }
+  .tl { left: -22px; top: -22px; }
+  .tr { right: -22px; top: -22px; }
+  .bl { left: -22px; bottom: -22px; }
+  .br { right: -22px; bottom: -22px; }
+  .scale {
+    right: -20px;
+  }
+  .scale i {
+    width: 9px;
+    height: 9px;
+  }
+  .edge {
+    left: -18px;
+  }
+  .regNote {
+    right: -6px;
+  }
+  .cap {
+    left: -8px;
+  }
+}

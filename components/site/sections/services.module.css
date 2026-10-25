@@ -1,0 +1,317 @@
+/* Services (after Corvel's contents): sticky heading column, then the
+   service rows, each ending in a blue rule that draws in. */
+
+.services {
+  position: relative;
+  /* A shorter tail than --sec-y: the process heading follows straight on,
+     and two full section paddings back to back read as a hole. */
+  padding-bottom: clamp(56px, 6vw, 96px);
+  /* Clip, not hidden: keeps the sticky parts working. */
+  overflow-x: clip;
+}
+/* SplitText's line masks clip; give accents (Á É Í Ó Ú Ñ) and descenders room. */
+.head :global(.sv-line-mask) {
+  padding: 0.24em 0 0.06em;
+  margin: -0.24em 0 -0.06em;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(40px, 6vw, 104px);
+}
+
+/* ---- Sticky heading column ---- */
+.head {
+  position: sticky;
+  top: calc(var(--head-h) + 32px);
+  align-self: start;
+}
+
+.glyph {
+  display: block;
+  width: min(100%, 340px);
+  margin: 6px 0 34px;
+  overflow: visible;
+}
+.gFrame {
+  fill: var(--paper-hi);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.gGuide {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 0.8;
+  stroke-dasharray: 2 4;
+}
+.gFill {
+  fill: var(--blue);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.7s var(--ease);
+}
+.gRing {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.gCross {
+  fill: none;
+  stroke-width: 1.2;
+  transition: stroke 0.3s var(--ease);
+}
+.gTick {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.gText {
+  fill: var(--ink-soft);
+  font: 500 9.5px var(--f-mono);
+  letter-spacing: 0.06em;
+}
+:global(.motion) .gFill {
+  transform: scale(0);
+}
+:global(.motion) .gDot.on .gFill {
+  transform: scale(1);
+}
+/* Static: every circle printed. With motion each fills as its row arrives. */
+.gCross {
+  stroke: var(--paper-hi);
+}
+:global(.motion) .gCross {
+  stroke: var(--ink);
+}
+:global(.motion) .gDot.on .gCross {
+  stroke: var(--paper-hi);
+}
+
+.headNote {
+  display: grid;
+  max-width: 340px;
+  margin-top: clamp(28px, 3.2vw, 44px);
+  border-top: var(--stroke) solid var(--ink);
+  color: var(--ink-soft);
+}
+.headNote span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hair);
+}
+.headNote span::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--blue);
+}
+
+.hand {
+  position: relative;
+  margin-top: 30px;
+  --rot: -5deg;
+}
+.arrow {
+  position: absolute;
+  top: 10px;
+  right: -78px;
+  width: 64px;
+  height: 42px;
+  overflow: visible;
+}
+.arrow path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- Service rows ---- */
+.list {
+  border-top: var(--stroke) solid var(--ink);
+}
+.svc {
+  position: relative;
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto 1fr;
+  column-gap: clamp(20px, 2.4vw, 34px);
+  row-gap: 12px;
+  padding: clamp(26px, 2.6vw, 36px) 0;
+}
+.svc::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--stroke);
+  background: var(--blue);
+  transform-origin: left;
+}
+:global(.motion) .svc::after {
+  transform: scaleX(0);
+  transition: transform 1.3s var(--ease);
+}
+:global(.motion) .svc.ruled::after {
+  transform: none;
+}
+:global(.motion) .svc [data-rise] {
+  opacity: 0;
+}
+
+.tileWrap {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  align-self: start;
+  width: 84px;
+  height: 84px;
+}
+.tile {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r-md);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    4px 4px 0 var(--ink);
+  transition: transform 0.45s var(--ease);
+}
+.svc:hover .tile {
+  transform: rotate(-5deg) scale(1.04);
+}
+.num {
+  position: absolute;
+  right: -10px;
+  bottom: -9px;
+  padding: 4px 6px;
+  background: var(--ink);
+  color: var(--paper-hi);
+  font-size: 10.5px;
+}
+
+.name {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  font: 400 var(--t-h3) / 1.08 var(--f-text);
+}
+/* The real case behind the service: a small ink key, then the client. */
+.tag {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: start;
+  padding-top: 6px;
+  color: var(--blue);
+  font-size: 12.5px;
+  text-align: right;
+  white-space: nowrap;
+}
+.tagK {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 3px 5px 2px;
+  background: var(--ink);
+  color: var(--paper-hi);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+}
+.desc {
+  grid-column: 2 / -1;
+  max-width: 44ch;
+  color: color-mix(in oklab, var(--ink) 86%, var(--paper));
+  text-wrap: pretty;
+}
+.points {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  color: var(--ink-soft);
+  font-size: 11.5px;
+}
+.points li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.points li::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--blue);
+}
+
+/* Short desktop screens: compact the stuck heading so the facts and the
+   hand note stay on screen (the construction glyph shrinks, then goes). */
+@media (min-width: 861px) and (max-height: 720px) {
+  .head {
+    top: calc(var(--head-h) + 16px);
+  }
+  .glyph {
+    width: min(100%, 180px);
+    margin: 2px 0 16px;
+  }
+  .headNote {
+    margin-top: 22px;
+  }
+  .hand {
+    margin-top: 20px;
+  }
+}
+@media (min-width: 861px) and (max-height: 600px) {
+  .glyph {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .head {
+    position: static;
+  }
+  .hand {
+    margin-top: 22px;
+  }
+  .arrow {
+    top: 30px;
+    right: -60px;
+    transform: rotate(40deg);
+  }
+}
+@media (max-width: 560px) {
+  .svc {
+    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    row-gap: 10px;
+  }
+  .tileWrap {
+    grid-row: 1 / span 2;
+    width: 64px;
+    height: 64px;
+  }
+  .name {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .tag {
+    grid-column: 2;
+    grid-row: 2;
+    padding-top: 0;
+    text-align: left;
+    white-space: normal;
+  }
+  .desc,
+  .points {
+    grid-column: 1 / -1;
+  }
+  .desc {
+    margin-top: 6px;
+  }
+}

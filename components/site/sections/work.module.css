@@ -1,0 +1,568 @@
+/* Work: Agentic dark inset panel (the section root carries .panel) holding
+   Corvel's pinned horizontal portfolio of printed spreads. */
+
+.work {
+  padding-top: var(--sec-y);
+}
+/* A fine dot field behind the head that fades out toward the track. */
+.work::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: min(1000px, 130svh);
+  background: radial-gradient(circle, color-mix(in oklab, var(--on-panel) 20%, transparent) 1px, transparent 1.7px) 0 0 / 22px 22px;
+  -webkit-mask: radial-gradient(120% 95% at 88% 0%, var(--ink), transparent 72%);
+  mask: radial-gradient(120% 95% at 88% 0%, var(--ink), transparent 72%);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- Head */
+.head {
+  position: relative;
+}
+.h2 {
+  color: var(--on-panel);
+}
+/* SplitText's line masks clip at the 0.84 line box, which would cut accents
+   (Á É Í Ó Ú Ñ) and descenders: give them headroom without moving the text. */
+.h2 :global(.work-line-mask) {
+  margin-block: -0.24em -0.06em;
+  padding-block: 0.24em 0.06em;
+}
+.aside {
+  display: grid;
+  justify-items: start;
+  gap: 22px;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px 10px 13px;
+  border: 1px solid var(--panel-line);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--on-panel) 5%, transparent);
+  color: var(--panel-muted);
+}
+.pill i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--magenta);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--magenta) 24%, transparent);
+}
+.pill b {
+  color: var(--on-panel);
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------- Pin / track */
+.pin,
+.stage {
+  position: relative;
+}
+.track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(44px, 6vw, 76px);
+  width: min(100% - 2 * var(--gut), 1040px);
+  margin-inline: auto;
+  padding-bottom: calc(var(--sec-y) * 0.85);
+}
+.bar,
+.marks {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- Spread */
+.spread {
+  --pad: clamp(12px, 1.5vw, 20px);
+  --off: clamp(8px, 1vw, 14px);
+  --year-fs: clamp(84px, 10.5vw, 156px);
+  --title-fs: clamp(50px, 6.4vw, 96px);
+  --blurb-fs: clamp(15.5px, 1.25vw, 18px);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+  gap: clamp(18px, 2.6vw, 40px);
+  padding: var(--pad);
+  border-radius: var(--r-lg);
+  background: var(--paper-hi);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    var(--off) var(--off) 0 var(--c);
+  rotate: calc(var(--tilt) * 0.5);
+}
+/* Crop marks just outside three corners, like a proof off the press. */
+.crop {
+  --l: 14px;
+  --g: 19px;
+  --m: color-mix(in oklab, var(--on-panel) 42%, transparent);
+  position: absolute;
+  inset: calc(-1 * var(--g));
+  pointer-events: none;
+  background:
+    linear-gradient(var(--m) 0 0) left 0 top var(--g) / var(--l) 1px no-repeat,
+    linear-gradient(var(--m) 0 0) left var(--g) top 0 / 1px var(--l) no-repeat,
+    linear-gradient(var(--m) 0 0) right 0 top var(--g) / var(--l) 1px no-repeat,
+    linear-gradient(var(--m) 0 0) right var(--g) top 0 / 1px var(--l) no-repeat,
+    linear-gradient(var(--m) 0 0) left 0 bottom var(--g) / var(--l) 1px no-repeat,
+    linear-gradient(var(--m) 0 0) left var(--g) bottom 0 / 1px var(--l) no-repeat;
+}
+
+/* The photo, in full colour, as a rounded plate. */
+.ph {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--ink);
+  box-shadow: 0 0 0 var(--stroke) var(--ink);
+}
+.phImg {
+  position: absolute;
+  inset: 0;
+}
+/* The plate ID: the page's chip, keyed with a tick in the project's ink. */
+.plate {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  max-width: calc(100% - 24px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.plate :global(.chip-k) {
+  gap: 8px;
+}
+.plate :global(.chip-k)::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  background: var(--c);
+}
+
+/* Text side */
+.txt {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.3vw, 16px);
+  min-width: 0;
+  padding: 2px 4px 0 0;
+}
+/* A halftone patch in the project's ink, fading from the top corner. */
+.txt::before {
+  content: "";
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: -1;
+  width: 52%;
+  height: 58%;
+  background: radial-gradient(circle, var(--c) 1.5px, transparent 2.1px) 0 0 / 8px 8px;
+  -webkit-mask: radial-gradient(farthest-side at 100% 0%, var(--ink), transparent);
+  mask: radial-gradient(farthest-side at 100% 0%, var(--ink), transparent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 11px;
+  border-bottom: var(--stroke) solid var(--ink);
+}
+.of {
+  color: var(--ink-soft);
+}
+.swatches {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.swatches i {
+  width: 9px;
+  height: 9px;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 35%, transparent);
+}
+.swatches i[data-on] {
+  width: 12px;
+  height: 18px;
+  box-shadow: 0 0 0 var(--stroke) var(--ink);
+}
+
+.yearRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  margin-top: 2px;
+}
+/* The year printed in the project's ink over an ink key plate, so yellow and
+   cyan still read on paper. */
+.year {
+  padding-bottom: calc(var(--year-fs) * 0.04);
+  color: var(--c);
+  font: 400 var(--year-fs) / 0.78 var(--f-display);
+  letter-spacing: 0.01em;
+  -webkit-text-stroke: calc(var(--year-fs) * 0.024) var(--ink);
+  paint-order: stroke fill;
+  text-shadow: calc(var(--year-fs) * 0.04) calc(var(--year-fs) * 0.04) 0 var(--ink);
+}
+.noteWrap {
+  --note-ink: color-mix(in oklab, var(--magenta) 72%, var(--ink));
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 2px;
+  color: var(--note-ink);
+  transform-origin: 0 60%;
+}
+.arrow {
+  flex: none;
+  width: clamp(40px, 4vw, 56px);
+  aspect-ratio: 64 / 34;
+  margin-top: 0.7em;
+  filter: drop-shadow(0 0 1.5px var(--paper-hi)) drop-shadow(0 0 1.5px var(--paper-hi));
+}
+/* The sheet is paper inside a dark panel: keep the paper ink, not the panel's tint. */
+.spread .noteWrap .note {
+  --rot: -7deg;
+  --note: var(--note-ink);
+  color: var(--note);
+  font-size: clamp(26px, calc(var(--year-fs) * 0.24), 38px);
+  text-shadow:
+    0 0 2px var(--paper-hi),
+    0 0 2px var(--paper-hi),
+    0 0 5px var(--paper-hi);
+}
+
+.name {
+  display: grid;
+  gap: 8px;
+  font-weight: 400;
+}
+.title {
+  font: 400 var(--title-fs) / 0.84 var(--f-display);
+  letter-spacing: 0.004em;
+}
+.spread .title :global(.stop) {
+  --stop: var(--c);
+  box-shadow: 0 0 0 var(--stroke) var(--ink);
+}
+.client {
+  color: var(--ink-soft);
+  font: 400 var(--t-h3) / 1.12 var(--f-text);
+}
+.blurb {
+  max-width: 50ch;
+  margin-top: clamp(2px, 0.6vw, 8px);
+  font-size: var(--blurb-fs);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.result {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 10px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+}
+.result::before {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 9px;
+  background: var(--blue);
+}
+/* The foot: the sheet's spec in dotted leaders, closed by a registration mark. */
+.foot {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-top: auto;
+}
+.spec {
+  --spec-fs: 12px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+  margin: 0;
+}
+.spec > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-block: 0.62em 0.5em;
+  font: 500 var(--spec-fs) / 1.25 var(--f-mono);
+}
+.spec > div:first-child {
+  margin-top: 4px;
+  padding-top: 1em;
+  border-top: var(--stroke) dashed color-mix(in oklab, var(--ink) 40%, transparent);
+}
+.spec dt {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 10px;
+  min-width: max-content;
+  color: var(--ink-soft);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.spec dt::after {
+  content: "";
+  flex: 1;
+  min-width: 18px;
+  border-bottom: 2px dotted color-mix(in oklab, var(--ink) 34%, transparent);
+}
+.spec dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  font: 400 calc(var(--spec-fs) * 1.24) / 1.2 var(--f-text);
+  text-align: right;
+  text-wrap: balance;
+}
+/* A registration mark closes the sheet. */
+.foot::after {
+  content: "";
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-bottom: 0.45em;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 50%;
+  background:
+    linear-gradient(var(--ink) 0 0) 50% 50% / var(--stroke) 100% no-repeat,
+    linear-gradient(var(--ink) 0 0) 50% 50% / 100% var(--stroke) no-repeat;
+}
+
+/* ------------------------------------------------- Stage bar (pinned only) */
+.bar {
+  position: relative;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 18px var(--gut) 20px;
+  color: var(--panel-muted);
+}
+.progress {
+  position: absolute;
+  top: 0;
+  right: var(--gut);
+  left: var(--gut);
+  height: 2px;
+  background: var(--panel-line);
+}
+.progress i {
+  position: absolute;
+  inset: 0;
+  background: var(--magenta);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.count {
+  font-size: 13px;
+}
+.count b {
+  color: var(--on-panel);
+  font-size: 16px;
+  font-weight: 700;
+}
+.index ol {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 6px;
+}
+.index button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+  color: var(--panel-muted);
+  cursor: pointer;
+  transition:
+    color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    background-color 0.3s var(--ease);
+}
+.index button:hover {
+  color: var(--on-panel);
+}
+.index button[aria-current="true"] {
+  border-color: var(--panel-line);
+  background: color-mix(in oklab, var(--on-panel) 7%, transparent);
+  color: var(--on-panel);
+}
+.index button[aria-current="true"]::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--magenta);
+}
+.hint {
+  display: inline-flex;
+  gap: 8px;
+}
+.hint span {
+  color: var(--magenta);
+}
+/* Agentic's crosshair marks at the corners and middles of the stage. */
+.marks {
+  --m: color-mix(in oklab, var(--on-panel) 34%, transparent);
+  position: absolute;
+  inset: calc(var(--head-h) * 0.6 + 4px) var(--gut) 78px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--m) 0 0) left 5px top 0 / 1px 11px no-repeat,
+    linear-gradient(var(--m) 0 0) left 0 top 5px / 11px 1px no-repeat,
+    linear-gradient(var(--m) 0 0) right 5px top 0 / 1px 11px no-repeat,
+    linear-gradient(var(--m) 0 0) right 0 top 5px / 11px 1px no-repeat,
+    linear-gradient(var(--m) 0 0) 50% 0 / 1px 11px no-repeat,
+    linear-gradient(var(--m) 0 0) 50% 5px / 11px 1px no-repeat,
+    linear-gradient(var(--m) 0 0) left 5px bottom 0 / 1px 11px no-repeat,
+    linear-gradient(var(--m) 0 0) left 0 bottom 5px / 11px 1px no-repeat,
+    linear-gradient(var(--m) 0 0) right 5px bottom 0 / 1px 11px no-repeat,
+    linear-gradient(var(--m) 0 0) right 0 bottom 5px / 11px 1px no-repeat,
+    linear-gradient(var(--m) 0 0) 50% 100% / 1px 11px no-repeat,
+    linear-gradient(var(--m) 0 0) 50% calc(100% - 5px) / 11px 1px no-repeat;
+}
+
+/* ------------------------------------- Pinned horizontal scene (≥900px) */
+@media (min-width: 900px) {
+  :global(.motion) .work {
+    padding-bottom: var(--frame);
+  }
+  :global(.motion) .head {
+    margin-bottom: clamp(16px, 2.5vw, 40px);
+  }
+  :global(.motion) .pin {
+    --card-w: min(86vw, 1040px);
+    --card-gap: clamp(48px, 5.5vw, 96px);
+    /* The travel, estimated from the same geometry the track uses (n spreads,
+       n - 1 gaps, the track's padding, minus the stage: the panel inside its
+       frame), so the page has its full height at first paint and deep links
+       and scroll restoration land. The script overwrites it with the exact px. */
+    --dist: calc(
+      var(--n, 6) * var(--card-w) + (var(--n, 6) - 1) * var(--card-gap) + 2 * var(--gut) - (100vw - 2 * var(--frame))
+    );
+    height: calc(100svh + var(--dist));
+  }
+  :global(.motion) .stage {
+    position: sticky;
+    top: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
+    height: 100svh;
+    padding-top: calc(var(--head-h) * 0.6);
+    overflow: hidden;
+  }
+  :global(.motion) .track {
+    flex-direction: row;
+    align-items: center;
+    align-self: center;
+    gap: var(--card-gap);
+    width: max-content;
+    margin: 0;
+    padding: 0 var(--gut);
+    will-change: transform;
+  }
+  :global(.motion) .spread {
+    --w: var(--card-w);
+    --h: min(66svh, 600px, calc(var(--w) * 0.58));
+    --pad: clamp(14px, calc(var(--h) * 0.035), 22px);
+    --year-fs: calc(var(--h) * 0.26);
+    --title-fs: calc(var(--h) * 0.165);
+    --blurb-fs: clamp(15px, calc(var(--h) * 0.035), 20.5px);
+    flex: none;
+    width: var(--w);
+    height: var(--h);
+    grid-template-columns: calc((var(--h) - 2 * var(--pad)) * 0.8) minmax(0, 1fr);
+    rotate: var(--tilt);
+  }
+  :global(.motion) .client {
+    font-size: clamp(18px, calc(var(--h) * 0.054), 32px);
+  }
+  :global(.motion) .txt {
+    gap: clamp(8px, calc(var(--h) * 0.025), 16px);
+  }
+  /* The spec takes whatever height the sheet has left; rows that don't fit
+     wrap into a second column, which is clipped, so only whole rows show. */
+  :global(.motion) .foot {
+    flex: 1 1 0;
+    min-height: 18px;
+    margin-top: 0;
+  }
+  :global(.motion) .spec {
+    --spec-fs: clamp(10.5px, calc(var(--h) * 0.021), 12.5px);
+    flex-wrap: wrap;
+    align-self: stretch;
+    align-content: flex-start;
+    overflow: hidden;
+  }
+  :global(.motion) .spec > div {
+    width: 100%;
+  }
+  :global(.motion) .ph {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  :global(.motion) .phImg {
+    inset: 0 -9%;
+  }
+  :global(.motion) .bar {
+    display: grid;
+  }
+  :global(.motion) .marks {
+    display: block;
+  }
+}
+/* Short pinned stages: the client line goes so the sheet's text stays inside it. */
+@media (min-width: 900px) and (max-height: 560px) {
+  :global(.motion) .client {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- Phones */
+@media (max-width: 699.98px) {
+  .spread {
+    --off: 8px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .ph {
+    aspect-ratio: 1;
+  }
+  .crop {
+    display: none;
+  }
+  .txt {
+    padding: 0 4px 4px;
+  }
+}
+@media (max-width: 420px) {
+  .foot::after {
+    display: none;
+  }
+}

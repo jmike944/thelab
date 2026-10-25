@@ -1,0 +1,266 @@
+/* ---------------------------------------------------------------
+   Capability ticker: a thin mono strip under the hero (Prism).
+   --------------------------------------------------------------- */
+.cap {
+  position: relative;
+  border-block: 1px solid var(--hair);
+  background: var(--paper);
+}
+.capRun {
+  padding-block: 15px;
+}
+.capItem {
+  display: flex;
+  flex: none;
+  align-items: center;
+  font: 500 13px/1 var(--f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.capSep {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-inline: 22px;
+}
+.capRule {
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--hair);
+}
+/* A small printed shape; its ink keyline sits a hair out of register. */
+.shape {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  background: var(--c);
+}
+.shape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--ink);
+  border-radius: inherit;
+  transform: translate(2px, -2px);
+}
+.sq {
+  border-radius: 0;
+}
+.ci {
+  border-radius: 50%;
+}
+.di {
+  transform: rotate(45deg) scale(0.86);
+}
+.di::after {
+  transform: translate(2px, 0);
+}
+
+@media (max-width: 640px) {
+  .capRun {
+    padding-block: 13px;
+  }
+  .capItem {
+    font-size: 12px;
+  }
+  .capSep {
+    gap: 10px;
+    margin-inline: 16px;
+  }
+  .capRule {
+    width: 24px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Client ticker: the real names at display size (Prism's big ticker).
+   --------------------------------------------------------------- */
+.clients {
+  position: relative;
+  padding-block: clamp(64px, 7vw, 104px) clamp(40px, 5vw, 72px);
+}
+.band {
+  position: relative;
+  border-block: 1px solid var(--hair);
+}
+.clRun {
+  padding-block: clamp(18px, 2vw, 30px);
+}
+.clItem {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.2em;
+  font: 400 clamp(56px, 8.4vw, 120px) / 0.82 var(--f-display);
+  letter-spacing: 0.004em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* A small goo composition, mounted like a colour chip. */
+.swatch {
+  flex: none;
+  width: 0.75em;
+  height: 0.53em;
+  border-radius: var(--r-sm);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    0.05em 0.05em 0 var(--stroke) var(--ink);
+}
+/* A footnote beside each name: its number and what we made together. */
+.clItem .sup {
+  display: grid;
+  gap: 6px;
+  align-self: flex-start;
+  margin: 0.06em 0 0 0.12em;
+  font-size: clamp(10px, 0.85vw, 12px);
+  line-height: 1.1;
+}
+.supN {
+  color: var(--blue);
+}
+.supV {
+  color: var(--ink-soft);
+}
+.word {
+  /* LAB caps sit high in their box; nudge them onto the swatch's centre. */
+  padding-top: 0.07em;
+}
+.outline {
+  color: transparent;
+  -webkit-text-stroke: var(--stroke) var(--ink);
+}
+.clSep {
+  display: block;
+  flex: none;
+  width: 0.8em;
+  height: var(--stroke);
+  margin-inline: 0.28em;
+  background: var(--line);
+}
+
+/* The label tab pinned over the left edge; the names slide under it. */
+.label {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding-inline: var(--gut) 26px;
+  background: var(--paper);
+  box-shadow: 1px 0 0 var(--hair);
+}
+.label::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100% + 1px);
+  width: clamp(28px, 5vw, 72px);
+  background: linear-gradient(90deg, var(--paper), color-mix(in oklab, var(--paper) 0%, transparent));
+  pointer-events: none;
+}
+.labelK {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.labelK::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  background: var(--blue);
+}
+.labelN {
+  padding-left: 18px;
+  color: var(--ink-soft);
+}
+/* Fade the names out at the right edge too. */
+.band::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  width: clamp(28px, 6vw, 96px);
+  background: linear-gradient(270deg, var(--paper), color-mix(in oklab, var(--paper) 0%, transparent));
+  pointer-events: none;
+}
+
+.clNote {
+  --rot: -5deg;
+  position: absolute;
+  right: calc(var(--gut) + 2%);
+  bottom: calc(100% + 6px);
+  z-index: 2;
+}
+
+/* Without motion (reduced motion, no JS, before hydration) the band is a
+   static list (the shared marquee rules wrap the run). Here it becomes a
+   client wall: the names drop a size so they pair up on a line, and the
+   end rules and edge fades go, since nothing slides under them. */
+:global(html:not(.motion)) .clRun {
+  padding-block: clamp(20px, 2.4vw, 34px);
+}
+:global(html:not(.motion)) .clRun :global(.mq-run) {
+  justify-content: flex-start;
+  gap: clamp(12px, 1.6vw, 24px) clamp(26px, 3vw, 48px);
+}
+:global(html:not(.motion)) .clItem {
+  font-size: clamp(40px, 4.8vw, 72px);
+}
+:global(html:not(.motion)) .clSep,
+:global(html:not(.motion)) .band::after,
+:global(html:not(.motion)) .label::after {
+  display: none;
+}
+/* The tab takes its own column beside the names instead of covering the
+   first one. */
+@media (min-width: 641px) {
+  :global(html:not(.motion)) .band {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  :global(html:not(.motion)) .label {
+    position: relative;
+  }
+  :global(html:not(.motion)) .clRun :global(.mq-run) {
+    padding-left: clamp(24px, 3vw, 44px);
+  }
+}
+
+/* Phones: the label rides above the band instead of over it. */
+@media (max-width: 640px) {
+  .clients {
+    padding-top: 104px;
+  }
+  .label {
+    top: auto;
+    bottom: calc(100% + 14px);
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 0 0 0 var(--gut);
+    background: none;
+    box-shadow: none;
+  }
+  .label::after {
+    content: none;
+  }
+  .labelN {
+    padding-left: 0;
+  }
+  .clNote {
+    right: var(--gut);
+    bottom: calc(100% + 42px);
+    font-size: 22px;
+  }
+}

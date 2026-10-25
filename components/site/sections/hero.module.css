@@ -1,0 +1,984 @@
+/* ============================================================
+   Cover (after Corvel's): masthead, arch, print, floating plates.
+   Sizes are derived from the masthead's font size, which fits its
+   width from the character count (LAB runs ~0.4em per character),
+   so the arch always starts just under the tagline.
+   ============================================================ */
+.cover {
+  position: relative;
+  background: var(--paper);
+  /* Width of the construction drawings beside the masthead. */
+  --dw: min(19vw, 290px);
+  /* Masthead width and size: min of a height cap and width / (len * k). The
+     width never exceeds the gap between the two drawings (+28px air each side),
+     so taller screens can't grow the letters over them. */
+  --mast-w: min(60vw, 980px, 100vw - 2 * (var(--gut) * 0.6 + var(--dw) + 28px));
+  --mast-fs: min(300px, 29svh, var(--mast-w) / 2.8);
+  --arch-gap: 66px;
+  --arch-top: calc(var(--head-h) + var(--mast-fs) * 0.78 + var(--arch-gap));
+  /* Side columns (TOC, figure) on wide screens; the arch keeps clear of them. */
+  --side: min(17vw, 260px);
+  --art-w: max(
+    140px,
+    min(680px, (50vw - var(--gut) + 12px - var(--side) - 22px) / 0.78, (100svh - var(--arch-top) - 64px) * 1.25)
+  );
+}
+
+/* Pinned for one and a bit screens under motion; a normal cover without.
+   The stage is exactly one screen tall at every size, so nothing sits below
+   the fold while it is pinned (short screens get compact tiers below). */
+:global(.motion) .pin {
+  height: 220svh;
+}
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------
+   Brand construction drawings either side of the masthead
+   --------------------------------------------------------------- */
+.diagram {
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--head-h) - 4px);
+  width: var(--dw);
+  color: var(--ink);
+  overflow: visible;
+  pointer-events: none;
+}
+.diagramL {
+  left: calc(var(--gut) * 0.6);
+}
+.diagramR {
+  right: calc(var(--gut) * 0.6);
+}
+.dLines * {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.1;
+}
+.dLines .dDash {
+  stroke-dasharray: 2 5;
+  stroke-opacity: 0.7;
+}
+.dDots circle {
+  fill: var(--blue);
+}
+
+/* ---------------------------------------------------------------
+   Masthead
+   --------------------------------------------------------------- */
+.head {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--head-h) - 6px);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.headIn {
+  position: relative;
+  /* As wide as the masthead: the tagline and mail wrap inside it. */
+  width: min-content;
+  pointer-events: auto;
+}
+.title {
+  display: block;
+  font-weight: inherit;
+}
+.mast {
+  position: relative;
+  display: block;
+  font: 400 var(--mast-fs) / 0.78 var(--f-display);
+  letter-spacing: 0.012em;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.mastText {
+  display: block;
+}
+.ch {
+  display: inline-block;
+  will-change: transform;
+}
+.reg {
+  position: absolute;
+  top: 0.1em;
+  right: -0.17em;
+  font: 400 0.13em/1 var(--f-text);
+}
+.tag {
+  display: block;
+  /* Leaves room for the mail (24 mono characters, same size) at the
+     masthead's bottom right, however narrow the masthead gets. */
+  max-width: min(54%, 100% - 14.4em - 28px);
+  margin-top: 0.9em;
+  font: 500 clamp(12px, 1.05vw, 15px) / 1.3 var(--f-mono);
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--blue);
+}
+.mail {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font: 500 clamp(12px, 1.05vw, 15px) / 1.3 var(--f-mono);
+  color: var(--blue);
+  white-space: nowrap;
+}
+.made {
+  position: absolute;
+  right: calc(100% + 2px);
+  top: calc(var(--mast-fs) * 0.56);
+  --rot: -7deg;
+  font-size: clamp(24px, 2.2vw, 34px);
+  /* Rays cross the note: a paper halo keeps the hand lettering clean. */
+  text-shadow:
+    0 0 2px var(--paper),
+    0 0 6px var(--paper);
+}
+
+/* ---------------------------------------------------------------
+   The arch
+   --------------------------------------------------------------- */
+.art {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 64px;
+  width: var(--art-w);
+  height: min(100% - var(--arch-top) - 64px, var(--art-w) * 1.22);
+  translate: -50% 0;
+}
+.lines {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 60%;
+  width: 500%;
+  height: auto;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  overflow: visible;
+  pointer-events: none;
+}
+.lines line {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-opacity: 0.7;
+}
+.lines .dash {
+  stroke-dasharray: 3 7;
+}
+.rayDot {
+  fill: var(--blue);
+}
+.archLine {
+  position: absolute;
+  inset: -14px -14px -10px;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 999px 999px 0 0;
+  background: var(--paper);
+}
+.arch {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 999px 999px 0 0;
+  background: var(--ink);
+}
+.raysTurn {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  width: 320%;
+  aspect-ratio: 1;
+  margin: -160% 0 0 -160%;
+}
+.rays {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--rays);
+}
+.archDots {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, var(--ink) 0 38%, transparent 42%) 0 0 / 9px 9px;
+  -webkit-mask: linear-gradient(to top, black 8%, transparent 58%);
+  mask: linear-gradient(to top, black 8%, transparent 58%);
+}
+.archGrain {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  -webkit-mask: var(--grain);
+  mask: var(--grain);
+  opacity: 0.35;
+}
+
+/* The print: tilted, straightens as you scroll. */
+.print {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 19%;
+  width: 54%;
+  margin-left: -27%;
+  transform: rotate(-5deg);
+  /* Captions size to the plate they sit on, not to the viewport. */
+  container: print / inline-size;
+}
+.printIn {
+  padding: 5% 5% 0;
+}
+.printIn > figcaption {
+  margin: 6% 0;
+  font-size: clamp(10px, 6.6cqi, 16px);
+}
+/* Narrow prints drop "Toma" and keep the number: "N.º 01 — WU". */
+@container print (max-width: 140px) {
+  .printIn .capLong {
+    display: none;
+  }
+}
+@container print (max-width: 110px) {
+  .printIn > figcaption {
+    padding-inline: 0.2em;
+    letter-spacing: 0.04em;
+  }
+}
+.printHt {
+  aspect-ratio: 1;
+  --dot: 5px;
+  --ht-c: 0.75;
+  --ht-b: 1.15;
+}
+
+/* Floating pieces (positions are fractions of the arch box). */
+.fly {
+  position: absolute;
+  z-index: 3;
+}
+.ph {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+}
+.fA {
+  left: -27%;
+  top: 1%;
+  width: 30%;
+  rotate: -9deg;
+  container: mer / inline-size;
+}
+.fB {
+  right: -22%;
+  top: 5%;
+  width: 25%;
+}
+.fC {
+  left: -19%;
+  top: 60%;
+  width: 25%;
+  rotate: 9deg;
+  container: zoco / inline-size;
+}
+.fD {
+  right: -26%;
+  top: 56%;
+  width: 34%;
+  rotate: -6deg;
+}
+/* The tags ride above the print so it never hides their ends. */
+.tagA,
+.tagB {
+  z-index: 5;
+}
+.tagA {
+  left: -6%;
+  top: 52%;
+}
+.tagB {
+  right: -9%;
+  top: 34%;
+}
+.bub {
+  z-index: 5;
+  left: 25%;
+  top: -30px;
+  /* Sized by its two lines, not by the arch it sits on. */
+  width: max-content;
+}
+.bub :global(.bubble) svg {
+  flex: none;
+  width: 1.35em;
+  height: 1.35em;
+  color: var(--blue);
+}
+/* Two even lines: the figure, then the rest. */
+.bubT > span {
+  display: block;
+}
+
+/* Square plate with the project's colour on its shadow and caption. */
+.sq {
+  padding: 7% 7% 0;
+}
+.sq .ph {
+  aspect-ratio: 1;
+}
+.sq > figcaption {
+  margin: 7% 0;
+  font-size: clamp(8px, 9cqi, 12px);
+}
+@container mer (max-width: 70px) {
+  .sq > figcaption {
+    padding-inline: 0.15em;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Round frame. */
+.round {
+  padding: 6%;
+  border-radius: 50%;
+  background: var(--paper-hi);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    6px 6px 0 var(--blue);
+}
+.round .ph {
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+/* Rounded-corner card with a mono label in its foot. */
+.card {
+  padding: 6% 6% 0;
+  border-radius: 20px;
+  background: var(--paper-hi);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    6px 6px 0 var(--blue);
+}
+.card .ph {
+  aspect-ratio: 0.8;
+  border-radius: 11px;
+}
+.cardCap {
+  padding: 0.9em 0 1.1em;
+  font: 500 clamp(8px, 7.5cqi, 11px) / 1 var(--f-mono);
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Narrow cards keep the brand's first word: "Zoco". */
+@container zoco (max-width: 72px) {
+  .cardCap .capLong {
+    display: none;
+  }
+}
+
+/* Landscape card with a viewfinder. */
+.land {
+  padding: 5%;
+  background: var(--paper-hi);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    6px 6px 0 var(--blue);
+}
+.land .ph {
+  aspect-ratio: 1.38;
+}
+.vf::after {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  --c: var(--paper-hi);
+  background:
+    linear-gradient(var(--c), var(--c)) 0 0 / 12px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) 0 0 / 1.5px 12px no-repeat,
+    linear-gradient(var(--c), var(--c)) 100% 0 / 12px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) 100% 0 / 1.5px 12px no-repeat,
+    linear-gradient(var(--c), var(--c)) 0 100% / 12px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) 0 100% / 1.5px 12px no-repeat,
+    linear-gradient(var(--c), var(--c)) 100% 100% / 12px 1.5px no-repeat,
+    linear-gradient(var(--c), var(--c)) 100% 100% / 1.5px 12px no-repeat;
+}
+.rec {
+  position: absolute;
+  z-index: 1;
+  top: 12%;
+  right: 12%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.35em 0.5em;
+  background: var(--ink);
+  color: var(--paper-hi);
+  font: 700 9px/1 var(--f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.rec::before {
+  content: "";
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+/* ---------------------------------------------------------------
+   Bottom row
+   --------------------------------------------------------------- */
+.chips {
+  position: absolute;
+  z-index: 5;
+  left: var(--gut);
+  right: var(--gut);
+  bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+.chips > * {
+  pointer-events: auto;
+}
+
+/* ---------------------------------------------------------------
+   TOC and the big figure. Wide screens: inside the pinned stage,
+   anchored to the masthead (they pin and leave with the cover).
+   Narrow screens: the second copy in .extra, below the stage.
+   --------------------------------------------------------------- */
+.inStage {
+  display: none;
+}
+.toc {
+  position: absolute;
+  z-index: 6;
+  /* Level with the tagline, but never up into the drawing above it. */
+  top: max(var(--arch-top) - 40px, var(--head-h) + var(--dw) * 0.576 + 10px);
+  left: var(--gut);
+  /* The arch's left plates keep clear of this edge (see --art-w). */
+  width: calc(var(--side) - 24px);
+}
+.toc li {
+  padding: 10px 0 8px;
+  border-bottom: var(--stroke) solid color-mix(in oklab, var(--blue) 70%, var(--paper));
+}
+.toc li + li {
+  margin-top: 12px;
+}
+.toc a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 10px;
+  text-decoration: none;
+}
+.tocT {
+  font: 400 clamp(16px, 1.1vw, 20px) / 1.18 var(--f-text);
+  text-wrap: balance;
+}
+.toc svg {
+  width: 10px;
+  height: 16px;
+  align-self: center;
+  color: var(--blue);
+  transition: transform 0.3s var(--ease);
+}
+.toc small {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.toc a:hover svg,
+.toc a:focus-visible svg {
+  transform: translateX(5px);
+}
+.toc a:hover .tocT {
+  color: var(--blue);
+}
+
+.no {
+  position: absolute;
+  z-index: 6;
+  top: calc(var(--arch-top) - 4px);
+  right: var(--gut);
+  color: var(--blue);
+}
+/* Rays run under the in-stage copies: a soft paper halo on the type keeps
+   them legible without cutting a box out of the cover. */
+.inStage {
+  text-shadow:
+    0 0 2px var(--paper),
+    0 0 6px var(--paper),
+    0 0 12px var(--paper);
+}
+.no b {
+  display: block;
+  font: 400 clamp(64px, 7.6vw, 124px) / 0.8 var(--f-display);
+  letter-spacing: 0.005em;
+}
+.no p > span {
+  display: block;
+  max-width: 13em;
+  margin-top: 0.7em;
+  font: 400 15px/1.3 var(--f-text);
+  color: var(--ink);
+}
+.count {
+  position: absolute;
+  right: 0.2em;
+  bottom: -1.05em;
+  --rot: -7deg;
+  font-size: clamp(24px, 2.1vw, 32px);
+}
+
+@media (min-width: 1181px) {
+  .inStage {
+    display: block;
+  }
+  .extra {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Motion: entrance hidden states, idle loops
+   --------------------------------------------------------------- */
+:global(.motion) .mastText {
+  visibility: hidden;
+}
+:global(.motion) .cover [data-up],
+:global(.motion) .cover [data-pop],
+:global(.motion) .cover [data-print-in],
+:global(.motion) .chips > *,
+:global(.motion) .cover [data-fade] {
+  opacity: 0;
+}
+:global(.motion) .cover [data-wipe] {
+  clip-path: inset(0 100% -20% 0);
+}
+:global(.motion) .cover [data-note] {
+  clip-path: inset(-30% 100% -30% -10%);
+}
+:global(.motion) .cover [data-arch-in] {
+  clip-path: inset(100% 0 0 0);
+}
+:global(.motion) .cover [data-draw],
+:global(.motion) .cover [data-ray] {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+:global(.motion) .cover [data-dot] {
+  opacity: 0;
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes bob {
+  from {
+    translate: 0 -6px;
+  }
+  to {
+    translate: 0 6px;
+  }
+}
+:global(.motion) .rays {
+  animation: spin 150s linear infinite;
+}
+:global(.motion) .fly {
+  animation: bob 2.8s ease-in-out infinite alternate;
+}
+:global(.motion) .fB {
+  animation-duration: 3.3s;
+  animation-delay: -1s;
+}
+:global(.motion) .fC {
+  animation-duration: 3.1s;
+  animation-delay: -2s;
+}
+:global(.motion) .fD {
+  animation-duration: 2.5s;
+  animation-delay: -0.6s;
+}
+:global(.motion) .tagA,
+:global(.motion) .tagB {
+  animation-duration: 3.6s;
+}
+:global(.motion) .bub {
+  animation-duration: 2.2s;
+  animation-delay: -1.4s;
+}
+.off .rays,
+.off .fly {
+  animation-play-state: paused;
+}
+
+
+/* ---------------------------------------------------------------
+   Under 1180px: the TOC and figure move below the stage
+   --------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  .cover {
+    --dw: min(15vw, 190px);
+    --mast-w: min(58vw, 760px, 100vw - 2 * (var(--gut) * 0.6 + var(--dw) + 28px));
+    --art-w: max(
+      140px,
+      min(600px, (100vw - 2 * var(--gut)) / 1.62, (100svh - var(--arch-top) - 64px) * 1.25)
+    );
+  }
+  .toc,
+  .no {
+    position: static;
+    width: auto;
+  }
+  .extra {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 28px 48px;
+    padding: 48px 0 16px;
+  }
+  .no {
+    position: relative;
+    top: auto;
+    right: auto;
+    align-self: start;
+    justify-self: start;
+    padding-top: 22px;
+  }
+  .count {
+    right: -2.8em;
+    bottom: auto;
+    top: 0.3em;
+  }
+}
+
+/* Under 900px one drawing stays, in the gap above the arch. */
+@media (max-width: 900px) {
+  .cover {
+    --mast-w: min(58vw, 760px);
+  }
+  .diagramL {
+    display: none;
+  }
+  .diagramR {
+    top: calc(var(--arch-top) - 12px);
+    left: var(--gut);
+    right: auto;
+    width: min(36vw, 230px);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Short desktop windows (≈1280×540, 1366×620): a slightly smaller
+   masthead and a tighter index so the arch keeps its room.
+   --------------------------------------------------------------- */
+@media (min-width: 761px) and (max-height: 640px) {
+  .cover {
+    --mast-fs: min(300px, 26svh, var(--mast-w) / 2.8);
+    --arch-gap: 64px;
+  }
+  /* Smaller mono lines keep the tagline to two lines beside the mail under
+     the narrower masthead. */
+  .tag,
+  .mail {
+    font-size: 12px;
+  }
+  .tag {
+    letter-spacing: 0.02em;
+  }
+  /* The bubble rests on the arch's cap instead of reaching up into the
+     tagline; the print steps down to make room. */
+  .bub {
+    top: -4px;
+  }
+  .print {
+    top: 24%;
+  }
+  .toc li {
+    padding: 7px 0 6px;
+  }
+  .toc li + li {
+    margin-top: 8px;
+  }
+  .toc small {
+    margin-top: 5px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Phones: the art column narrows and centres, chips stack.
+   Top to bottom: masthead, tagline, the mail row (with the hand
+   note on its left), the bubble on the arch's right shoulder, the
+   arch, then the chips. --chips-h is the room kept for the chips.
+   --------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .cover {
+    --mast-w: calc(100vw - 2 * var(--gut));
+    --mast-fs: min(260px, 29svh, var(--mast-w) / 2.8);
+    --arch-top: calc(var(--head-h) + var(--mast-fs) * 0.78 + 102px);
+    --chips-h: 112px;
+    --art-w: max(140px, min(74vw, (100svh - var(--arch-top) - var(--chips-h)) * 0.8));
+  }
+  :global(.motion) .pin {
+    height: 170svh;
+  }
+  .head {
+    top: calc(var(--head-h) - 2px);
+  }
+  .tag,
+  .mail {
+    font-size: 11px;
+  }
+  .tag {
+    max-width: 100%;
+    margin-top: 0.8em;
+    letter-spacing: 0.02em;
+  }
+  .mail {
+    position: static;
+    display: block;
+    width: fit-content;
+    margin: 6px 0 0 auto;
+  }
+  .made {
+    right: auto;
+    left: 0;
+    top: auto;
+    bottom: -3px;
+    --rot: -5deg;
+    font-size: 24px;
+  }
+  /* The drawing sits on the left between the masthead and the arch, sized
+     to the room the arch leaves there (--room); with less than 60px of room
+     it collapses to nothing rather than landing on the Mercato plate. */
+  .diagramR {
+    --art-h: min(100svh - var(--arch-top) - var(--chips-h), var(--art-w) * 1.32);
+    --room: calc(100svh - var(--chips-h) - var(--art-h) - var(--arch-top) + 30px);
+    top: calc(var(--arch-top) - 30px);
+    left: var(--gut);
+    right: auto;
+    width: min(36vw, 170px, (var(--room) - 10px) * 1.7, max(0px, (var(--room) - 60px) * 100));
+  }
+  .art {
+    bottom: var(--chips-h);
+    height: min(100% - var(--arch-top) - var(--chips-h), var(--art-w) * 1.32);
+  }
+  .fA {
+    left: -18%;
+    top: 4%;
+    width: 33%;
+  }
+  .fB {
+    right: -16%;
+    top: 8%;
+    width: 28%;
+  }
+  .fC {
+    left: -15%;
+    top: 62%;
+    width: 29%;
+  }
+  .fD {
+    right: -17%;
+    top: 60%;
+    width: 38%;
+  }
+  .tagA {
+    left: -10%;
+    top: 50%;
+  }
+  .tagB {
+    right: -12%;
+    top: 30%;
+  }
+  /* Above the arch's right shoulder, flush with the right gutter: clear of
+     the print, the Mercato plate and the round plate below it. */
+  .bub {
+    left: auto;
+    top: auto;
+    right: calc(var(--art-w) / 2 - 50vw + var(--gut));
+    bottom: calc(100% - 6px);
+    max-width: calc(100vw - 2 * var(--gut));
+  }
+  .print {
+    top: 20%;
+    width: 60%;
+    margin-left: -30%;
+  }
+  .chips {
+    bottom: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .chips > :global(.chip) {
+    font-size: 11px;
+  }
+  .chips > :global(.btn) {
+    align-self: flex-end;
+    font-size: 14px;
+  }
+  /* The promise wraps onto two short lines instead of pushing the
+     button past the screen edge. */
+  .chips > :global(.btn) :global(.btn-v) {
+    max-width: calc(14ch + 2.4em);
+    line-height: 1.2;
+    white-space: normal;
+    text-wrap: balance;
+  }
+  .extra {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding-top: 16px;
+  }
+  /* The chips have faded by the time the stage lets go: tuck the list up. */
+  :global(.motion) .extra {
+    margin-top: -64px;
+  }
+  .count {
+    right: auto;
+    left: 6.2em;
+    top: 0.2em;
+  }
+}
+
+/* Shorter phones (Safari with its bars, SE): never room for the drawing. */
+@media (max-width: 760px) and (max-height: 700px) {
+  .diagramR {
+    display: none;
+  }
+}
+
+/* Very short phones (≈375×553, 320×460): the plate chip goes (the print's own
+   caption names the plate), so the arch keeps a usable size and the CTA stays
+   on screen. */
+@media (max-width: 760px) and (max-height: 640px) {
+  .cover {
+    --chips-h: 86px;
+  }
+  .plateChip {
+    display: none;
+  }
+}
+
+/* Small phones (320-360px): tighter bubble, tags and button. */
+@media (max-width: 360px) {
+  .bub :global(.bubble) {
+    font-size: 12px;
+  }
+  .cover :global(.tilt) {
+    font-size: 10px;
+  }
+  .made {
+    font-size: 22px;
+  }
+  .chips > :global(.btn) {
+    font-size: 12px;
+  }
+  .chips > :global(.btn) > span {
+    padding: 0.85em 0.75em;
+  }
+  .chips > :global(.btn) :global(.btn-v) {
+    font-size: 10px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Landscape phones (≈568×320 to 932×430): two columns. Masthead,
+   tagline, mail, note and chips on the left; the arch on the right,
+   as tall as the screen allows.
+   --------------------------------------------------------------- */
+@media (max-width: 1180px) and (max-height: 500px) and (orientation: landscape) {
+  .cover {
+    --col: calc(50vw - var(--gut));
+    --mast-w: calc(var(--col) - 12px);
+    --mast-fs: min(26svh, var(--mast-w) / 2.8);
+    --arch-top: calc(var(--head-h) + 28px);
+    --art-w: max(140px, min((100svh - var(--arch-top) - 14px) / 1.25, var(--col) / 1.6));
+  }
+  .head {
+    top: calc(var(--head-h) - 8px);
+    left: var(--gut);
+    right: auto;
+    justify-content: flex-start;
+  }
+  .tag,
+  .mail {
+    font-size: 11px;
+  }
+  .tag {
+    max-width: 100%;
+    margin-top: 0.8em;
+    letter-spacing: 0.02em;
+  }
+  .mail {
+    position: static;
+    display: block;
+    width: fit-content;
+    margin: 6px 0 0;
+  }
+  .made {
+    right: auto;
+    left: 0;
+    top: calc(100% + 2px);
+    bottom: auto;
+    --rot: -5deg;
+    font-size: 22px;
+  }
+  .diagram {
+    display: none;
+  }
+  .art {
+    left: calc(75% - var(--gut) / 2);
+    bottom: 14px;
+    height: min(100% - var(--arch-top) - 14px, var(--art-w) * 1.3);
+  }
+  .bub {
+    left: 4%;
+    right: auto;
+    top: -34px;
+    bottom: auto;
+  }
+  .bub :global(.bubble) {
+    font-size: 11.5px;
+  }
+  .chips {
+    left: var(--gut);
+    right: auto;
+    width: var(--col);
+    bottom: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .chips > :global(.btn) {
+    align-self: flex-start;
+    font-size: 14px;
+  }
+  .chips > :global(.btn) :global(.btn-v) {
+    max-width: calc(14ch + 2.4em);
+    line-height: 1.2;
+    white-space: normal;
+    text-wrap: balance;
+  }
+}
