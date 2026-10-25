@@ -9,7 +9,9 @@ import { useGSAP } from "@gsap/react";
 import { motionOn } from "@/components/site/motion-provider";
 import { Btn } from "@/components/site/ui/btn";
 import { Halftone } from "@/components/site/ui/halftone";
-import { CONTACT, PROJECTS, STATS, projectById } from "@/lib/content";
+import { Logo3D } from "@/components/site/ui/logo-3d";
+import { Signature } from "@/components/site/ui/signature";
+import { CONTACT, PROJECTS, STATS, projectById, type SigItem } from "@/lib/content";
 import s from "./hero.module.css";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
@@ -22,6 +24,11 @@ const collab = projectById("collab");
 /* Plate numbers follow the PROJECTS order (WU is plate 01), as in the work track. */
 const plateNo = (id: string) => String(PROJECTS.findIndex((p) => p.id === id) + 1).padStart(2, "0");
 const [zocoFirst, ...zocoRest] = zoco.client.split(" ");
+
+/* The brand's signature line under the masthead (brandbook p. 8, 20-23). It
+   carries the tagline and the city, so the line under it only says what the
+   studio does. */
+const SIG: SigItem[] = ["The LAB MX", { text: "Creative Worth", lang: "en" }, "Saltillo, Coah."];
 
 const TOC: [href: string, title: string, key: string][] = [
   ["#trabajo", "Seis proyectos recientes", "Trabajo"],
@@ -148,12 +155,14 @@ function Side({ stage = false }: { stage?: boolean }) {
 }
 
 /**
- * The cover (after Corvel's): a giant LAB masthead between two logo
- * construction drawings, a sunburst arch with rays across the page, the WU
- * video printed through a halftone on a tilted print, and four full-colour
- * plates floating around it. Under motion the section is ~2.2 screens tall:
- * the stage pins while the masthead letters and the plates fly apart, the
- * rays turn and the arch grows. Without motion it's a static, normal cover.
+ * The cover (after Corvel's): a giant LAB masthead with the brand's dotted
+ * signature line under it, between two logo construction drawings; a
+ * sunburst arch with rays across the page, the WU video printed through a
+ * halftone on a tilted print, four full-colour plates floating around it and
+ * the 3D-logo sticker. Under motion the section is ~2.2 screens tall: the
+ * stage pins while the masthead letters, the plates and the sticker fly
+ * apart, the rays turn and the arch grows. Without motion it's a static,
+ * normal cover.
  */
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -217,10 +226,16 @@ export function Hero() {
           return { x: r.left + r.width / 2, y: r.top + r.height * 0.6 };
         };
         q("[data-fly]").forEach((f, i) => {
-          // The bubble leaves sideways with a small tilt, so it can't end up
-          // jammed against the masthead letters above it.
+          // The bubble rises straight up behind the masthead, slower than its
+          // letters so it never reaches them, and fades out with them. Every
+          // sideways route crosses a plate (Mercato and the round plate climb
+          // away on either side of it).
           if (f.dataset.fly === "bub") {
-            tl.to(f, { x: () => innerWidth * 0.55, y: () => -innerHeight * 0.1, rotation: 9, ease: "power2.in", duration: 1 }, 0);
+            tl.to(f, { x: () => innerWidth * 0.05, y: () => -innerHeight * 0.3, rotation: -7, ease: "power2.in", duration: 1 }, 0).to(
+              f,
+              { opacity: 0, ease: "power1.in", duration: 0.35 },
+              0.65
+            );
             return;
           }
           const vec = () => {
@@ -231,7 +246,11 @@ export function Hero() {
             const d = Math.hypot(dx, dy) || 1;
             return { x: dx / d, y: dy / d };
           };
-          const k = 0.75 + (i % 3) * 0.2;
+          // The sticker is thrown harder than the plates, so on narrow
+          // screens it outruns the Mercato plate climbing up behind it, and
+          // it turns less (it's a flat card).
+          const stk = f.dataset.fly === "stk";
+          const k = (0.75 + (i % 3) * 0.2) * (stk ? 1.8 : 1);
           tl.to(
             f,
             {
@@ -239,7 +258,7 @@ export function Hero() {
               yPercent: () => vec().y * 220 * k,
               x: () => vec().x * innerWidth * 0.18 * k,
               y: () => vec().y * innerHeight * 0.2 * k,
-              rotation: (i % 2 ? 1 : -1) * (18 + i * 5),
+              rotation: stk ? -24 : (i % 2 ? 1 : -1) * (18 + i * 5),
               ease: "power2.in",
               duration: 1,
             },
@@ -257,7 +276,10 @@ export function Hero() {
           .to(q("[data-hide-out]"), { autoAlpha: 0, ease: "power1.in", duration: 0.4 }, 0)
           .to(q("[data-side]"), { autoAlpha: 0, y: -40, ease: "power1.in", duration: 0.4 }, 0)
           .to(q("[data-diagram]"), { opacity: 0, y: -60, ease: "power1.in", duration: 0.6 }, 0)
-          .to(q("[data-chips]"), { autoAlpha: 0, y: 30, duration: 0.4 }, 0);
+          .to(q("[data-chips]"), { autoAlpha: 0, y: 30, duration: 0.4 }, 0)
+          // The sticker fades on its way out, so on phones its tag never lies
+          // across masthead letters that are still visible.
+          .to(q('[data-fly="stk"]'), { opacity: 0, ease: "power1.in", duration: 0.3 }, 0.4);
         const n = chars.length;
         const mid = (n - 1) / 2;
         chars.forEach((c, i) => {
@@ -311,15 +333,16 @@ export function Hero() {
                   </span>
                 </span>
                 <span className={s.tag} data-wipe data-fade-out>
-                  <span lang="en">Creative worth</span> — estudio de contenido en Saltillo
+                  Estudio de contenido orgánico
                 </span>
               </h1>
+              {/* Sits right under the masthead, as in the brand lockups. */}
+              <div className={s.sig} data-wipe data-fade-out>
+                <Signature items={SIG} fill />
+              </div>
               <a className={`${s.mail} link`} href={`mailto:${CONTACT.email}`} data-wipe data-hide-out>
                 {CONTACT.email}
               </a>
-              <p className={`${s.made} note`} data-note data-fade-out>
-                hecho en Saltillo
-              </p>
             </div>
           </div>
 
@@ -423,6 +446,16 @@ export function Hero() {
                   +25M de reproducciones <span>en un solo video</span>
                 </span>
               </p>
+            </div>
+          </div>
+
+          {/* The sticker (brandbook p. 16, 20, 24): the 3D logo on a red block
+              with the handle on a black tag. It floats and flies like the plates. */}
+          <div className={`${s.fly} ${s.stk}`} data-fly="stk" aria-hidden="true">
+            <div className={s.stkIn} data-pop>
+              <div className={`${s.stkField} field field--red`} />
+              <Logo3D className={s.stkLogo} />
+              <span className={s.stkTag}>{CONTACT.instagram}</span>
             </div>
           </div>
 

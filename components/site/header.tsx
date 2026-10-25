@@ -83,13 +83,26 @@ export function Header() {
       }
       setActive(current);
     };
+    // Over the film, keyboard focus left behind in the bar must not pin it on
+    // screen; actively tabbing into the bar does, until the page scrolls again.
+    const onFocusIn = (e: FocusEvent) => {
+      if ((e.target as Element).matches(":focus-visible")) head.classList.add("kbd-active");
+    };
+    const onFocusOut = (e: FocusEvent) => {
+      if (!head.contains(e.relatedTarget as Node | null)) head.classList.remove("kbd-active");
+    };
     const onScroll = () => {
+      head.classList.remove("kbd-active");
       if (!raf) raf = requestAnimationFrame(update);
     };
+    head.addEventListener("focusin", onFocusIn);
+    head.addEventListener("focusout", onFocusOut);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     update();
     return () => {
+      head.removeEventListener("focusin", onFocusIn);
+      head.removeEventListener("focusout", onFocusOut);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);

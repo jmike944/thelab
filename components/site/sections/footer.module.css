@@ -1,11 +1,15 @@
 /* ============================================================
-   Footer — Corvel's ruled grid and chips on paper, Agentic's
-   giant mark (in blue) that rises into place.
+   Footer — Corvel's ruled grid and chips on paper, the brand's
+   orange visual with the logo wheel, and Agentic's giant mark
+   (in blue) that rises into place.
    ============================================================ */
 .foot {
   position: relative;
   padding-top: clamp(72px, 9vw, 136px);
-  overflow-x: clip;
+  /* Both axes: the mark's letters start below their line (a transform), and a
+     transform still counts as scrollable overflow. Clipping here keeps the
+     page's height the same from first paint. */
+  overflow: clip;
 }
 
 .top {
@@ -57,81 +61,95 @@
   color: var(--ink-soft);
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 12px;
-  margin-top: clamp(36px, 5vw, 64px);
+/* ---- The brand's orange visual (brandbook p. 21) ----
+   An orange field inset like the contact panel: "THE LAB®" in LAB, the
+   cursive "The Lab", the signature line, all in black (p. 9, p. 15); the
+   radial logo wheel (p. 18) turning beside it in black. */
+.band {
+  --pad: clamp(40px, 5vw, 76px);
+  --wh: clamp(300px, 38vw, 580px);
+  position: relative;
+  margin: clamp(56px, 7vw, 104px) var(--frame) 0;
+  border-radius: var(--r-xl);
+  overflow: clip;
 }
+.bandIn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(24px, 3vw, 56px);
+  padding-block: var(--pad);
+}
+.sign {
+  display: grid;
+  /* A full-width track: an auto track would size to the signature until the
+     lazy script image loads, then grow (the footer would change height). */
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  justify-self: stretch;
+  gap: clamp(14px, 1.6vw, 22px);
+  min-width: 0;
+}
+.bandTop {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(28px, 2.7vw, 42px);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+}
+.script {
+  width: min(100%, 660px);
+}
+.scriptMark {
+  width: 100%;
+  /* The source's own ratio, fixed: a resized srcset file can round it
+     differently once it loads. */
+  aspect-ratio: 830 / 358;
+}
+.sig {
+  justify-content: center;
+  font-size: clamp(14px, 1.15vw, 17px);
+  text-align: center;
+}
+/* The wheel runs off the field's bottom-right corner, as the brandbook's
+   visuals bleed their logos off the edge (p. 20-21); its centre stays in. */
+.wheelHost {
+  align-self: end;
+  width: var(--wh);
+  margin-top: calc(var(--pad) * -0.5);
+  margin-bottom: calc(var(--pad) * -1 - var(--wh) * 0.2);
+  margin-right: calc(var(--gut) * -1 - var(--wh) * 0.16);
+}
+.wheel {
+  width: 100%;
+}
+.foot[data-off] :global(.wheel-turn) {
+  animation-play-state: paused;
+}
+
 .chips {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: clamp(28px, 3.6vw, 48px);
 }
 .chipBlue :global(.chip-k) {
   background: var(--blue);
 }
 
-/* A paper stamp with ring text and the LaB mark, slapped over the mark's edge. */
-.stamp {
-  --stamp: clamp(104px, 11vw, 168px);
-  position: absolute;
-  right: clamp(0px, 6vw, 96px);
-  top: -6px;
-  width: var(--stamp);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--paper-hi);
-  box-shadow:
-    0 0 0 var(--stroke) var(--ink),
-    5px 5px 0 var(--magenta);
-  transform: rotate(-10deg);
-}
-.stampRing {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.stampRing circle {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 0.6;
-}
-.stampRing text {
-  fill: var(--ink);
-  font: 500 7.6px var(--f-mono);
-  letter-spacing: 0.04em;
-}
-:global(.motion) .stampRing {
-  animation: spin 36s linear infinite;
-}
-.foot[data-off] .stampRing {
-  animation-play-state: paused;
-}
-.stampMark {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 40%;
-  aspect-ratio: 9159 / 4697;
-  background: var(--blue);
-  -webkit-mask: url("/logos/the-lab-mark.svg") center / contain no-repeat;
-  mask: url("/logos/the-lab-mark.svg") center / contain no-repeat;
-  transform: translate(-50%, -50%);
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* ---- Giant mark: fills the content width from its character count ---- */
 .markWrap {
   container-type: inline-size;
-  margin-top: clamp(28px, 4vw, 56px);
-  /* Clips the letters while they're below the line. */
-  clip-path: inset(-40% -6% 0 -6%);
+  /* Headroom above the letters (percentages follow the width, like the mark). */
+  margin-top: calc(clamp(28px, 4vw, 56px) - 6%);
+  padding-top: 6%;
+  /* Clips the letters while they're below the line. Overflow clip (not a
+     clip-path) so the lowered letters don't count as overflow either: the
+     footer's height and scroll height stay the same in every state. */
+  overflow-x: visible;
+  overflow-y: clip;
 }
 .mark {
   display: flex;
@@ -177,6 +195,11 @@
   border-top: var(--stroke) solid var(--ink);
   font-size: 15px;
 }
+/* The tagline in CommonWealth, mixed case (brandbook p. 13). */
+.tagline {
+  color: var(--ink-soft);
+  font-size: 15px;
+}
 .up {
   display: inline-flex;
   align-items: center;
@@ -198,18 +221,38 @@
     grid-column: 1 / -1;
   }
 }
-/* Below 700px the chips reach the right edge (one row, or stacked), so the
-   stamp drops to the corner over the mark and the chips keep clear of it. */
-@media (max-width: 699.98px) {
-  .chips {
-    padding-right: calc(var(--stamp-sm) + 4px);
-    --stamp-sm: clamp(80px, 15vw, 100px);
+/* Phones: the wheel drops under the script and rises out of the bottom edge. */
+@media (max-width: 760px) {
+  .band {
+    --wh: min(100vw - 2 * var(--frame) - 24px, 360px);
   }
-  .stamp {
-    --stamp: var(--stamp-sm);
-    top: auto;
-    bottom: -60px;
-    right: -6px;
+  .bandIn {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 22px;
+  }
+  .wheelHost {
+    align-self: auto;
+    margin: 0 0 calc(var(--pad) * -1 - var(--wh) * 0.3);
+  }
+  .script {
+    width: min(100%, 500px);
+  }
+}
+@media (max-width: 480px) {
+  .sig {
+    font-size: 13px;
+  }
+  .sig :global(.sig-dots) {
+    flex-basis: 2.6em;
+  }
+}
+@media (max-width: 380px) {
+  .sig {
+    font-size: 12px;
+  }
+  .sig :global(.sig-dots) {
+    flex-basis: 2em;
   }
 }
 @media (max-width: 600px) {

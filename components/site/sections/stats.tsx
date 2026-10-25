@@ -5,16 +5,20 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { STATS } from "@/lib/content";
+import { Logo3D } from "../ui/logo-3d";
 import { motionOn } from "../motion-provider";
 import s from "./stats.module.css";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /*
- * The figures (after Corvel's stats band), on a blue inset panel (Agentic's
- * frame) with faint paper rays radiating from below it. The four numbers are
- * set huge in LAB with an ink key plate behind them and are stamped in when
- * the band arrives: overshoot from 1.45x and -9deg, staggered.
+ * The figures (after Corvel's stats band) on a RED colour field (brandbook
+ * p. 9 "color vs black": colour carries black type), kept as an inset rounded
+ * panel (Agentic's frame) with faint ink rays radiating from below it. The
+ * four numbers are set huge in LAB as black faces on a paper extrusion with a
+ * black back edge, the way the 3D logo sits on its colour blocks (p. 16), and
+ * are stamped in when the band arrives: overshoot from 1.45x and -9deg,
+ * staggered. A blue 3D-logo sticker (p. 24) is slapped on a corner last.
  */
 
 /** "+43M" → "Más de 43 millones", for screen readers. */
@@ -26,7 +30,7 @@ function spoken(v: string) {
   return `${plus ? "Más de " : ""}${n}${unit}`;
 }
 
-/** Splits the sign and the percent off so they print in the second ink. */
+/** Splits the sign and the percent off so they print inverted (paper on black). */
 function Figure({ v }: { v: string }) {
   const m = v.match(/^(\+?)(.*?)(%?)$/);
   const [, plus, core, pct] = m ?? ["", "", v, ""];
@@ -51,6 +55,7 @@ export function Stats() {
       const vals = gsap.utils.toArray<HTMLElement>("[data-stamp]", root);
       const rules = gsap.utils.toArray<HTMLElement>("[data-rule]", root);
       const note = root.querySelector("[data-note]");
+      const sticker = root.querySelector("[data-sticker]");
 
       const tl = gsap.timeline({ scrollTrigger: { trigger: list, start: "top 82%", once: true } });
       tl.fromTo(
@@ -73,6 +78,13 @@ export function Stats() {
           { opacity: 1, scale: 1, rotation: 0, duration: 0.55, ease: "back.out(2.4)", clearProps: "transform" },
           ">-0.25",
         );
+      if (sticker)
+        tl.fromTo(
+          sticker,
+          { opacity: 0, scale: 1.6, rotation: 14 },
+          { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: "back.out(1.8)", clearProps: "transform" },
+          ">-0.2",
+        );
 
       // The rays turn slowly with the scroll.
       const rays = root.querySelector("[data-rays]");
@@ -91,7 +103,7 @@ export function Stats() {
   );
 
   return (
-    <section ref={ref} className={s.stats} aria-labelledby="stats-title">
+    <section ref={ref} className={`field field--red ${s.stats}`} aria-labelledby="stats-title">
       <div className={s.rays} aria-hidden="true">
         <div data-rays />
       </div>
@@ -141,6 +153,16 @@ export function Stats() {
             );
           })}
         </ul>
+
+        {/* The 3D logo as a sticker (p. 24): blue sides, paper faces, a tag. */}
+        <span className={s.sticker} aria-hidden="true">
+          <span className={s.stickerIn} data-sticker>
+            <Logo3D className={s.logo} side="var(--blue)" ink="var(--paper-hi)" />
+            <span className={s.stickerTag} lang="en">
+              Creative Worth
+            </span>
+          </span>
+        </span>
       </div>
     </section>
   );

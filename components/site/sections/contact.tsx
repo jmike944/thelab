@@ -8,7 +8,8 @@ import { useGSAP } from "@gsap/react";
 import { motionOn } from "@/components/site/motion-provider";
 import { Btn } from "@/components/site/ui/btn";
 import { Goo } from "@/components/site/ui/goo";
-import { CONTACT, INTERESTS } from "@/lib/content";
+import { Signature } from "@/components/site/ui/signature";
+import { CONTACT, INTERESTS, TEAM } from "@/lib/content";
 import s from "./contact.module.css";
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
@@ -191,6 +192,19 @@ export function Contact() {
       tl.fromTo(lines, { p: 0 }, { p: 1, ease: "power2.out", duration: 1, stagger: { each: 0.02, from: "random" } }, 0);
       if (dotted.length) tl.fromTo(dotted, { d: 0 }, { d: 1, ease: "back.out(3)", duration: 0.3, stagger: { each: 0.03, from: "random" } }, 0.75);
 
+      // The business card drops onto the panel; its tagline swings round to rest,
+      // like the turned headers on the brandbook's cards (p. 22).
+      const biz = sec.querySelector<HTMLElement>("[data-biz]");
+      if (biz) {
+        const bt = { trigger: biz, start: "top 92%", toggleActions: "play none none reverse" };
+        gsap.fromTo(biz, { y: 48, rotate: -7 }, { y: 0, rotate: -2, ease: "power3.out", duration: 1, scrollTrigger: { ...bt } });
+        gsap.fromTo(
+          biz.querySelector("[data-biz-tilt]"),
+          { rotate: -28 },
+          { rotate: 4, ease: "back.out(2.2)", duration: 1.2, delay: 0.15, scrollTrigger: { ...bt } },
+        );
+      }
+
       // The card lands with a hard shadow.
       gsap.fromTo(
         cardRef.current,
@@ -254,6 +268,36 @@ export function Contact() {
               </span>
             </h2>
             <p className={s.lede}>Cuéntanos qué quieres crear. Te respondemos en menos de 2 días hábiles.</p>
+
+            {/* The team as the brand's business card (brandbook p. 22): black logo, the tagline
+                line and the handle tilted under it, then a dotted name ...... role line each. */}
+            <div className={s.team}>
+              <h3 id="contact-team-title" className={`mono ${s.teamTitle}`}>
+                Quién te responde
+              </h3>
+              <div className={s.biz} data-biz role="group" aria-labelledby="contact-team-title">
+                <div className={s.bizHead}>
+                  <span className={`logo-mask ${s.bizLogo}`} role="img" aria-label="The Lab" />
+                  <div className={s.bizTilt} data-biz-tilt>
+                    <p className={`sig ${s.bizTag}`}>
+                      <span className="sig-part" lang="en">
+                        Creative Worth
+                      </span>
+                      <span className="sig-dots" aria-hidden="true" />
+                      <span className="sr-only">, </span>
+                      <span className="sig-part">México</span>
+                    </p>
+                    <p className={s.bizHandle}>{CONTACT.instagram}</p>
+                  </div>
+                </div>
+                <div className={s.bizLines}>
+                  {TEAM.map((p) => (
+                    <Signature key={p.name} fill items={[p.name, p.role]} className={s.bizLine} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <ul className={s.notes}>
               <li>
                 <strong className="mono">Correo</strong>

@@ -6,7 +6,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { motionOn } from "@/components/site/motion-provider";
 import { Halftone } from "@/components/site/ui/halftone";
-import { CAPABILITIES, CLIENTS, CONTACT, PROJECTS, projectById } from "@/lib/content";
+import { HandMark } from "@/components/site/ui/hand-mark";
+import { Signature } from "@/components/site/ui/signature";
+import { ABOUT, CAPABILITIES, CLIENTS, CONTACT, PROJECTS, projectById } from "@/lib/content";
 import s from "./story.module.css";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -35,7 +37,9 @@ const CORNERS = [s.tl, s.tr, s.bl, s.br];
  * The studio's story (after Corvel's feature): the Rancho photo printed twice,
  * an ink plate and a blue plate at different screen angles, that start out of
  * register and slide into place as you scroll, with the registration marks and
- * the headline's blue offset closing up with them.
+ * the headline's blue offset closing up with them. The copy is the studio's
+ * official About (brandbook p. 8), set in two print columns and signed with the
+ * script logo over the brand's dotted signature line.
  */
 export function Story() {
   const ref = useRef<HTMLElement>(null);
@@ -85,9 +89,10 @@ export function Story() {
   return (
     <section ref={ref} id="estudio" aria-labelledby="estudio-title" className={s.story}>
       <div className={`wrap ${s.sheet}`}>
-        {/* Slug line along the sheet's top edge, outside the trim. */}
+        {/* Slug line along the sheet's top edge, outside the trim: the
+            brand's dotted signature line, as on every brandbook page. */}
         <div className={`mono ${s.slug}`} aria-hidden="true">
-          <span>The Lab® — Estudio de contenido</span>
+          <Signature className={s.slugSig} />
           <span className={s.strip}>
             {Array.from({ length: 8 }, (_, i) => (
               <i key={i} />
@@ -157,26 +162,25 @@ export function Story() {
             <header className={s.head}>
               <p className="sec-tag mono">El estudio</p>
               <h2 id="estudio-title" className={`h2 ${s.title}`} data-reg-title>
-                Lo que eres, convertido en contenido
+                Contenido con identidad, consistencia y carácter
                 <span className="stop" aria-hidden="true" />
               </h2>
             </header>
 
             <div className={s.body}>
               <div className={s.cols} data-reveal>
-                <p className={s.drop}>
-                  The Lab es un estudio de contenido en Saltillo, Coahuila. Creamos contenido viral, fotografía, video y
-                  community management para marcas que quieren rango: crecimiento real, hecho 100% orgánico.
-                </p>
-                <p>
-                  Somos especialistas en restaurantes y experiencias: sabemos contar un platillo, una apertura o una noche de
-                  cantina para que tu comunidad quiera vivirla. Convertimos lo que eres en contenido que se siente, se
-                  entiende y se queda.
-                </p>
+                {ABOUT.map((para, i) => (
+                  <p key={i} className={i === 0 ? s.drop : undefined}>
+                    {para}
+                  </p>
+                ))}
               </div>
 
               <div className={s.foot} data-reveal>
-                <p className={`note ${s.sign}`}>— The Lab, Saltillo</p>
+                <div className={s.sign}>
+                  <HandMark name="script" className={s.script} sizes="220px" label="Firma: The Lab" />
+                  <Signature items={["The LAB MX", `${CONTACT.city}, México`]} className={s.signLine} />
+                </div>
                 <ul className={s.facts} aria-label="El estudio en breve">
                   <li className="chip">
                     <span className="chip-k">Base</span>

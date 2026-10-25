@@ -1,20 +1,26 @@
-/* Stats: a blue inset panel (Agentic's frame, Corvel's figures band) with
-   faint paper rays fanning up from below it. */
+/* Stats: a RED colour field (brandbook p. 9 "color vs black", p. 15-16) kept
+   as an inset rounded panel (Agentic's frame, Corvel's figures band), with
+   faint ink rays fanning up from below it. The section also carries the
+   global `field field--red` (background, ink type, ink stops and notes). */
 
 .stats {
+  /* Brand black (#231f20) is 3.7:1 on the red: plenty for the huge figures,
+     short of AA for small type. True black (p. 9's "color vs black" dots) is
+     4.8:1, so the small type, the rules' labels and the note use it. */
+  --k: #000;
+  --note: var(--k);
   position: relative;
   isolation: isolate;
   margin: var(--frame) var(--frame) 0;
-  padding-block: clamp(44px, 5.5vw, 88px) clamp(80px, 10vw, 150px);
+  /* The foot leaves room for the sticker under the last figure. */
+  padding-block: clamp(44px, 5.5vw, 88px) clamp(96px, 11.5vw, 170px);
   overflow: clip;
   border-radius: var(--r-xl);
-  background:
-    radial-gradient(70% 60% at 50% 120%, color-mix(in oklab, var(--paper-hi) 20%, transparent), transparent 70%),
-    var(--blue);
-  color: var(--paper-hi);
+  background: var(--field, var(--red));
+  color: var(--ink);
 }
 
-/* Sunburst: a huge conic disc centred below the panel. */
+/* Sunburst: a huge conic disc centred below the panel, in ink. */
 .rays {
   position: absolute;
   inset: 0;
@@ -32,10 +38,10 @@
   margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius: 50%;
   background:
-    repeating-conic-gradient(color-mix(in oklab, var(--paper-hi) 16%, transparent) 0deg 0.8deg, transparent 0.8deg 6deg),
-    repeating-conic-gradient(color-mix(in oklab, var(--ink) 10%, transparent) 0deg 0.3deg, transparent 0.3deg 1.5deg);
+    repeating-conic-gradient(color-mix(in oklab, var(--ink) 7%, transparent) 0deg 0.8deg, transparent 0.8deg 6deg),
+    repeating-conic-gradient(color-mix(in oklab, var(--ink) 4%, transparent) 0deg 0.3deg, transparent 0.3deg 1.5deg);
 }
-/* A halftone ramp of paper dots along the bottom edge (Corvel). */
+/* A halftone ramp of ink dots along the bottom edge (Corvel). */
 .ramp {
   position: absolute;
   right: 0;
@@ -43,7 +49,7 @@
   left: 0;
   z-index: -1;
   height: var(--ramp-h);
-  background: color-mix(in oklab, var(--paper-hi) 16%, transparent);
+  background: color-mix(in oklab, var(--ink) 18%, transparent);
   -webkit-mask: var(--ramp) 0 0 / calc(var(--ramp-h) / 10) var(--ramp-h) repeat-x;
   mask: var(--ramp) 0 0 / calc(var(--ramp-h) / 10) var(--ramp-h) repeat-x;
   pointer-events: none;
@@ -62,15 +68,13 @@
 }
 .stats .tag {
   margin: 0;
-  color: var(--paper-hi);
-}
-.stats .tag::before {
-  background: var(--yellow);
+  color: var(--k);
 }
 .meta {
   display: grid;
   justify-items: end;
   gap: 6px;
+  color: var(--k);
   text-align: right;
 }
 
@@ -87,45 +91,88 @@
   container-type: inline-size;
 }
 .val {
-  font: 400 min(clamp(80px, 11vw, 190px), 100cqi / 2.2) / 0.8 var(--f-display);
+  /* Room above for the extrusion. */
+  padding-top: 0.08em;
+  font: 400 min(clamp(80px, 11vw, 190px), 100cqi / 2.3) / 0.8 var(--f-display);
   letter-spacing: -0.012em;
   white-space: nowrap;
 }
-/* Paper figure over an ink key plate, misregistered a touch. */
+/* Black faces on a paper extrusion with a black back edge, receding up and
+   to the right like the 3D logo on its colour blocks (p. 16). */
 .stamp {
   display: inline-block;
-  color: var(--paper-hi);
-  text-shadow: 0.04em 0.04em 0 var(--ink);
+  color: var(--ink);
+  text-shadow:
+    0.007em -0.007em 0 var(--paper-hi),
+    0.014em -0.014em 0 var(--paper-hi),
+    0.021em -0.021em 0 var(--paper-hi),
+    0.028em -0.028em 0 var(--paper-hi),
+    0.035em -0.035em 0 var(--paper-hi),
+    0.042em -0.042em 0 var(--paper-hi),
+    0.049em -0.049em 0 var(--paper-hi),
+    0.056em -0.056em 0 var(--paper-hi),
+    0.063em -0.063em 0 var(--paper-hi),
+    0.07em -0.07em 0 var(--ink),
+    0.078em -0.078em 0 var(--ink);
   transform-origin: 35% 70%;
 }
+/* The sign and the percent print inverted: paper faces on a black block. */
+.plus,
+.pct {
+  --e: 0.008em;
+  color: var(--paper-hi);
+  text-shadow:
+    calc(var(--e) * 1) calc(var(--e) * -1) 0 var(--ink),
+    calc(var(--e) * 2) calc(var(--e) * -2) 0 var(--ink),
+    calc(var(--e) * 3) calc(var(--e) * -3) 0 var(--ink),
+    calc(var(--e) * 4) calc(var(--e) * -4) 0 var(--ink),
+    calc(var(--e) * 5) calc(var(--e) * -5) 0 var(--ink),
+    calc(var(--e) * 6) calc(var(--e) * -6) 0 var(--ink),
+    calc(var(--e) * 7) calc(var(--e) * -7) 0 var(--ink),
+    calc(var(--e) * 8) calc(var(--e) * -8) 0 var(--ink),
+    calc(var(--e) * 9) calc(var(--e) * -9) 0 var(--ink),
+    calc(var(--e) * 10) calc(var(--e) * -10) 0 var(--ink);
+}
 .plus {
+  /* Same depth as the figure's, at 0.55 of its size. */
+  --e: calc(0.008em / 0.55);
   position: relative;
   top: -0.74em;
-  margin-right: 0.03em;
-  color: var(--yellow);
+  margin-right: 0.06em;
   font-size: 0.55em;
 }
 .pct {
-  color: var(--yellow);
+  margin-left: 0.02em;
 }
 .rule {
   display: block;
-  height: var(--stroke);
+  height: 2px;
   margin: clamp(16px, 1.8vw, 26px) 0 12px;
-  background: var(--paper-hi);
+  background: var(--ink);
   transform-origin: 0 50%;
 }
 .label {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px 10px;
+  color: var(--k);
   font-size: clamp(11px, 0.95vw, 13px);
 }
+/* The index as the stickers' black tag (p. 24). */
 .idx {
-  color: var(--yellow);
+  flex: none;
+  /* Stays at the right when a long label pushes it onto its own line. */
+  margin-left: auto;
+  padding: 0.4em 0.55em 0.32em;
+  background: var(--ink);
+  color: var(--paper-hi);
+  line-height: 1;
+  rotate: -4deg;
 }
 
-/* Hand note in yellow (magenta would sink on blue). */
+/* Hand note in black, as notes are on colour fields. */
 .noteWrap {
   position: absolute;
   top: calc(-1 * clamp(40px, 4.2vw, 64px));
@@ -137,7 +184,7 @@
 .noteIn {
   display: inline-flex;
   align-items: flex-start;
-  color: var(--yellow);
+  color: var(--note);
   white-space: nowrap;
 }
 .arrow {
@@ -148,16 +195,58 @@
 }
 .stats .note {
   --rot: -8deg;
-  color: var(--yellow);
-  /* A halo in the panel's blue keeps the strokes clear of the rays behind. */
+  /* A halo in the field's red keeps the strokes clear of the rays behind. */
   text-shadow:
-    0 0 2px var(--blue),
-    0 0 5px var(--blue);
+    0 0 2px var(--red),
+    0 0 5px var(--red);
+}
+
+/* ------------------------------------------- The 3D-logo sticker (p. 24) */
+/* Hung under the last figure, at the content column's edge. */
+.sticker {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: clamp(14px, 1.6vw, 24px);
+  width: clamp(96px, 10vw, 156px);
+  rotate: -6deg;
+  pointer-events: none;
+}
+.stickerIn {
+  position: relative;
+  display: block;
+  transform-origin: 50% 60%;
+}
+.logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  /* Die-cut paper edge, then a hard black shadow lifting it off the red. */
+  filter: drop-shadow(1.5px 0 0 var(--paper-hi)) drop-shadow(-1.5px 0 0 var(--paper-hi))
+    drop-shadow(0 1.5px 0 var(--paper-hi)) drop-shadow(0 -1.5px 0 var(--paper-hi))
+    drop-shadow(3px 4px 0 var(--ink));
+}
+/* Its black tag, laid along the logo's plane. */
+.stickerTag {
+  position: absolute;
+  right: -3%;
+  bottom: -6%;
+  padding: 0.42em 0.7em 0.36em;
+  background: var(--ink);
+  color: var(--paper-hi);
+  /* CommonWealth has one weight; no faux bold. */
+  font: 400 clamp(10px, 0.8vw, 11.5px) / 1 var(--f-text);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  rotate: -20deg;
+  box-shadow: 0 0 0 1.5px var(--paper-hi);
 }
 
 /* Hidden until stamped (motion only). */
 :global(.motion) .stamp,
-:global(.motion) .noteIn {
+:global(.motion) .noteIn,
+:global(.motion) .stickerIn {
   opacity: 0;
 }
 :global(.motion) .rule {
@@ -177,10 +266,27 @@
     margin-top: -0.2em;
     transform: scaleY(-1);
   }
+  /* Under the third figure, across from the note under the fourth. */
+  .sticker {
+    top: calc(100% - 14px);
+    right: auto;
+    left: 6px;
+    margin-top: 0;
+  }
 }
 @media (max-width: 480px) {
   .meta {
     justify-items: start;
     text-align: left;
+  }
+}
+/* The narrowest phones: the long labels push their tags onto a second line,
+   so the sticker drops below the figures instead of beside the note. */
+@media (max-width: 359.98px) {
+  .stats {
+    padding-bottom: 112px;
+  }
+  .sticker {
+    top: calc(100% + 8px);
   }
 }

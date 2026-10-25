@@ -36,6 +36,7 @@
   --cyan: #00cfff;
   --red: #ee1708;
   --green: #3ac62f;
+  --sage: #7c9f69;
 
   --ink-soft: color-mix(in oklab, var(--ink) 70%, var(--paper));
   --line: color-mix(in oklab, var(--ink) 55%, var(--paper));
@@ -44,7 +45,10 @@
   --panel-line: color-mix(in oklab, var(--on-panel) 16%, transparent);
   /* Hand-note inks: magenta deepened with ink to read on paper (about 4.9:1),
      and lifted with white to read on dark panels and the blue band. */
-  --note-ink: color-mix(in oklab, var(--magenta) 72%, var(--ink));
+  /* Hand notes: blue on paper (the brandbook's only colour that reads cleanly
+     as text on white, and the colour of its own crayon marks); a light
+     magenta tint on dark panels. */
+  --note-ink: var(--blue);
   --note-light: color-mix(in oklab, var(--magenta) 70%, white);
 
   --f-display: var(--font-lab), "Arial Narrow", sans-serif;
@@ -377,8 +381,9 @@ canvas {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* The smallest phones wrap the value rather than lose its end. */
-@media (max-width: 359.98px) {
+/* Small phones (up to the common 360–375px widths) wrap the value rather
+   than lose its end; it only wraps when it doesn't fit. */
+@media (max-width: 379.98px) {
   .chip .chip-v {
     line-height: 1.2;
     white-space: normal;
@@ -608,23 +613,26 @@ canvas {
     transform: translateX(-50%);
   }
 }
-/* Without motion (reduced motion, no JS) there is no loop to bring the rest
-   of the run into view, so the marquee becomes a static list: the duplicate
-   copy goes, and the run wraps so every item is on screen. */
-html:not(.motion) .mq-track {
+/* Without motion (reduced motion, no JS) or with the animations paused,
+   there is no loop to bring the rest of the run into view, so the marquee
+   becomes a static list: the duplicate copy goes, and the run wraps so every
+   item is on screen. A paused loop is dropped, not frozen mid-slide. */
+:is(html:not(.motion), html.is-paused) .mq-track {
   display: block;
   width: auto;
+  animation: none;
+  transform: none;
 }
-html:not(.motion) .mq-run {
+:is(html:not(.motion), html.is-paused) .mq-run {
   flex-wrap: wrap;
   justify-content: center;
   row-gap: 12px;
   padding-inline: var(--gut);
 }
-html:not(.motion) .mq-run[aria-hidden="true"] {
+:is(html:not(.motion), html.is-paused) .mq-run[aria-hidden="true"] {
   display: none;
 }
-html:not(.motion) .mq-run > li {
+:is(html:not(.motion), html.is-paused) .mq-run > li {
   flex-shrink: 1;
   min-width: 0;
   max-width: 100%;
@@ -667,6 +675,11 @@ html:not(.motion) .mq-run > li {
    over the film. */
 .head:has(:focus-visible) {
   transform: none;
+}
+/* Over the film only an active Tab into the bar (kbd-active, header.tsx)
+   brings it back; focus left there from earlier doesn't. */
+.head.is-away:not(.kbd-active) {
+  transform: translateY(-100%);
 }
 .head-in {
   display: flex;
@@ -908,6 +921,134 @@ html.is-paused *,
 html.is-paused *::before,
 html.is-paused *::after {
   animation-play-state: paused !important;
+}
+
+/* ---------------------------------------------------------------
+   Brandbook pieces (THELAB_BRANDBOOK.pdf, Dum Dum Studio 2026)
+   --------------------------------------------------------------- */
+/* Colour fields: full-bleed brand colours carry BLACK type and the black
+   logo (brandbook p. 9 "color vs black", p. 15). Never white on yellow. */
+.field {
+  --stop: var(--ink);
+  --note: var(--ink);
+  --btn-shadow: var(--paper-hi);
+  background: var(--field, var(--red));
+  color: var(--ink);
+}
+.field--red {
+  --field: var(--red);
+}
+.field--magenta {
+  --field: var(--magenta);
+}
+.field--yellow {
+  --field: var(--yellow);
+}
+.field--orange {
+  --field: var(--orange);
+}
+.field .sec-tag::before {
+  background: var(--ink);
+}
+.field :focus-visible {
+  outline-color: var(--ink);
+}
+
+/* Signature line: parts joined by dot leaders (<Signature>). */
+.sig {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.45em;
+  margin: 0;
+  font: 400 clamp(13px, 1vw, 15px) / 1.35 var(--f-text);
+}
+.sig-dots {
+  flex: 0 0 4.2em;
+  height: 0.3em;
+  background: radial-gradient(circle, currentColor 0.055em, transparent 0.07em) 0 100% / 0.3em 0.16em repeat-x;
+}
+.sig--fill {
+  flex-wrap: nowrap;
+}
+.sig--fill .sig-dots {
+  flex: 1 1 2em;
+  min-width: 2em;
+}
+
+/* Hand-drawn logo marks (<HandMark>). */
+.hand-mark {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Radial logo wheel (<LogoWheel>). Size it with a width on the host. */
+.wheel {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 1;
+}
+.wheel-turn {
+  position: absolute;
+  inset: 0;
+}
+.motion .wheel-turn {
+  animation: wheel-spin 90s linear infinite;
+}
+@keyframes wheel-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+.wheel-spoke {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  justify-items: start;
+  gap: 0.25em;
+  font: 400 2.6cqi / 1 var(--f-text);
+  white-space: nowrap;
+  transform-origin: 0 0;
+  transform: rotate(calc(var(--i) * 360deg / var(--n))) translate(19cqi, -50%);
+}
+.wheel-logo {
+  width: 11cqi;
+}
+.wheel-sig {
+  font-size: 0.8em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.wheel-handle {
+  font-size: 0.8em;
+}
+.wheel-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 17cqi;
+  translate: -50% -50%;
+}
+
+/* Test-card colour bars (<ColorBars>). Size it with width/height on the host. */
+.bars {
+  display: grid;
+  grid-template-rows: 1fr 0.12fr;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+.bars-top,
+.bars-foot {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+.bars i {
+  display: block;
 }
 
 /* ---------------------------------------------------------------

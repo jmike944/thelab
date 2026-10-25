@@ -14,7 +14,11 @@
      so taller screens can't grow the letters over them. */
   --mast-w: min(60vw, 980px, 100vw - 2 * (var(--gut) * 0.6 + var(--dw) + 28px));
   --mast-fs: min(300px, 29svh, var(--mast-w) / 2.8);
-  --arch-gap: 66px;
+  /* Under the masthead: the signature line (--sig-fs), then the tagline
+     and the mail on one row. --arch-gap clears both rows and the bubble. */
+  --sig-fs: clamp(13px, 1.05vw, 15px);
+  --sig-gap: 9px;
+  --arch-gap: 80px;
   --arch-top: calc(var(--head-h) + var(--mast-fs) * 0.78 + var(--arch-gap));
   /* Side columns (TOC, figure) on wide screens; the arch keeps clear of them. */
   --side: min(17vw, 260px);
@@ -117,13 +121,18 @@
   /* Leaves room for the mail (24 mono characters, same size) at the
      masthead's bottom right, however narrow the masthead gets. */
   max-width: min(54%, 100% - 14.4em - 28px);
-  margin-top: 0.9em;
+  /* Below the signature line, which is laid over this gap. */
+  margin-top: calc(var(--sig-gap) * 2 + var(--sig-fs) * 1.35 - 1px);
   font: 500 clamp(12px, 1.05vw, 15px) / 1.3 var(--f-mono);
   letter-spacing: 0.04em;
   text-align: left;
   text-transform: uppercase;
   text-wrap: balance;
   color: var(--blue);
+  /* Rays cross this line too. */
+  text-shadow:
+    0 0 2px var(--paper),
+    0 0 5px var(--paper);
 }
 .mail {
   position: absolute;
@@ -132,17 +141,31 @@
   font: 500 clamp(12px, 1.05vw, 15px) / 1.3 var(--f-mono);
   color: var(--blue);
   white-space: nowrap;
-}
-.made {
-  position: absolute;
-  right: calc(100% + 2px);
-  top: calc(var(--mast-fs) * 0.56);
-  --rot: -7deg;
-  font-size: clamp(24px, 2.2vw, 34px);
-  /* Rays cross the note: a paper halo keeps the hand lettering clean. */
   text-shadow:
     0 0 2px var(--paper),
-    0 0 6px var(--paper);
+    0 0 5px var(--paper);
+}
+/* The brand's dotted signature line, stretched to the masthead's width
+   right under it (brandbook p. 20, 22). It sits outside the h1, so it is
+   laid over the gap the tagline leaves above itself. */
+.sig {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--mast-fs) * 0.78 + var(--sig-gap));
+  color: var(--ink);
+}
+.sig :global(.sig) {
+  font-size: var(--sig-fs);
+  line-height: 1.35;
+  white-space: nowrap;
+  /* Rays cross the line: a paper halo keeps the letters clean. */
+  text-shadow:
+    0 0 2px var(--paper),
+    0 0 5px var(--paper);
+}
+.sig :global(.sig-dots) {
+  min-width: 1.4em;
 }
 
 /* ---------------------------------------------------------------
@@ -314,7 +337,8 @@
 .bub {
   z-index: 5;
   left: 25%;
-  top: -30px;
+  /* Rests on the arch's cap, clear of the tagline row above it. */
+  top: -12px;
   /* Sized by its two lines, not by the arch it sits on. */
   width: max-content;
 }
@@ -436,6 +460,58 @@
   height: 0.7em;
   border-radius: 50%;
   background: var(--red);
+}
+
+/* ---------------------------------------------------------------
+   The sticker (brandbook p. 16, 20, 24): the 3D logo, paper sides
+   and ink faces, overlapping the edges of a red block, with the
+   handle on a black tag under the B. Everything scales from
+   --stk-w, the block's width; a width of 0 hides it.
+   Wide screens: in the left column, under the index.
+   --------------------------------------------------------------- */
+.stk {
+  /* Room between the index (--toc-h, ≈250px tall) and the plate chip. */
+  --stk-room: calc(
+    100svh - max(var(--arch-top) - 40px, var(--head-h) + var(--dw) * 0.576 + 10px) - var(--toc-h, 250px) - 92px
+  );
+  --stk-w: min(var(--side) - 30px, var(--stk-room) / 0.62, max(0px, (var(--stk-room) - 70px) * 100));
+  left: calc(var(--gut) + 4px);
+  /* Centred in the band left between the index and the plate chip. */
+  bottom: calc(62px + max(0px, var(--stk-room) - var(--stk-w) * 0.62) * 0.42);
+  width: var(--stk-w);
+  /* The logo rises above the block and the tag hangs below it. */
+  padding: calc(var(--stk-w) * 0.09) 0 calc(var(--stk-w) * 0.14);
+  rotate: -4deg;
+  pointer-events: none;
+}
+.stkIn {
+  position: relative;
+  aspect-ratio: 310 / 120;
+}
+.stkField {
+  position: absolute;
+  inset: 0;
+}
+.stkLogo {
+  position: absolute;
+  left: 10.5%;
+  top: -21%;
+  width: 79%;
+  height: auto;
+  overflow: visible;
+}
+.stkTag {
+  position: absolute;
+  left: 61%;
+  top: 92%;
+  padding: 0.32em 0.75em 0.38em;
+  background: var(--ink);
+  color: var(--paper-hi);
+  /* At least 10px, and 0 when the sticker is collapsed. */
+  font: 400 clamp(0px, var(--stk-w) * 1000, max(10px, var(--stk-w) * 0.058)) / 1 var(--f-text);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  rotate: -20deg;
 }
 
 /* ---------------------------------------------------------------
@@ -670,21 +746,41 @@
     bottom: auto;
     top: 0.3em;
   }
+  /* The sticker moves to the top right, under the right-hand drawing and
+     above the round plate. */
+  .stk {
+    --stk-w: var(--dw);
+    left: auto;
+    right: calc(var(--gut) * 0.6 + 2px);
+    top: calc(var(--head-h) + var(--dw) * 0.576 + 14px);
+    bottom: auto;
+  }
 }
 
-/* Under 900px one drawing stays, in the gap above the arch. */
+/* Under 900px one drawing stays, on the left of the band between the
+   masthead and the arch, and the sticker takes the right of it. Both are
+   sized to the room the arch leaves there (--room); with too little room
+   (short windows, where the arch takes all the height) they collapse to
+   nothing rather than landing on the plates. */
 @media (max-width: 900px) {
   .cover {
     --mast-w: min(58vw, 760px);
+    --art-h: min(100svh - var(--arch-top) - 64px, var(--art-w) * 1.22);
+    --room: calc(100svh - 64px - var(--art-h) - var(--arch-top) + 6px);
   }
   .diagramL {
     display: none;
   }
   .diagramR {
-    top: calc(var(--arch-top) - 12px);
+    top: calc(var(--arch-top) - 6px);
     left: var(--gut);
     right: auto;
-    width: min(36vw, 230px);
+    width: min(34vw, 230px, (var(--room) - 10px) * 1.7, max(0px, (var(--room) - 60px) * 100));
+  }
+  .stk {
+    --stk-w: min(30vw, 210px, (var(--room) - 8px) / 0.62, max(0px, (var(--room) - 64px) * 100));
+    right: var(--gut);
+    top: calc(var(--arch-top) - 6px);
   }
 }
 
@@ -695,9 +791,11 @@
 @media (min-width: 761px) and (max-height: 640px) {
   .cover {
     --mast-fs: min(300px, 26svh, var(--mast-w) / 2.8);
-    --arch-gap: 64px;
+    --sig-gap: 7px;
+    --arch-gap: 70px;
+    --toc-h: 212px;
   }
-  /* Smaller mono lines keep the tagline to two lines beside the mail under
+  /* Smaller mono lines keep the tagline to one line beside the mail under
      the narrower masthead. */
   .tag,
   .mail {
@@ -706,10 +804,10 @@
   .tag {
     letter-spacing: 0.02em;
   }
-  /* The bubble rests on the arch's cap instead of reaching up into the
-     tagline; the print steps down to make room. */
+  /* The bubble sits a little lower on the arch's cap; the print steps
+     down to make room. */
   .bub {
-    top: -4px;
+    top: -8px;
   }
   .print {
     top: 24%;
@@ -725,19 +823,38 @@
   }
 }
 
+/* Shortish windows where the CTA shares the bottom row with the arch: a
+   slightly smaller print, so its caption ends clear above the button. */
+@media (min-width: 761px) and (max-width: 1180px) and (max-height: 760px) {
+  .print {
+    top: 20%;
+    width: 50%;
+    margin-left: -25%;
+  }
+}
+@media (min-width: 761px) and (max-width: 1180px) and (max-height: 640px) {
+  .print {
+    top: 22%;
+  }
+}
+
 /* ---------------------------------------------------------------
    Phones: the art column narrows and centres, chips stack.
-   Top to bottom: masthead, tagline, the mail row (with the hand
-   note on its left), the bubble on the arch's right shoulder, the
-   arch, then the chips. --chips-h is the room kept for the chips.
+   Top to bottom: masthead, signature line, tagline, the mail row,
+   the sticker (left) and the bubble (on the arch's right shoulder),
+   the arch, then the chips. --chips-h is the room kept for the chips.
    --------------------------------------------------------------- */
 @media (max-width: 760px) {
   .cover {
     --mast-w: calc(100vw - 2 * var(--gut));
     --mast-fs: min(260px, 29svh, var(--mast-w) / 2.8);
-    --arch-top: calc(var(--head-h) + var(--mast-fs) * 0.78 + 102px);
+    --sig-fs: 12px;
+    --sig-gap: 7px;
+    --arch-top: calc(var(--head-h) + var(--mast-fs) * 0.78 + 122px);
     --chips-h: 112px;
     --art-w: max(140px, min(74vw, (100svh - var(--arch-top) - var(--chips-h)) * 0.8));
+    --art-h: min(100svh - var(--arch-top) - var(--chips-h), var(--art-w) * 1.32);
+    --room: calc(100svh - var(--chips-h) - var(--art-h) - var(--arch-top) + 30px);
   }
   :global(.motion) .pin {
     height: 170svh;
@@ -751,7 +868,6 @@
   }
   .tag {
     max-width: 100%;
-    margin-top: 0.8em;
     letter-spacing: 0.02em;
   }
   .mail {
@@ -760,28 +876,23 @@
     width: fit-content;
     margin: 6px 0 0 auto;
   }
-  .made {
-    right: auto;
-    left: 0;
-    top: auto;
-    bottom: -3px;
-    --rot: -5deg;
-    font-size: 24px;
-  }
-  /* The drawing sits on the left between the masthead and the arch, sized
-     to the room the arch leaves there (--room); with less than 60px of room
-     it collapses to nothing rather than landing on the Mercato plate. */
+  /* The sticker sits on the left between the masthead and the arch (where
+     the construction drawing goes on wider screens), sized to the room the
+     arch leaves there (--room); with less than 64px of room it collapses to
+     nothing rather than landing on the Mercato plate. */
   .diagramR {
-    --art-h: min(100svh - var(--arch-top) - var(--chips-h), var(--art-w) * 1.32);
-    --room: calc(100svh - var(--chips-h) - var(--art-h) - var(--arch-top) + 30px);
-    top: calc(var(--arch-top) - 30px);
+    display: none;
+  }
+  .stk {
+    --stk-w: min(42vw, 180px, (var(--room) - 8px) / 0.62, max(0px, (var(--room) - 64px) * 100));
     left: var(--gut);
     right: auto;
-    width: min(36vw, 170px, (var(--room) - 10px) * 1.7, max(0px, (var(--room) - 60px) * 100));
+    top: calc(var(--arch-top) - 30px);
+    rotate: -3deg;
   }
   .art {
     bottom: var(--chips-h);
-    height: min(100% - var(--arch-top) - var(--chips-h), var(--art-w) * 1.32);
+    height: var(--art-h);
   }
   .fA {
     left: -18%;
@@ -862,21 +973,29 @@
   }
 }
 
-/* Shorter phones (Safari with its bars, SE): never room for the drawing. */
-@media (max-width: 760px) and (max-height: 700px) {
-  .diagramR {
-    display: none;
-  }
-}
-
-/* Very short phones (≈375×553, 320×460): the plate chip goes (the print's own
-   caption names the plate), so the arch keeps a usable size and the CTA stays
-   on screen. */
+/* Very short phones (≈375×553, 360×560, 320×460): the plate chip goes (the
+   print's own caption names the plate), so the arch keeps a usable size and
+   the CTA stays on screen. The arch is too small there for all the pieces
+   round it: the two tilted tags (which land on the print) and the round
+   plate (under the bubble) go, leaving three plates and the bubble. */
 @media (max-width: 760px) and (max-height: 640px) {
   .cover {
     --chips-h: 86px;
+    --sig-gap: 5px;
+    --arch-top: calc(var(--head-h) + var(--mast-fs) * 0.78 + 106px);
   }
-  .plateChip {
+  .mail {
+    margin-top: 3px;
+  }
+  /* With the round plate gone, the bubble can sit lower on the arch's right
+     shoulder, which gives the arch back some height. */
+  .bub {
+    bottom: calc(100% - 20px);
+  }
+  .plateChip,
+  .tagA,
+  .tagB,
+  .fB {
     display: none;
   }
 }
@@ -888,9 +1007,6 @@
   }
   .cover :global(.tilt) {
     font-size: 10px;
-  }
-  .made {
-    font-size: 22px;
   }
   .chips > :global(.btn) {
     font-size: 12px;
@@ -905,8 +1021,8 @@
 
 /* ---------------------------------------------------------------
    Landscape phones (≈568×320 to 932×430): two columns. Masthead,
-   tagline, mail, note and chips on the left; the arch on the right,
-   as tall as the screen allows.
+   signature, tagline, mail, sticker and chips on the left; the arch
+   on the right, as tall as the screen allows.
    --------------------------------------------------------------- */
 @media (max-width: 1180px) and (max-height: 500px) and (orientation: landscape) {
   .cover {
@@ -928,7 +1044,6 @@
   }
   .tag {
     max-width: 100%;
-    margin-top: 0.8em;
     letter-spacing: 0.02em;
   }
   .mail {
@@ -937,16 +1052,21 @@
     width: fit-content;
     margin: 6px 0 0;
   }
-  .made {
-    right: auto;
-    left: 0;
-    top: calc(100% + 2px);
-    bottom: auto;
-    --rot: -5deg;
-    font-size: 22px;
-  }
   .diagram {
     display: none;
+  }
+  /* The sticker sits at the right of the left column, beside the mail and
+     above the chips (--hd-b: the bottom of the tagline row). */
+  .stk {
+    --hd-b: calc(
+      var(--head-h) - 8px + var(--mast-fs) * 0.78 + var(--sig-gap) * 2 + var(--sig-fs) * 1.35 + 15px
+    );
+    --room: calc(100svh - 104px - var(--hd-b) - 24px);
+    --stk-w: min(150px, var(--col) - 180px, var(--room) / 0.62, max(0px, (var(--room) - 60px) * 100));
+    left: calc(var(--gut) + var(--col) - var(--stk-w) - 6px);
+    top: calc(var(--hd-b) + 14px);
+    bottom: auto;
+    rotate: -3deg;
   }
   .art {
     left: calc(75% - var(--gut) / 2);
@@ -954,7 +1074,7 @@
     height: min(100% - var(--arch-top) - 14px, var(--art-w) * 1.3);
   }
   .bub {
-    left: 4%;
+    left: 20%;
     right: auto;
     top: -34px;
     bottom: auto;

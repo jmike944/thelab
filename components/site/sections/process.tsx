@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
 import { motionOn } from "@/components/site/motion-provider";
+import { ColorBars } from "@/components/site/ui/color-bars";
 import { Goo } from "@/components/site/ui/goo";
 import { STEPS } from "@/lib/content";
 import s from "./process.module.css";
@@ -28,10 +29,14 @@ function RegMark() {
   );
 }
 
+/** The brand's test-card colours (brandbook p. 14), in its order, for the slug patches. */
+const PATCHES = ["paper-hi", "yellow", "cyan", "green", "violet", "red", "blue"];
+
 /**
  * Process (after Corvel's proofs and Prism's process): the studio's line as
- * three colour proofs that stick and stack as you scroll, each with a colour
- * bar, crop marks, a hand-written numeral and a floating goo panel.
+ * three colour proofs that stick and stack as you scroll, each with the
+ * brand's test-card colour bar, crop marks, a test-card swatch labelled
+ * "Prueba de color", a hand-written numeral and a floating goo panel.
  */
 export function Process() {
   const ref = useRef<HTMLElement>(null);
@@ -173,14 +178,15 @@ export function Process() {
 
               <div className={s.inner}>
                 <div className={s.copy}>
-                  <p className={`mono ${s.meta}`} data-rise>
+                  <div className={`mono ${s.meta}`} data-rise>
                     <span>
                       Paso {pad(i + 1)} / {pad(STEPS.length)}
                     </span>
                     <span className={s.metaR} aria-hidden="true">
+                      <ColorBars className={s.swatch} />
                       Prueba de color
                     </span>
-                  </p>
+                  </div>
                   <h3 className={s.title} data-rise>
                     {step.title}
                     <span className="stop" aria-hidden="true" />
@@ -191,10 +197,9 @@ export function Process() {
                   <div className={s.slug} aria-hidden="true" data-rise>
                     <RegMark />
                     <span className={s.patches}>
-                      <i />
-                      <i />
-                      <i />
-                      <i />
+                      {PATCHES.map((c) => (
+                        <i key={c} style={{ background: `var(--${c})` }} />
+                      ))}
                     </span>
                     <span className="mono">The Lab® · Prueba {pad(i + 1)}</span>
                   </div>

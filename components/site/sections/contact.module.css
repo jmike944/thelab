@@ -131,6 +131,81 @@
   text-wrap: pretty;
 }
 
+/* ---- The team as the brand's business card (brandbook p. 22) ----
+   A 9 × 6 cm card in paper-hi: the black logo, the tagline line and handle
+   tilted under it, then one dotted name ...... role line per person. */
+.team {
+  /* The card's type and spacing scale with its width (cqi). */
+  container-type: inline-size;
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  width: min(100%, 400px);
+}
+.teamTitle {
+  margin: 0;
+  /* Full panel colour: it sits over the goo and rays. */
+  color: var(--on-panel);
+  font-weight: 500;
+}
+.biz {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 7cqi;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  padding: 7.5cqi 8cqi 7cqi;
+  background: var(--paper-hi);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    7px 7px 0 var(--blue);
+  transform: rotate(-2deg);
+  transform-origin: 30% 60%;
+}
+.bizHead {
+  display: grid;
+  justify-items: center;
+  gap: 2.6cqi;
+}
+.bizLogo {
+  width: 31cqi;
+  color: var(--ink);
+}
+/* The tagline and handle sit a few degrees off the logo, as on the printed card. */
+.bizTilt {
+  display: grid;
+  justify-items: center;
+  gap: 0.9cqi;
+  transform: rotate(4deg);
+}
+.bizTag {
+  flex-wrap: nowrap;
+  gap: 0 0.28em;
+  font-size: clamp(11px, 3.9cqi, 15px);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.bizTag :global(.sig-dots) {
+  flex-basis: 2.2em;
+}
+.bizHandle {
+  font-size: clamp(11px, 3.6cqi, 14px);
+  line-height: 1.1;
+}
+.bizLines {
+  display: grid;
+  gap: 1.6cqi;
+}
+.bizLine {
+  font-size: clamp(11px, 4cqi, 15px);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
 .notes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -409,6 +484,17 @@
 /* ---- Motion: the card lands ---- */
 :global(.motion) .card {
   will-change: transform;
+}
+
+/* Two columns, but a narrow copy column: a smaller card, and the note tucks
+   in closer to the form so the two don't touch. */
+@media (min-width: 960.02px) and (max-width: 1199.98px) {
+  .team {
+    width: min(100%, 330px);
+  }
+  .note {
+    right: calc(100% + 8px);
+  }
 }
 
 /* ---- Small screens ---- */

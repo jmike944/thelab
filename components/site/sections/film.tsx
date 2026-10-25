@@ -199,11 +199,20 @@ export function Film() {
       const guides = q("[data-guide]");
       const cap = q("[data-cap]")[0];
       const css = (name: string) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0;
-      const pct = (px: number, of: number) => ((px / of) * 100).toFixed(3);
+      // Unary + drops trailing zeros ("51.2", not "51.200"): gsap 3.15 misreads
+      // the padded form inside clip-path strings and blows the inset up ~100x.
+      const pct = (px: number, of: number) => +((px / of) * 100).toFixed(3);
 
-      const setOpen = (on: boolean) => {
+      // Each time the slot opens going forward (from closed), the reel starts again
+      // from 0:00 rather than resuming mid-film. A film the visitor is playing by
+      // hand keeps playing where it is.
+      const setOpen = (on: boolean, forward = true) => {
         if (pb.current.open === on) return;
         pb.current.open = on;
+        if (on && forward && video.paused) {
+          video.currentTime = 0;
+          setTime(0);
+        }
         syncRef.current();
       };
 
@@ -251,9 +260,9 @@ export function Film() {
               const W = stage.clientWidth;
               const x = cut();
               const hw = Math.max(5, Math.min(14, (gapR() - gapL()) * 0.24));
-              return `inset(31% ${pct(W - x - hw, W)}% 31% ${pct(x - hw, W)}% round ${hw.toFixed(1)}px)`;
+              return `inset(31% ${pct(W - x - hw, W)}% 31% ${pct(x - hw, W)}% round ${+hw.toFixed(1)}px)`;
             };
-            const opened = (self: ScrollTrigger) => setOpen(self.progress >= OPEN_AT_WIDE);
+            const opened = (self: ScrollTrigger) => setOpen(self.progress >= OPEN_AT_WIDE, self.direction >= 0);
 
             const tl = gsap.timeline({
               scrollTrigger: {
@@ -319,7 +328,7 @@ export function Film() {
                   scrub: true,
                   invalidateOnRefresh: true,
                   onRefresh: (self) => setOpen(self.progress >= OPEN_AT_NARROW),
-                  onUpdate: (self) => setOpen(self.progress >= OPEN_AT_NARROW),
+                  onUpdate: (self) => setOpen(self.progress >= OPEN_AT_NARROW, self.direction >= 0),
                 },
               },
             );

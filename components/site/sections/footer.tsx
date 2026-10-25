@@ -5,24 +5,30 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { motionOn } from "@/components/site/motion-provider";
+import { HandMark } from "@/components/site/ui/hand-mark";
+import { LogoWheel } from "@/components/site/ui/logo-wheel";
+import { Signature } from "@/components/site/ui/signature";
 import { CONTACT, NAV } from "@/lib/content";
 import s from "./footer.module.css";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const MARK = "THE LAB";
-const RING = "Creative worth ✶ Hecho en Saltillo ✶ The Lab® ✶ ";
 
 /*
  * Footer (Corvel's footer grid and chips + Agentic's giant mark). Columns on
- * a ruled sheet, then the wordmark set to the full content width from its
- * character count, rising letter by letter out of a hairline as it comes in,
- * then the legal line.
+ * a ruled sheet; then the brand's orange visual (brandbook p. 21): the
+ * cursive "The Lab" over the signature line on an orange field, with the
+ * radial logo wheel (p. 18) turning beside it; the chips; the secondary logo
+ * "THE LAB®" set to the full content width from its character count, rising
+ * letter by letter out of a hairline as it comes in; then the legal line.
+ * Everything moves by transform (and clip-path) only, and the footer clips
+ * its own overflow, so its height is the same from first paint.
  */
 export function Footer() {
   const root = useRef<HTMLElement>(null);
 
-  // The stamp only turns while the footer is on screen.
+  // The wheel only turns while the footer is on screen.
   useEffect(() => {
     const el = root.current;
     if (!el) return;
@@ -47,6 +53,17 @@ export function Footer() {
         { "--mis": "0.08em" },
         { "--mis": "0.018em", ease: "power1.out", duration: tl.duration() || 1 },
         0,
+      );
+      // The script writes itself in from the left as the orange band scrolls in.
+      const band = root.current!.querySelector<HTMLElement>("[data-band]")!;
+      gsap.fromTo(
+        band.querySelector("[data-script]"),
+        { clipPath: "inset(-10% 100% -10% -4%)" },
+        {
+          clipPath: "inset(-10% -4% -10% -4%)",
+          ease: "none",
+          scrollTrigger: { trigger: band, start: "top 85%", end: "center 55%", scrub: 0.5 },
+        },
       );
       gsap.fromTo(
         root.current!.querySelectorAll("[data-col]"),
@@ -112,22 +129,25 @@ export function Footer() {
         </div>
       </div>
 
-      <div className={`wrap ${s.chips}`}>
-        <div className={s.stamp} aria-hidden="true">
-          <svg className={s.stampRing} viewBox="0 0 100 100" focusable="false">
-            <defs>
-              <path id="foot-ring" d="M50 50m-38 0a38 38 0 1 1 76 0a38 38 0 1 1-76 0" />
-            </defs>
-            <circle cx="50" cy="50" r="47" />
-            <circle cx="50" cy="50" r="29" />
-            <text>
-              <textPath href="#foot-ring" textLength="236" lengthAdjust="spacing">
-                {RING.toUpperCase()}
-              </textPath>
-            </text>
-          </svg>
-          <span className={s.stampMark} />
+      {/* The brand's orange visual (brandbook p. 21) with the logo wheel (p. 18). A brand
+          sign-off: the script and the signature repeat the name, place and tagline set out
+          in the columns and the legal line, so the band is hidden from assistive tech. */}
+      <div className={`field field--orange ${s.band}`} data-band aria-hidden="true">
+        <div className={`wrap ${s.bandIn}`}>
+          <div className={s.sign}>
+            <p className={s.bandTop}>THE LAB®</p>
+            <div className={s.script} data-script>
+              <HandMark name="script" className={s.scriptMark} sizes="(max-width: 760px) 86vw, 46vw" />
+            </div>
+            <Signature className={s.sig} />
+          </div>
+          <div className={s.wheelHost}>
+            <LogoWheel className={s.wheel} />
+          </div>
         </div>
+      </div>
+
+      <div className={`wrap ${s.chips}`}>
         <p className="chip">
           <span className="chip-k">Hecho en</span>
           <span className="chip-v">Saltillo, Coahuila</span>
@@ -159,8 +179,8 @@ export function Footer() {
 
       <div className={`wrap ${s.bottom}`}>
         <p>© 2026 The Lab®. Todos los derechos reservados.</p>
-        <p className={`mono ${s.soft}`}>
-          <span lang="en">Creative worth</span>.
+        <p className={s.tagline}>
+          <span lang="en">Creative Worth</span>
         </p>
         <a className={`link ${s.up}`} href="#top">
           Volver arriba

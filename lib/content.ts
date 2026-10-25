@@ -175,8 +175,24 @@ export const CAPABILITIES = [
   "Collabs",
 ];
 
-/** Real clients from the projects above, for the display ticker. */
-export const CLIENTS = ["WU Nutrition", "Zoco Brema", "La Cantina", "La Potranca", "Il Mercato Gentiloni"];
+/**
+ * Real clients from the projects above, with their own logos (official
+ * website files or their Instagram profile art, cut to a black mark on
+ * transparent for the yellow band). w/h are the logo files' pixel sizes.
+ * `made` describes the work for clients without a project above (from The
+ * Lab's own Instagram posts).
+ */
+export const CLIENTS: { name: string; logo: string; w: number; h: number; made?: string }[] = [
+  { name: "WU Nutrition", logo: "/clients/wu-nutrition.png", w: 1125, h: 706 },
+  { name: "Zoco Brema", logo: "/clients/zoco-brema.png", w: 1546, h: 194 },
+  { name: "La Cantina", logo: "/clients/la-cantina.png", w: 1292, h: 296 },
+  { name: "La Potranca", logo: "/clients/la-potranca.png", w: 1768, h: 410 },
+  { name: "Il Mercato Gentiloni", logo: "/clients/il-mercato-gentiloni.png", w: 1530, h: 414 },
+  { name: "Taco de Ojo", logo: "/clients/taco-de-ojo.png", w: 1200, h: 909, made: "Mini documental · 2026" },
+  { name: "8 Segundos Rodeo", logo: "/clients/8-segundos-rodeo.png", w: 1200, h: 834, made: "Cobertura de rodeo · 2025" },
+  { name: "Coconsa", logo: "/clients/coconsa.png", w: 1400, h: 478, made: "Documental de obra · 2026" },
+  { name: "D'leite", logo: "/clients/dleite.png", w: 1400, h: 648, made: "Branding · 2025" },
+];
 
 export const INTERESTS = ["Contenido viral", "Cobertura de eventos", "Foto y video", "Community management", "Aún no sé"];
 
@@ -188,6 +204,46 @@ export const CONTACT = {
   location: "Saltillo, Coahuila, México",
   response: "Menos de 2 días hábiles",
 };
+
+/* ---------------------------------------------------------------
+   From the brandbook (THELAB_BRANDBOOK.pdf, Dum Dum Studio, 2026)
+   --------------------------------------------------------------- */
+
+/** The official "About" (brandbook p. 8), as three paragraphs. */
+export const ABOUT = [
+  "THE LAB es una agencia creativa especializada en contenido orgánico profesional para redes sociales. Trabajamos con marcas que buscan elevar su presencia digital a través de contenido creativo, estético y bien ejecutado.",
+  "Nuestro enfoque combina planeación, creatividad y producción profesional para crear piezas que no solo se vean bien, sino que también conecten con las audiencias.",
+  "En THE LAB creemos que el contenido no se trata de llenar redes sociales, sino de construir marcas con identidad, consistencia y carácter. Por eso cuidamos cada parte del proceso: desde la idea hasta la ejecución final.",
+];
+
+/** The words that orbit the tagline "Creative Worth" (brandbook p. 13). */
+export const TAGLINE_WORDS = [
+  "Visión",
+  "Historia",
+  "Relevancia",
+  "Creación",
+  "Ideas",
+  "Impacto",
+  "Dirección",
+  "Estrategia",
+  "Valor",
+  "Cultura",
+  "Construir",
+  "Concepto",
+];
+
+/** A signature-line part; English parts carry lang so they're read correctly. */
+export type SigItem = string | { text: string; lang?: string };
+
+/** The dotted signature line (brandbook p. 8, 18-24): parts joined by dot leaders. */
+export const SIGNATURE: SigItem[] = ["The LAB MX", { text: "Creative Worth", lang: "en" }, "México"];
+
+/** The team, as on the business cards (brandbook p. 22). Names and roles only. */
+export const TEAM: { name: string; role: SigItem }[] = [
+  { name: "Emiliano Vasconcelos", role: "Director General" },
+  { name: "Pablo Hurtado", role: "Director Creativo" },
+  { name: "Marcela González", role: { text: "Head of Content", lang: "en" } },
+];
 
 /** Header and footer sections, in the order they appear on the page. */
 export const NAV: [id: string, label: string][] = [

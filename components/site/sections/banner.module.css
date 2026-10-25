@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------
    Banner: the big generative panel (Prism's hero art) with corner
-   metas around it, a rule grid with lit cells over it and the
-   studio's line set huge in its bottom-left corner.
+   metas around it, a rule grid with lit cells over it, and the
+   brand's tagline page (brandbook p. 13) on paper in its middle.
    --------------------------------------------------------------- */
 .banner {
   position: relative;
@@ -58,7 +58,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  aspect-ratio: 21 / 9;
+  aspect-ratio: 2 / 1;
   border-radius: var(--r-lg);
   background: var(--blue);
   container-type: inline-size;
@@ -137,51 +137,114 @@
   transform: scale(0);
 }
 
-/* A soft ink shade under the statement keeps it legible over any colour. */
-.shade {
+/* ---------------------------------------------------------------
+   The paper: a sheet of bright paper on the ring of goo, set like the
+   tagline page of the brandbook (p. 13). It sits in the same grid as
+   the rules, one cell in from every edge, so its edges ride the rules.
+   Clicks fall through it to the composition (the remix button).
+   --------------------------------------------------------------- */
+.plateGrid {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
-      120% 105% at 0% 100%,
-      color-mix(in oklab, var(--ink) 74%, transparent) 0%,
-      color-mix(in oklab, var(--ink) 52%, transparent) 30%,
-      color-mix(in oklab, var(--ink) 16%, transparent) 54%,
-      color-mix(in oklab, var(--ink) 0%, transparent) 72%
-    );
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--gc, 12), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--gr, 6), minmax(0, 1fr));
   pointer-events: none;
+}
+.plate {
+  --pp: clamp(12px, 2.2cqw, 28px); /* inner margin */
+  --sig-h: 30px; /* room for the header line */
+  position: relative;
+  grid-column: 2 / -2;
+  grid-row: 2 / -2;
+  background: var(--paper-hi);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 var(--stroke) var(--ink),
+    var(--shadow) var(--shadow) 0 var(--ink);
+  container-type: size;
+}
+/* The page's own header line, top right: "The Lab MX .... Tagline .... Comunicación". */
+.plateHead {
+  position: absolute;
+  top: clamp(8px, 1.6cqh, 16px);
+  right: var(--pp);
+  left: var(--pp);
+  display: flex;
+  justify-content: flex-end;
+}
+.plateHead .plateSig {
+  justify-content: flex-end;
+  font-size: clamp(11px, 1.15cqw, 14px);
 }
 
-.statement {
-  --stop: var(--yellow);
+/* The lockup keeps the brandbook page's proportions and scales as one
+   piece inside the paper: wide (2.39:1) on desktop and tablet, tall
+   (4:5) on phones. Everything in it is sized in its own width (cqi). */
+.lockup {
+  --ar: 2.39;
   position: absolute;
-  left: clamp(16px, 2.6cqi, 44px);
-  bottom: clamp(12px, 2cqi, 34px);
-  color: var(--paper-hi);
-  font-family: var(--f-display);
-  font-weight: 400;
-  font-size: 15.5cqi;
-  line-height: 0.8;
-  letter-spacing: 0.004em;
-  text-transform: uppercase;
-  text-shadow: 0.028em 0.028em 0 var(--ink);
-  /* An ink keyline round every glyph (under the fill), so the white letters
-     keep their edge over the yellow, cyan and pale cells of any composition. */
-  -webkit-text-stroke: max(0.024em, 3px) var(--ink);
-  paint-order: stroke fill;
-  pointer-events: none;
+  top: calc(50% + var(--sig-h) / 2);
+  left: 50%;
+  width: min(100cqw - 2 * var(--pp), (100cqh - var(--sig-h) - 2 * var(--pp)) * var(--ar));
+  aspect-ratio: var(--ar);
+  translate: -50% -50%;
+  container-type: inline-size;
 }
-.statement :global(.stop) {
-  text-shadow: none;
-  box-shadow: 0.028em 0.028em 0 var(--ink);
+
+/* "Creative Worth" in CommonWealth, mixed case, ink on paper. */
+.tagline {
+  position: absolute;
+  top: 2.35cqi;
+  right: 0;
+  left: 0;
+  margin: 0;
+  color: var(--ink);
+  font: 400 24.34cqi / 0.78 var(--f-text);
+  letter-spacing: -0.004em;
+  text-align: center;
+  white-space: nowrap;
 }
-/* SplitText's line masks clip; give the glyphs and their shadow room. */
-.statement :global(.bn-line-mask) {
-  padding: 0.08em 0.06em 0.05em 0;
-  margin: -0.08em -0.06em -0.05em 0;
+/* The full stop hangs past the line, so "Worth" stays centred. */
+/* SplitText's line masks clip; give the caps and the stop room. The
+   headroom is paid back in one bottom margin (stacked masks would collapse
+   a top and a bottom margin into one and open the lines up), and the split
+   heading moves up by the first mask's top padding. */
+.tagline :global(.bn-line-mask) {
+  padding: 0.24em 0.2em 0.06em;
+  margin: 0 -0.2em -0.3em;
 }
-:global(.motion) .statement {
+.tagline:has(:global(.bn-line-mask)) {
+  translate: 0 -0.24em;
+}
+:global(.motion) .tagline {
   visibility: hidden;
+}
+
+/* The twelve words in orbit, some turned. */
+.orbit {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.orbit > li {
+  position: absolute;
+  top: calc(var(--y) * 100%);
+  left: calc(var(--x) * 100%);
+  color: var(--ink);
+  font: 400 max(11.5px, 2.42cqi) / 1 var(--f-text);
+  white-space: nowrap;
+  translate: -50% -50%;
+  rotate: var(--r, 0deg);
+}
+.orbit > li > span {
+  display: inline-block;
+}
+:global(.motion) .orbit > li > span {
+  opacity: 0;
 }
 
 /* Run counter and grid size, like Prism's "Run 4,182" tag. */
@@ -230,15 +293,20 @@
   position: relative;
   margin-top: clamp(20px, 2.2vw, 30px);
 }
+/* Centred with auto margins, not a translate: GSAP folds `translate` into its
+   own transform when the caption animates in, freezing the -50% as pixels,
+   so a resize across 900px threw it off-centre. */
 .caption {
   position: absolute;
   top: 2px;
-  left: 50%;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   gap: 10px;
+  width: max-content;
+  margin-inline: auto;
   white-space: nowrap;
-  translate: -50% 0;
 }
 .caption::before {
   content: "";
@@ -248,8 +316,10 @@
   background: var(--magenta);
 }
 
-/* Motion: metas and caption fade up, the stamps pop on. */
-:global(.motion) .meta,
+/* Motion: metas and caption fade up, the stamps pop on. A meta that holds
+   a link only fades its label, so the link is never invisible. */
+:global(.motion) .meta:not([data-meta="link"]),
+:global(.motion) .meta[data-meta="link"] dt,
 :global(.motion) .caption,
 :global(.motion) .noteWrap,
 :global(.motion) .tiltWrap {
@@ -263,25 +333,31 @@
   .art {
     aspect-ratio: 3 / 2;
   }
-  .statement {
-    font-size: 19cqi;
-  }
   .noteWrap {
     right: 24%;
+  }
+}
+/* Below ~800px the note no longer clears the tilted tag on the panel's top
+   edge, so it takes its own line above the panel, right-aligned. */
+@media (max-width: 800px) {
+  .metasTop {
+    margin-bottom: 80px;
+  }
+  .noteWrap {
+    right: 2px;
+    bottom: calc(100% + 30px);
   }
 }
 @media (max-width: 900px) {
   .caption {
     position: static;
+    width: auto;
+    margin-inline: 0;
     margin-bottom: 22px;
-    translate: none;
     white-space: normal;
   }
 }
 @media (max-width: 640px) {
-  .metasTop {
-    margin-bottom: 72px;
-  }
   .metas {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -295,12 +371,42 @@
   .art {
     aspect-ratio: 4 / 5;
   }
-  .statement {
-    font-size: 25cqi;
+  /* Phones: the tall lockup, the words above, between and under the lines. */
+  .plate {
+    --sig-h: 24px;
   }
-  .noteWrap {
-    right: 2px;
-    bottom: calc(100% + 20px);
+  .plateHead {
+    top: 8px;
+  }
+  .plateHead .plateSig {
+    gap: 0 0.35em;
+    font-size: 11px;
+  }
+  .plateHead .plateSig :global(.sig-dots) {
+    flex-basis: 1.6em;
+  }
+  .lockup {
+    --ar: 0.8;
+  }
+  @media (max-width: 360px) {
+    .plateHead .plateSig {
+      gap: 0 0.3em;
+      font-size: 10px;
+    }
+    .plateHead .plateSig :global(.sig-dots) {
+      flex-basis: 0.9em;
+    }
+  }
+  .tagline {
+    top: 29.58cqi;
+    font-size: 26.87cqi;
+    line-height: 1.227;
+  }
+  .orbit > li {
+    top: calc(var(--ty) * 100%);
+    left: calc(var(--tx) * 100%);
+    font-size: max(11.5px, 5.3cqi);
+    rotate: var(--tr, 0deg);
   }
   .tiltWrap {
     left: 14px;

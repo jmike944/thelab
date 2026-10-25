@@ -30,6 +30,14 @@
   margin-block: -0.24em -0.06em;
   padding-block: 0.24em 0.06em;
 }
+/* Once split, the title is a column of masks: flex items' margins never
+   collapse (with each other or through the h2), so every mask nets to zero
+   and the two-line title keeps its exact pre-split height: nothing below it
+   moves when the split lands (deep links stay put). */
+.h2:has(> :global(.work-line-mask)) {
+  display: flex;
+  flex-direction: column;
+}
 .aside {
   display: grid;
   justify-items: start;
@@ -218,8 +226,10 @@
   paint-order: stroke fill;
   text-shadow: calc(var(--year-fs) * 0.04) calc(var(--year-fs) * 0.04) 0 var(--ink);
 }
+/* Hand notes are blue on paper (the brand's one colour that reads as text on
+   white, p. 9); the sheet is paper even though the panel around it is dark. */
 .noteWrap {
-  --note-ink: color-mix(in oklab, var(--magenta) 72%, var(--ink));
+  --note-ink: var(--blue);
   display: inline-flex;
   align-items: flex-start;
   gap: 2px;
@@ -537,10 +547,43 @@
     display: block;
   }
 }
-/* Short pinned stages: the client line goes so the sheet's text stays inside it. */
+/* Short pinned stages: the client moves up beside the title, set small on its
+   baseline, so it stays on the sheet (and in the heading) without costing a
+   line. */
 @media (min-width: 900px) and (max-height: 560px) {
+  :global(.motion) .name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 0.85em;
+  }
   :global(.motion) .client {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-size: clamp(14px, calc(var(--h) * 0.05), 17px);
+  }
+  /* A short rule leads into it, like the spec's leaders. */
+  :global(.motion) .client::before {
+    content: "";
+    align-self: center;
+    width: 1.1em;
+    border-top: var(--stroke) solid currentColor;
+  }
+}
+/* Very short stages: the sheet's head (N.º and swatches, which the stage bar's
+   counter repeats) goes, and the spec's first row tightens, so the category
+   row always shows whole instead of being cut at its top. */
+@media (min-width: 900px) and (max-height: 470px) {
+  :global(.motion) .meta {
     display: none;
+  }
+  :global(.motion) .txt::before {
+    top: 0;
+  }
+  :global(.motion) .spec > div:first-child {
+    margin-top: 0;
+    padding-top: 0.75em;
   }
 }
 
