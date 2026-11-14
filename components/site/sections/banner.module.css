@@ -64,6 +64,10 @@
   container-type: inline-size;
   transform-origin: 50% 100%;
 }
+/* Scaled by a scroll scrub: composite it rather than repaint it each frame. */
+:global(.motion) .art {
+  will-change: transform;
+}
 /* The composition is the remix button; its ring goes round the whole panel. */
 .art .remix {
   position: absolute;

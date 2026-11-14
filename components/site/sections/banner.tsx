@@ -346,7 +346,7 @@ export function Banner() {
               seed={105}
               beat={7000}
               remixLabel="Generar otra composición"
-              className={s.remix}
+              className={`${s.remix} goo-layer`}
             />
             <div className={s.grid} style={gridVars} aria-hidden="true">
               {Array.from({ length: dims.gc * dims.gr }, (_, i) => (

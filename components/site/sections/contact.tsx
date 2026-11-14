@@ -254,7 +254,7 @@ export function Contact() {
     <section ref={root} id="contacto" data-tone="dark" aria-labelledby="contact-title" className={s.contact}>
       <div ref={panelRef} className={`panel ${s.panel}`}>
         <div className={s.bg} aria-hidden="true">
-          <Goo cols={grid.cols} rows={grid.rows} seed={1907} beat={9000} className={s.goo} />
+          <Goo cols={grid.cols} rows={grid.rows} seed={1907} beat={9000} className={`${s.goo} goo-layer`} />
         </div>
         <svg ref={svgRef} className={s.burst} aria-hidden="true" focusable="false" />
 
