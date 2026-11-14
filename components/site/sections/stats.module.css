@@ -41,6 +41,10 @@
     repeating-conic-gradient(color-mix(in oklab, var(--ink) 7%, transparent) 0deg 0.8deg, transparent 0.8deg 6deg),
     repeating-conic-gradient(color-mix(in oklab, var(--ink) 4%, transparent) 0deg 0.3deg, transparent 0.3deg 1.5deg);
 }
+/* Turned by a scroll scrub: composite the disc instead of repainting it. */
+:global(.motion) .rays div {
+  will-change: transform;
+}
 /* A halftone ramp of ink dots along the bottom edge (Corvel). */
 .ramp {
   position: absolute;

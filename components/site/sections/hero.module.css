@@ -110,6 +110,17 @@
   display: inline-block;
   will-change: transform;
 }
+/* Everything the scroll scrub turns or scales gets its own layer while the
+   scenes run, so each frame is a compositor transform instead of a repaint
+   (the print's halftone, the conic rays and the photos are costly to paint). */
+:global(.motion) .fly,
+:global(.motion) .print,
+:global(.motion) .lines,
+:global(.motion) .arch,
+:global(.motion) .archLine,
+:global(.motion) .raysTurn {
+  will-change: transform;
+}
 .reg {
   position: absolute;
   top: 0.1em;

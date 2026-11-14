@@ -528,6 +528,15 @@ canvas {
   display: block;
   overflow: hidden;
 }
+/* A large goo field with things repainting around it gets its own compositor
+   layer (add this class), so its gooey filter, a blur over the whole host, is
+   rasterised once per composition instead of again on every scroll frame that
+   repaints a neighbour or rescales an ancestor. On phones that re-filtering
+   was most of the scroll cost. Small goos stay unpromoted: dozens of extra
+   layers (ticker swatches, tiles) cost more than they save. */
+.goo-layer {
+  will-change: transform;
+}
 .goo-host--btn {
   padding: 0;
   border: 0;
@@ -660,6 +669,15 @@ canvas {
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 var(--stroke) 0 var(--hair);
+}
+/* On phones the blur under the bar is recomputed on every scroll frame for a
+   barely visible effect (the bar is 92% paper): go solid instead. */
+@media (max-width: 860px), (hover: none) {
+  .head.is-solid {
+    background: var(--paper);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 .head.on-dark {
   background: var(--panel);
